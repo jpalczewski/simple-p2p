@@ -9,7 +9,7 @@ find_package(PkgConfig REQUIRED)
 pkg_search_module(OPENSSL REQUIRED openssl)
 
 if( OPENSSL_FOUND )
-    message(STATUS "Using OpenSSL ${OPENSSL_VERSION}")
+    message(STATUS "ski/simple-p2Using OpenSSL ${OPENSSL_VERSION}")
 
     include_directories(${OPENSSL_INCLUDE_DIRS})
 else()

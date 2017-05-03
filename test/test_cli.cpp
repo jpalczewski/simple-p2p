@@ -3,5 +3,5 @@
 
 BOOST_AUTO_TEST_CASE(always_true)
 {
-    BOOST_TEST(2*2==4);
+    BOOST_CHECK(2*2==4);
 }
