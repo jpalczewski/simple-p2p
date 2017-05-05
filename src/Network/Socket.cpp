@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <unistd.h>
 #include <cstring>
+#include <iostream>
 
 Socket::Socket(Socket::Domain domain, Socket::Type type)
 {
@@ -20,16 +21,36 @@ Socket::Socket(Socket::Domain domain, Socket::Type type)
     {
         throw std::runtime_error("Error during creating socket");
     }
+    this->domain = domain;
+    this->type = type;
 }
 
 Socket::Socket(int socketDescriptor, Socket::Domain domain, Socket::Type type)
 {
     this->socketDescriptor = socketDescriptor;
+    this->domain = domain;
+    this->type = type;
 }
 
 Socket::~Socket()
 {
-    close();
+//    close();
+}
+
+Socket::Socket(Socket&& other): socketDescriptor(other.socketDescriptor)
+{
+    other.socketDescriptor = -1;
+    domain = other.domain;
+    type = other.type;
+}
+
+Socket& Socket::operator=(Socket &&other)
+{
+    socketDescriptor = other.socketDescriptor;
+    other.socketDescriptor = -1;
+    domain = other.domain;
+    type = other.type;
+    return *this;
 }
 
 void Socket::bind(int port)
@@ -41,6 +62,7 @@ void Socket::bind(int port)
 
     if (::bind(socketDescriptor, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
     {
+        std:: cout << errno << std::endl;
         throw std::runtime_error("Error on binding.");
     }
 }
@@ -83,6 +105,7 @@ Socket Socket::accept()
 
     if (newSocket < 0)
     {
+        std::cout << errno << std::endl;
         throw std::runtime_error("Error on accept.");
     }
 
@@ -105,11 +128,11 @@ Socket::Type Socket::getType(int socket) const
 
 int Socket::read(char* output, int length)
 {
-    /* Now read server response */
     int bytesRead = ::read(socketDescriptor, output, length);
 
     if (bytesRead < 0)
     {
+        std::cout << errno << std::endl;
         throw std::runtime_error("Error during reading from socket");
     }
 
@@ -129,5 +152,7 @@ int Socket::write(const char* input, int length)
 
 int Socket::close()
 {
+    if (socketDescriptor < 0)
+        return 1;
     return ::close(socketDescriptor);
 }

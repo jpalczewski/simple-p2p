@@ -14,9 +14,11 @@ public:
     enum class Domain {Local = AF_UNIX, Ip4 = AF_INET};
     enum class Type {Tcp = SOCK_STREAM, Udp = SOCK_DGRAM};
 
-    Socket() {};
     Socket(Domain domain, Type type);
     ~Socket();
+
+    Socket(Socket&& other);
+    Socket& operator=(Socket&& other);
 
     void bind(int port);
     void connect(std::string host, int port);
