@@ -4,6 +4,8 @@
 #include <thread>
 #include <unistd.h>
 
+#include "CryptoUtils.h"
+
 void serverFunc(int port)
 {
     Dispatcher dispatcher(port, 10);
@@ -33,6 +35,9 @@ void clientFunc(int serverPort)
 
 int main(int argc, char** argv)
 {
+    // example of calculating md5 hash of file
+    // create file 'helloWorld.txt' and uncomment this line to see result
+    // std::cout << "Hash: " << toMd5String(hashMd5FromFile("helloWorld.txt")) << std::endl;
     std::cout << "Hello, World!" << std::endl;
     if (argc < 3)
     {
