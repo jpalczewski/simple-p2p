@@ -1,4 +1,4 @@
-add_executable(cli cli.cpp Network/Socket.cpp Dispatcher.cpp Handler.cpp CryptoUtils.cpp)
+add_executable(cli cli.cpp Network/Socket.cpp Dispatcher.cpp Handler.cpp CryptoUtils.cpp examples.cpp)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)

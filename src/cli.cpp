@@ -35,13 +35,10 @@ void clientFunc(int serverPort)
 
 int main(int argc, char** argv)
 {
-    // example of calculating md5 hash of file
-    // create file 'helloWorld.txt' and uncomment this line to see result
-    // std::cout << "Hash: " << toMd5String(hashMd5FromFile("helloWorld.txt")) << std::endl;
-    std::cout << "Hello, World!" << std::endl;
+    initOpenSsl();
     if (argc < 3)
     {
-        std::cout << "Usage: " << argv[0] << "SERVER_PORT CLIENT_PORT" << std::endl;
+        std::cout << "Usage: " << argv[0] << " SERVER_PORT CLIENT_PORT" << std::endl;
         return 0;
     }
     int serverPort = atoi(argv[1]);
