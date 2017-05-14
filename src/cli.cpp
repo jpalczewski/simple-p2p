@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #include "CryptoUtils.h"
+#include "examples.h"
 
 void serverFunc(int port)
 {
