@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.2.2)
 project(simple_p2p)
 set(CMAKE_CXX_STANDARD 14)
 find_package(PkgConfig REQUIRED)
