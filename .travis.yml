@@ -1,0 +1,21 @@
+language: cpp
+
+dist: trusty
+sudo: false
+
+cache:
+  apt: true
+
+compiler:
+  - g++
+  - clang++
+
+os:
+  - linux
+
+addons:
+  apt:
+    packages:
+    - openssl
+    - libboost-all-dev
+    - cmake
