@@ -14,9 +14,9 @@ os:
   - linux
 
 addons:
-  sources:
-  - ubuntu-toolchain-r
   apt:
+    sources:
+    - ubuntu-toolchain-r
     packages:
     - g++-7
     - gcc-7
