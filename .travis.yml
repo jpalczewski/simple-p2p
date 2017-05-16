@@ -18,7 +18,8 @@ addons:
   - ubuntu-toolchain-r-test
   apt:
     packages:
-    - g++-7
+    - g++-5
+    - gcc-5
     - openssl
     - libboost-all-dev
     - cmake
@@ -27,6 +28,9 @@ before_script:
   - mkdir build
   - cd build
   - cmake ..
+
+install:
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
 
 script:
   - make
