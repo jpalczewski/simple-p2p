@@ -18,8 +18,8 @@ addons:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - g++-7
-    - gcc-7
+    - g++-5
+    - gcc-5
     - openssl
     - libboost-all-dev
     - cmake
@@ -30,7 +30,7 @@ before_script:
   - cmake ..
 
 install:
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-7" CC="gcc-7"; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
 script:
   - make
 
