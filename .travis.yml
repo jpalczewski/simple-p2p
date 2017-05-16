@@ -1,18 +1,12 @@
 language: cpp
-
 dist: trusty
 sudo: true
-
-
 cache:
   apt: true
-
 compiler:
-  - g++
-
+- g++
 os:
-  - linux
-
+- linux
 addons:
   apt:
     sources:
@@ -23,14 +17,14 @@ addons:
     - openssl
     - libboost-all-dev
     - cmake
-
 before_script:
-  - mkdir build
-  - cd build
-  - cmake ..
-
+- mkdir build
+- cd build
+- cmake ..
 install:
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
+- if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
 script:
-  - make
-
+- make
+notifications:
+  slack:
+    secure: Gze1PY3rDVFo8O/2g2SnIv6mIO4IOFSkO50oWmSxq028IkWFIANh1KCIY4FjD6YSm4ZLytB5SVDHIZWOrnC2Arj8OU3lzlT/0WVNe9EqX6JBxpH97hpZP6MalC9NdxWqJ0InU8lx5VFnUuUXTGvmqOU8MMxPoam0XObVJjf9tPYg/pRgTwzxqoW/sfeMtXWhhkwygCphcoAvM721QvB/AHzVP/TikQdD0kjJSniwcDdG9dv7ra1Zs0ZgtZ70IHQkdHqiH35BEmIo6A1U3AW/AHC5shHfauj2hr7oo0JQRWgqfzMMkx1+yzPu5Y1PyDqvDZlpueNqM59+sk2AIE+jWOHZFFNT72fi4pehpXi3CWdRGqYT5QvH2AYdr2c6JJPIih0opCKCZEVX0GrF18ARaahCjgRP6xaCdQnkUDYORGkZTdf3PRuIDc935MynviYPjwkyGqF9YigTtzpzSUWFvVJp+dZanShmT+F7O0DFJDShu1TaKAGwo2wGCTqtL2zN/cCaBioCfNlf0O9Uhc9tlE9kl3MXRUk7nQy33hWI8Xvf1RzWNugixBjdQIlWJnOzlI3OHo/v3nhix6Mc8NcNNAftlCZjbkyAPEAsi5JHU4iVD6LR4Sh7wFqyGImn9B+9biJezwfr+avQbnAMflCP5SLPvXBCiiy+juSwma+JcxQ=
