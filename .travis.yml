@@ -16,7 +16,7 @@ os:
 addons:
   apt:
     sources:
-    - ubuntu-toolchain-r
+    - ubuntu-toolchain-r-test
     packages:
     - g++-7
     - gcc-7
