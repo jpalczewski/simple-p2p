@@ -15,11 +15,11 @@ os:
 
 addons:
   sources:
-  - ubuntu-toolchain-r-test
+  - ubuntu-toolchain-r
   apt:
     packages:
-    - g++-5
-    - gcc-5
+    - g++-7
+    - gcc-7
     - openssl
     - libboost-all-dev
     - cmake
@@ -30,8 +30,7 @@ before_script:
   - cmake ..
 
 install:
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
-
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-7" CC="gcc-7"; fi
 script:
   - make
 
