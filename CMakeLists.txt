@@ -31,14 +31,11 @@ if( Boost_FOUND )
 endif()
 
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 
-# unit_test_framework
-#Examples:
-#add_executable(openssl_boost_playground main.cpp ${SOURCE_FILES})
-#add_executable(obp_test ${TEST_FILES})
-#target_link_libraries(openssl_boost_playground ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES})
-#target_link_libraries(obp_test ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES})
 
+add_subdirectory(examples)
 add_subdirectory(src)
 add_subdirectory(test)
 

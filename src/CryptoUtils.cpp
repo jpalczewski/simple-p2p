@@ -9,6 +9,7 @@
 #include <openssl/bio.h>
 #include <openssl/x509.h>
 #include <openssl/err.h>
+#include <openssl/evp.h>
 
 #include <string>
 #include <vector>
