@@ -8,14 +8,16 @@ cache:
 
 compiler:
   - g++
-  - clang++
 
 os:
   - linux
 
 addons:
+  sources:
+  - ubuntu-toolchain-r-test
   apt:
     packages:
+    - g++-7
     - openssl
     - libboost-all-dev
     - cmake
