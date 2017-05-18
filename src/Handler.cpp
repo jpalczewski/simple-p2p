@@ -4,15 +4,12 @@
 
 #include <iostream>
 #include "Handler.h"
+#include "Messages/MessageType.h"
 
 void Handler::handle(Socket connection)
 {
     char buffer[1024];
-    while (true)
-    {
-        int received = connection.read(buffer, 1024);
-        std::string response = "[server response] Received: " + std::string(buffer, received) + "\n";
-        std::cout << "Received from client: "  + std::string(buffer, received) << std::endl;
-        connection.write(response.c_str(), response.length());
-    }
+    int received = connection.read(buffer, 1);
+    if (buffer[0] == (char) MessageType::BroadcastResource)
+        std::cout << "Received broadcast"; // nvm, tcp connection cannot receive broadcast
 }

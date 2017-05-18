@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <cstring>
 #include <iostream>
+#include <arpa/inet.h>
 
 Socket::Socket(Socket::Domain domain, Socket::Type type)
 {
@@ -156,3 +157,49 @@ int Socket::close()
         return 1;
     return ::close(socketDescriptor);
 }
+
+void Socket::enableBroadcast()
+{
+    if (this->type != Type::Udp)
+        throw std::runtime_error("Broadcasting is supported only for the UDP protocol.");
+    int broadcastEnable = 1;
+    int response = setsockopt(socketDescriptor, SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
+    if (response <  0)
+        throw std::runtime_error("Enabling broadcast failed.");
+}
+
+int Socket::writeTo(const char *input, int length, std::string address, int port)
+{
+    struct sockaddr_in socketAddress;
+    if (!inet_pton(AF_INET, address.c_str(), &(socketAddress.sin_addr)))
+        throw std::runtime_error("Invalid address. Pton failed");
+    socketAddress.sin_port = htons(port);
+    socketAddress.sin_family = static_cast<int>(domain);
+    int bytesSent = ::sendto(socketDescriptor, input, length, 0, (const sockaddr *)&socketAddress, sizeof(socketAddress));
+
+    if (bytesSent < 0)
+        throw std::runtime_error("Error during writing to socket. Errno: " + std::string(strerror(errno)));
+
+    return bytesSent;
+}
+
+int Socket::readFrom(char *output, int length, std::string &receiveAddress)
+{
+    struct sockaddr_in socketAddress;
+    socklen_t addressLength;
+    
+    int result = recvfrom(socketDescriptor, output, length, 0, (struct sockaddr *)&socketAddress, &addressLength);
+    if (result < 0)
+        throw std::runtime_error("Error during reading from socket");
+
+    char address[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &(socketAddress.sin_addr), address, INET_ADDRSTRLEN);
+    receiveAddress = address;
+    return result;
+}
+
+
+
+
+
+

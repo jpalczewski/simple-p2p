@@ -26,8 +26,12 @@ public:
     void listen(int maxQueueLength);
     Socket accept();
     int read(char* output, int length);
+    int readFrom(char* output, int length, std::string& receiveAddress);
     int write(const char* input, int length);
+    int writeTo(const char *input, int length, std::string address, int port);
     int close();
+    void enableBroadcast();
+
 private:
     int socketDescriptor;
     Domain domain;

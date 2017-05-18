@@ -6,30 +6,27 @@
 
 #include "CryptoUtils.h"
 #include "examples.h"
+#include "UdpListener.h"
 
 void serverFunc(int port)
 {
-    Dispatcher dispatcher(port, 10);
-    dispatcher.start();
+    UdpListener listener(port);
+    listener.start();
 }
 
 void clientFunc(int serverPort)
 {
-    Socket socket(Socket::Domain::Ip4, Socket::Type::Tcp);
-    socket.connect("localhost", serverPort, 0);
+    Socket socket(Socket::Domain::Ip4, Socket::Type::Udp);
+//    socket.connect("localhost", serverPort, 0);
+    socket.enableBroadcast();
     std::cout << "Connected to server.\n";
     char buffer[1024];
     while (true)
     {
-        std::cout << "--- Write your message." << std::endl;
-        std::string message;
-        std::cin >> message;
-        socket.write(message.c_str(), message.length());
-        std::cout << "--- Message sent." << std::endl;
-        int bytesRead = socket.read(buffer, 1024);
-        std::string response(buffer, bytesRead);
-        std::cout << "--- Response:" << std::endl;
-        std::cout << response << std::endl << std::endl;
+        std::cout << "--- Sending broadcast." << std::endl;
+        char message[] = {0x00};
+        socket.writeTo(message, sizeof(message), "127.255.255.255", serverPort);
+        sleep(3);
     }
     socket.close();
 }
