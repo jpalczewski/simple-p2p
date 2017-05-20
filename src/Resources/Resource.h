@@ -6,23 +6,32 @@
 #define SIMPLE_P2P_RESOURCE_H
 
 #include <string>
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 
 #include <boost/functional/hash.hpp>
 
+struct ResourceHash;
+
 class Resource
 {
 public:
-    std::string name;
-    int64_t size;
-    std::vector<unsigned char> hash; // 16B
-    std::vector<unsigned char> sign; // 128B
+    void toByteStream(std::vector<unsigned char>& byteArray) const;
 
     bool operator==(const Resource& other)
     {
         return name == other.name && size == other.size && hash == other.hash && sign == other.sign;
     }
+
+    static Resource fromByteStream(const std::vector<unsigned char>& vector, int index);
+
+private:
+    std::string name;
+    int64_t size;
+    std::vector<unsigned char> hash; // 16B
+    std::vector<unsigned char> sign; // 128B
+
+    friend class ResourceHash;
 };
 
 // would be used to place Resource as a map key

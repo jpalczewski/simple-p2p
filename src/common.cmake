@@ -4,4 +4,5 @@ set(COMMON
         ${simple_p2p_SOURCE_DIR}/src/examples.cpp
         ${simple_p2p_SOURCE_DIR}/src/Handler.cpp
         ${simple_p2p_SOURCE_DIR}/src/UdpListener.cpp
+        ${simple_p2p_SOURCE_DIR}/src/ConversionUtils.cpp
         )
