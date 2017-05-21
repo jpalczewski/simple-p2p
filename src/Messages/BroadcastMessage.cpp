@@ -46,19 +46,24 @@ BroadcastMessage BroadcastMessage::fromByteStream(std::vector<unsigned char> byt
     const auto type = static_cast<MessageType>(byteArray[0]);
     if (type != MessageType::BroadcastResource)
         throw std::runtime_error("Invalid message type to construct a BroadcastMessage from byte stream");
+    std::unordered_map<std::string, std::vector<Resource>> resources;
     const int publicKeyCount = intFromBytes(byteArray, 1);
     int currentIndex = 5; // 1B - message type, 4B - number of public keys
     for (int i = 0; i < publicKeyCount; ++i)
     {
-        const std::string publicKey = std::string(reinterpret_cast<const char*>(&byteArray[currentIndex]), 251);
+        const std::string publicKey(reinterpret_cast<const char*>(&byteArray[currentIndex]), 251);
         currentIndex += 251;
         const int resourceCount = intFromBytes(byteArray, currentIndex);
         currentIndex += 4;
+        std::vector<Resource> publicKeyResources;
         for (int i = 0; i < resourceCount; ++i)
         {
-            Resource resource = Resource::fromByteStream(byteArray, currentIndex);
+            const Resource resource = Resource::fromByteStream(byteArray, currentIndex);
+            publicKeyResources.push_back(std::move(resource));
         }
+        resources[std::move(publicKey)] = std::move(publicKeyResources);
     }
+    return BroadcastMessage(std::move(resources));
 }
 
 

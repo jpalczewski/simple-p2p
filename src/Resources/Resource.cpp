@@ -5,6 +5,10 @@
 #include "Resource.h"
 #include "../ConversionUtils.h"
 
+Resource::Resource(const std::string &name, int64_t size, const std::vector<unsigned char> &hash,
+                   const std::vector<unsigned char> &sign) : name(name), size(size), hash(hash), sign(sign)
+{ }
+
 void Resource::toByteStream(std::vector<unsigned char>& byteArray) const
 {
     const char *data = name.data();
@@ -18,7 +22,42 @@ void Resource::toByteStream(std::vector<unsigned char>& byteArray) const
     byteArray.insert(byteArray.end(), sign.begin(), sign.end());
 }
 
-Resource Resource::fromByteStream(const std::vector<unsigned char>& vector, int index)
+Resource Resource::fromByteStream(const std::vector<unsigned char>& vector, int& index)
 {
-    throw std::logic_error("Not yet implemented");
+    const int length = intFromBytes(vector, index);
+    index += 4;
+    const std::string name(reinterpret_cast<const char*>(&vector[index]), length);
+    index += length;
+    const int64_t size = int64FromBytes(vector, index);
+    index += 8;
+    const std::vector<unsigned char> hash(&vector[index], &vector[index + 16]);
+    index += 16;
+    const std::vector<unsigned char> sign(&vector[index], &vector[index + 128]);
+    index += 128;
+    return Resource(std::move(name), size, std::move(hash), std::move(sign));
+}
+
+bool Resource::operator==(const Resource& other)
+{
+    return name == other.name && size == other.size && hash == other.hash && sign == other.sign;
+}
+
+const std::vector<unsigned char> &Resource::getSign() const
+{
+    return sign;
+}
+
+const std::vector<unsigned char> &Resource::getHash() const
+{
+    return hash;
+}
+
+int64_t Resource::getSize() const
+{
+    return size;
+}
+
+const std::string &Resource::getName() const
+{
+    return name;
 }

@@ -16,14 +16,19 @@ struct ResourceHash;
 class Resource
 {
 public:
+    Resource(const std::string &name, int64_t size, const std::vector<unsigned char> &hash,
+             const std::vector<unsigned char> &sign);
+    Resource() = default;
+
+    bool operator==(const Resource& other);
+
     void toByteStream(std::vector<unsigned char>& byteArray) const;
+    static Resource fromByteStream(const std::vector<unsigned char>& vector, int& index);
 
-    bool operator==(const Resource& other)
-    {
-        return name == other.name && size == other.size && hash == other.hash && sign == other.sign;
-    }
-
-    static Resource fromByteStream(const std::vector<unsigned char>& vector, int index);
+    const std::string & getName() const;
+    int64_t getSize() const;
+    const std::vector<unsigned char> & getHash() const;
+    const std::vector<unsigned char> & getSign() const;
 
 private:
     std::string name;
