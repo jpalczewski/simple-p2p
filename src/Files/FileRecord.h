@@ -5,6 +5,8 @@
 #ifndef SIMPLE_P2P_FILERECORD_H
 #define SIMPLE_P2P_FILERECORD_H
 
+#include "FilePartResponse.h"
+#include "FilePartRequest.h"
 #include "MD5Utils.h"
 #include <boost/filesystem.hpp>
 #include <boost/archive/xml_oarchive.hpp>
@@ -24,10 +26,9 @@ class FileRecord {
 
 public:
     FileRecord(time_t lastKnownWriteTime, const path &location, const HASH_ARRAY &md5);
-
     FileRecord();
-
     const path &getLocation() const;
+    FilePartResponse getFilePart(const FilePartRequest& request);
 
 private:
     bool isValid(); // last_write_time from boost::filesystem
@@ -51,8 +52,9 @@ private:
         location = boost::filesystem::path(stringLocation);
 
     }
-
     BOOST_SERIALIZATION_SPLIT_MEMBER()
+
+    HASH_ARRAY getHashFromCWD();
 public:
 };
 

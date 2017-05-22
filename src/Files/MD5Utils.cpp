@@ -24,7 +24,7 @@ const std::string MD5Utils::hashArrayToHashASCII(HASH_ARRAY ha) {
     return ostringstream.str();
 }
 
-HASH_ARRAY MD5Utils::ifstreamToHashArray(std::ifstream & ifs) {
+HASH_ARRAY MD5Utils::ifstreamToHashArray(std::istream &ifs) {
     HASH_ARRAY md5;
     std::array<char, buffer_size> readBuffer;
 
@@ -44,4 +44,12 @@ HASH_ARRAY MD5Utils::ifstreamToHashArray(std::ifstream & ifs) {
 
     MD5_Final(md5.data(), &CTX);
     return md5;
+}
+
+HASH_ARRAY MD5Utils::boostPathToHashArray(const boost::filesystem::path &p) {
+    using namespace boost::filesystem;
+    std::ifstream filestream = ifstream{p, std::ios::binary};
+    HASH_ARRAY md5fromCWD = MD5Utils::ifstreamToHashArray(filestream);
+    filestream.close();
+    return md5fromCWD;
 }
