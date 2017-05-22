@@ -1,6 +1,5 @@
 find_package (Boost COMPONENTS unit_test_framework REQUIRED)
 
-set (CMAKE_CXX_FLAGS "-mcmodel=medium ${CMAKE_CXX_FLAGS}")
 
 if (Boost_UNIT_TEST_FRAMEWORK_FOUND )
     message(STATUS "Boost UTF found!")
@@ -13,7 +12,7 @@ include_directories(${simple_p2p_SOURCE_DIR}/src)
 add_definitions (-DBOOST_TEST_DYN_LINK)
 set(BOOST_TEST
         ${Boost_FILESYSTEM_LIBRARY}
-        ${Boost_SYSTEM_LIBRRARY}
+        ${Boost_SYSTEM_LIBRARY}
         ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
         )
 
@@ -30,4 +29,3 @@ target_link_libraries(test_FileManager
         FileManager
         )
 
-target_compile_options(test_FileManager PRIVATE -mcmodel=medium)
