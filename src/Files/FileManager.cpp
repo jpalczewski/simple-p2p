@@ -6,7 +6,7 @@
 #include <boost/range/iterator_range.hpp>
 #include <iostream>
 
-FileManager::FileManager(const AUTHOR_LOOKUP_MAP &alm) : authorLookupMap(alm) {}
+FileManager::FileManager(const AuthorLookupMap &alm) : authorLookupMap(alm) {}
 
 FileManager::FileManager() {}
 
@@ -35,12 +35,12 @@ void FileManager::setWorkingDirectory(const std::string &cwdPath) {
     this->cwd = cwdPath;
 }
 
-RESOURCES_FIND_RESULT FileManager::findInResourcesManager(const HASH_ARRAY &hash) {
+ResourcesFindResult FileManager::findInResourcesManager(const HASH_ARRAY &hash) {
     return std::make_pair(true, std::vector<unsigned char>(1)); //TODO: to be implemented
 }
 
-AUTHORS_LIST FileManager::getAllAuthors() {
-    AUTHORS_LIST al;
+AuthorsList FileManager::getAllAuthors() {
+    AuthorsList al;
     for(auto kv : authorLookupMap)
     {
         al.push_back(kv.first);
@@ -69,8 +69,8 @@ FileManager::findFileFromTable(const GenericFileRequest &request) const
     return file->second;
 }
 
-AUTHOR_HASH_LIST FileManager::getAllFilesFromAuthor(const AUTHOR_KEY &author_key) {
-    AUTHOR_HASH_LIST author_hash_list;
+AuthorFilesHashList FileManager::getAllFilesFromAuthor(const AuthorKey &author_key) {
+    AuthorFilesHashList author_hash_list;
     auto authorFiles = authorLookupMap.find(author_key);
     if(authorFiles==authorLookupMap.end())
         throw new std::runtime_error("Author not found!");

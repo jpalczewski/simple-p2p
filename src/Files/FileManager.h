@@ -22,7 +22,7 @@ class FileManager {
 
     friend class boost::serialization::access;
 public:
-    FileManager(const AUTHOR_LOOKUP_MAP &alm);
+    FileManager(const AuthorLookupMap &alm);
     FileManager();
 
     template<class Archive>
@@ -33,17 +33,17 @@ public:
 
     void setWorkingDirectory(const std::string & path);
 
-    AUTHORS_LIST        getAllAuthors();
-    AUTHOR_HASH_LIST    getAllFilesFromAuthor(const AUTHOR_KEY & author_key);
+    AuthorsList        getAllAuthors();
+    AuthorFilesHashList    getAllFilesFromAuthor(const AuthorKey & author_key);
 
     FilePartResponse    getFilePart(const FilePartRequest &request);
     bool                saveFilePart(const FileSavePartRequest &request);
     bool                createFile(const FileCreateRequest & request);
 private:
-    AUTHOR_LOOKUP_MAP   authorLookupMap;
+    AuthorLookupMap   authorLookupMap;
     std::string         cwd;
 
-    RESOURCES_FIND_RESULT findInResourcesManager(const HASH_ARRAY &hash);
+    ResourcesFindResult findInResourcesManager(const HASH_ARRAY &hash);
 
     boost::filesystem::path createFilePath(const FileCreateRequest & request);
 
