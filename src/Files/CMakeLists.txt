@@ -1,0 +1,17 @@
+set(MD5UTILS MD5Utils.cpp)
+
+find_package (Boost REQUIRED COMPONENTS system filesystem)
+
+set(FILEMANAGER FileManager.cpp FileRecord.cpp)
+
+set (CMAKE_CXX_FLAGS "-mcmodel=large ${CMAKE_CXX_FLAGS}")
+
+add_library(FileManager ${FILEMANAGER} ${MD5UTILS})
+
+link_directories(FileManager ${Boost_LIBRARY_DIRS})
+
+target_link_libraries(FileManager
+        ${OPENSSL_LIBRARIES}
+        ${Boost_SYSTEM_LIBRRARY}
+        ${Boost_FILESYSTEM_LIBRARY}
+        )
