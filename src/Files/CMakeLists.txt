@@ -14,4 +14,5 @@ target_link_libraries(FileManager
         ${OPENSSL_LIBRARIES}
         ${Boost_SYSTEM_LIBRRARY}
         ${Boost_FILESYSTEM_LIBRARY}
+        ${Boost_SERIALIZATION_LIBRARY}
         )
