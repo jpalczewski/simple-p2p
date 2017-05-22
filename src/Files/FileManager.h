@@ -15,7 +15,8 @@
 #include "FileManagerTypes.h"
 #include "FilePartRequest.h"
 #include "FilePartResponse.h"
-
+#include "FileCreateRequest.h"
+#include "FileSavePartRequest.h"
 
 class FileManager {
 
@@ -32,15 +33,21 @@ public:
 
     void setWorkingDirectory(const std::string & path);
 
-    AUTHORS_LIST getAllAuthors();
-    AUTHOR_HASH_LIST getAllFilesFromAuthor(const AUTHOR_KEY & author_key);
-    FilePartResponse getFilePart(const FilePartRequest &request);
+    AUTHORS_LIST        getAllAuthors();
+    AUTHOR_HASH_LIST    getAllFilesFromAuthor(const AUTHOR_KEY & author_key);
+
+    FilePartResponse    getFilePart(const FilePartRequest &request);
+    bool                saveFilePart(const FileSavePartRequest &request);
+    bool                createFile(const FileCreateRequest & request);
 private:
-    AUTHOR_LOOKUP_MAP authorLookupMap;
+    AUTHOR_LOOKUP_MAP   authorLookupMap;
+    std::string         cwd;
 
     RESOURCES_FIND_RESULT findInResourcesManager(const HASH_ARRAY &hash);
 
+    boost::filesystem::path createFilePath(const FileCreateRequest & request);
 
+    FileRecord findFileFromTable(const GenericFileRequest &request) const;
 };
 
 

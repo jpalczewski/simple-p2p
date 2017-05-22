@@ -6,10 +6,17 @@
 #define SIMPLE_P2P_FILEPARTREQUEST_H
 
 #include "FileManagerTypes.h"
+#include "GenericFileRequest.h"
 
-struct FilePartRequest {
-    AUTHOR_KEY authorKey;
-    HASH_ARRAY fileHash;
+struct FilePartRequest : public GenericFileRequest {
+    FilePartRequest(const AUTHOR_KEY &authorKey,
+                    const HASH_ARRAY &fileHash,
+                    std::size_t offset_,
+                    std::size_t size_) : GenericFileRequest(authorKey,
+                                                           fileHash),
+                                        offset(offset_),
+                                        size(size_) {}
+
     std::size_t offset;
     std::size_t size;
 };

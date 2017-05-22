@@ -41,3 +41,15 @@ FilePartResponse FileRecord::getFilePart(const FilePartRequest &request) {
 
 }
 
+bool FileRecord::saveFilePart(const FileSavePartRequest &request)
+{
+    using namespace boost::filesystem;
+    std::ofstream ofs = ofstream{location, std::ios::binary};
+    ofs.seekp(request.offset);
+    ofs.write(&request.bytes[0], request.bytes.size());
+    if(ofs)
+        return true;
+    else
+        throw new std::runtime_error("Something gone wrong in FileRecord::saveFilePart");
+}
+

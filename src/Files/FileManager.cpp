@@ -4,6 +4,7 @@
 
 #include "FileManager.h"
 #include <boost/range/iterator_range.hpp>
+#include <iostream>
 
 FileManager::FileManager(const AUTHOR_LOOKUP_MAP &alm) : authorLookupMap(alm) {}
 
@@ -31,7 +32,7 @@ void FileManager::setWorkingDirectory(const std::string &cwdPath) {
         }
     }
 
-
+    this->cwd = cwdPath;
 }
 
 RESOURCES_FIND_RESULT FileManager::findInResourcesManager(const HASH_ARRAY &hash) {
@@ -49,15 +50,23 @@ AUTHORS_LIST FileManager::getAllAuthors() {
 }
 
 FilePartResponse FileManager::getFilePart(const FilePartRequest &request) {
+    auto file = findFileFromTable(request);
+
+    return file.getFilePart(request);
+}
+
+FileRecord
+FileManager::findFileFromTable(const GenericFileRequest &request) const
+{
     auto authorFiles = authorLookupMap.find(request.authorKey);
-    if(authorFiles==authorLookupMap.end())
-        throw new std::runtime_error("Author not found!");
+    if(authorFiles == authorLookupMap.end())
+       throw new std::runtime_error("Author not found!");
 
     auto file = authorFiles->second.find(request.fileHash);
     if(file == authorFiles->second.end())
         throw new std::runtime_error("File not found!");
 
-    return file->second.getFilePart(request);
+    return file->second;
 }
 
 AUTHOR_HASH_LIST FileManager::getAllFilesFromAuthor(const AUTHOR_KEY &author_key) {
@@ -72,4 +81,33 @@ AUTHOR_HASH_LIST FileManager::getAllFilesFromAuthor(const AUTHOR_KEY &author_key
     }
 
     return author_hash_list;
+}
+
+bool FileManager::createFile(const FileCreateRequest &request)
+{
+    using namespace boost::filesystem;
+    auto filepath = createFilePath(request);
+    std::cout << filepath.native() << " a cwd:" << cwd;
+    ofstream ofs{filepath};
+    if(!ofs.good())
+        throw new std::runtime_error("FileManager::createFile can't create file!");
+    ofs.close();
+    resize_file(filepath, request.length);
+
+    FileRecord newFile(0, filepath, request.fileHash);
+    authorLookupMap[request.authorKey][request.fileHash] = newFile;
+
+    return true;
+
+}
+
+boost::filesystem::path FileManager::createFilePath(const FileCreateRequest &request)
+{
+    return boost::filesystem::path(cwd + boost::filesystem::path::preferred_separator + request.name);
+}
+
+bool FileManager::saveFilePart(const FileSavePartRequest &request)
+{
+    auto file = findFileFromTable(request);
+    file.saveFilePart(request);
 }

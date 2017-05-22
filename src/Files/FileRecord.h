@@ -8,6 +8,7 @@
 #include "FilePartResponse.h"
 #include "FilePartRequest.h"
 #include "MD5Utils.h"
+#include "FileSavePartRequest.h"
 #include <boost/filesystem.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/archive/xml_iarchive.hpp>
@@ -28,7 +29,8 @@ public:
     FileRecord(time_t lastKnownWriteTime, const path &location, const HASH_ARRAY &md5);
     FileRecord();
     const path &getLocation() const;
-    FilePartResponse getFilePart(const FilePartRequest& request);
+    FilePartResponse    getFilePart(const FilePartRequest& request);
+    bool                saveFilePart(const FileSavePartRequest& request);
 
 private:
     bool isValid(); // last_write_time from boost::filesystem
