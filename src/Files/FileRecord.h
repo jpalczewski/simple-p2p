@@ -31,6 +31,8 @@ public:
     const path &getLocation() const;
     FilePartResponse    getFilePart(const FilePartRequest& request);
     bool                saveFilePart(const FileSavePartRequest& request);
+    void                create();
+    void                allocate(std::size_t size);
 
 private:
     bool isValid(); // last_write_time from boost::filesystem
@@ -57,7 +59,6 @@ private:
     BOOST_SERIALIZATION_SPLIT_MEMBER()
 
     HASH_ARRAY getHashFromCWD();
-public:
 };
 
 

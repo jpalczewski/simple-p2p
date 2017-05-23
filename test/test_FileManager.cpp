@@ -8,6 +8,7 @@
 #include <iostream>
 #include <Files/FileRecord.h>
 #include "Files/MD5Utils.h"
+using namespace boost::filesystem;
 
 BOOST_AUTO_TEST_SUITE(md5utils)
 
@@ -61,5 +62,52 @@ BOOST_AUTO_TEST_SUITE(filerecord)
         BOOST_REQUIRE_EQUAL(fr.getLocation().native(), fri.getLocation().native());
 
         boost::filesystem::remove(path);
+    }
+    BOOST_AUTO_TEST_CASE(reading)
+    {
+        std::string test_string = "TIN TEST #1";
+        std::vector<char> test_vec(test_string.begin(), test_string.end());
+        boost::filesystem::path path = boost::filesystem::unique_path();
+        ofstream ofs{path};
+        ofs << test_string;
+        ofs.close();
+        FileRecord fileRecord(0, path, {0});
+
+        FilePartRequest fpr({0}, {0}, 0, 1, true);
+        auto response = fileRecord.getFilePart(fpr);
+        BOOST_REQUIRE_EQUAL(response.received.size(), 1);
+        BOOST_REQUIRE_EQUAL(response.received[0], test_string[0]);
+
+        fpr.offset = 3;
+        response = fileRecord.getFilePart(fpr);
+        BOOST_REQUIRE_EQUAL(response.received[0], test_string[3]);
+
+        fpr.offset = 0;
+        fpr.size = 500;
+        response = fileRecord.getFilePart(fpr);
+        BOOST_REQUIRE_EQUAL_COLLECTIONS(response.received.begin(), response.received.end(), test_vec.begin(), test_vec.end());
+
+        remove(path);
+    }
+    BOOST_AUTO_TEST_CASE(write)
+    {
+        std::string test_string = "TIN TEST #1";
+        std::vector<char> test_vec(test_string.begin(), test_string.end());
+        boost::filesystem::path path = boost::filesystem::unique_path();
+        FileRecord fileRecord(0, path, {0});
+
+        fileRecord.create();
+        //fileRecord.allocate(test_string.size()+1);
+
+        FileSavePartRequest fileSavePartRequest({0}, {0}, 1, 1);
+        FilePartRequest filePartRequest({0}, {0}, 0, test_string.size(), true);
+        for(int j = test_string.size()-1; j >= 0; --j)
+        {
+            fileSavePartRequest.offset = j;
+            fileSavePartRequest.bytes[0] = test_string[j];
+            fileRecord.saveFilePart(fileSavePartRequest);
+        }
+        auto response = fileRecord.getFilePart(filePartRequest);
+        BOOST_REQUIRE_EQUAL_COLLECTIONS(response.received.begin(), response.received.end(), test_vec.begin(), test_vec.end());
     }
 BOOST_AUTO_TEST_SUITE_END()

@@ -12,13 +12,16 @@ struct FilePartRequest : public GenericFileRequest {
     FilePartRequest(const AuthorKey &authorKey,
                     const HASH_ARRAY &fileHash,
                     std::size_t offset_,
-                    std::size_t size_) : GenericFileRequest(authorKey,
+                    std::size_t size_,
+                    bool allowInvalid_ = false) : GenericFileRequest(authorKey,
                                                            fileHash),
                                         offset(offset_),
-                                        size(size_) {}
+                                        size(size_),
+                                        allowInvalid(allowInvalid_){}
 
     std::size_t offset;
     std::size_t size;
+    bool        allowInvalid;
 };
 
 
