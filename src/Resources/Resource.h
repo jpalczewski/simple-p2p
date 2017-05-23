@@ -7,7 +7,7 @@
 
 #include <string>
 #include <cstdint>
-#include <vector>
+#include <array>
 
 #include <boost/functional/hash.hpp>
 
@@ -20,29 +20,28 @@ public:
              const std::vector<unsigned char> &sign);
     Resource() = default;
 
-    bool operator==(const Resource& other);
-
     void toByteStream(std::vector<unsigned char>& byteArray) const;
     static Resource fromByteStream(const std::vector<unsigned char>& vector, int& index);
 
     const std::string & getName() const;
     int64_t getSize() const;
-    const std::vector<unsigned char> & getHash() const;
-    const std::vector<unsigned char> & getSign() const;
+    const std::vector<unsigned char>& getHash() const;
+    const std::vector<unsigned char>& getSign() const;
 
 private:
     std::string name;
     int64_t size;
-    std::vector<unsigned char> hash; // 16B
-    std::vector<unsigned char> sign; // 128B
+    const std::vector<unsigned char> hash; // 16B
+    const std::vector<unsigned char> sign; // 128B
 
     friend class ResourceHash;
+    friend bool operator==(const Resource& left, const Resource& right);
 };
 
 // would be used to place Resource as a map key
 struct ResourceHash
 {
-    size_t operator()(Resource resource) const
+    size_t operator()(const Resource& resource) const
     {
         std::size_t seed = 0;
         boost::hash_combine(seed, resource.name);

@@ -37,9 +37,9 @@ Resource Resource::fromByteStream(const std::vector<unsigned char>& vector, int&
     return Resource(std::move(name), size, std::move(hash), std::move(sign));
 }
 
-bool Resource::operator==(const Resource& other)
+bool operator==(const Resource& left, const Resource& right)
 {
-    return name == other.name && size == other.size && hash == other.hash && sign == other.sign;
+    return left.name == right.name && left.size == right.size && right.hash == left.hash && left.sign == right.sign;
 }
 
 const std::vector<unsigned char> &Resource::getSign() const

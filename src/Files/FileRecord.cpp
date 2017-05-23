@@ -78,6 +78,10 @@ void FileRecord::create() {
 
 }
 
+#ifndef _WIN32
+#define O_BINARY 0
+#endif
+
 void FileRecord::allocate(std::size_t size) {
     if(!exists(location))
         throw new std::runtime_error("FileRecord::allocate error - file doesn't exist!");

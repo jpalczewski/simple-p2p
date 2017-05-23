@@ -5,22 +5,67 @@
 #include <algorithm>
 #include "ResourceManager.h"
 
-void ResourceManager::addResource(std::string publicKey, std::unique_ptr<Resource> resource)
+namespace
 {
-    std::lock_guard<std::shared_timed_mutex> lock(mutex);
-    networkResources[std::move(publicKey)].push_back(std::make_pair(std::move(resource), std::make_unique<NetworkResourceInfo>()));
-}
-
-NetworkResourceInfo ResourceManager::getResourceInfo(const std::string &publicKey, const Resource &resource)
-{
-    std::shared_lock<std::shared_timed_mutex> lock(mutex);
-    auto& list = networkResources.find(publicKey)->second;
-    for (auto it = list.begin(); it != list.end(); ++it)
+     //TODO check whether resource exists in this map or not
+    template <typename T>
+    void addResource(const std::string &publicKey, const Resource &resource, ResourceManager::ResourceMap<T>& map)
     {
-        if (*it->first == resource)
-            return *it->second;
+        map[publicKey].insert(std::make_pair(resource, T{}));
+    }
+
+    // TODO check if first (publicKey as key) map is found
+    template <typename T>
+    T getResourceInfo(const std::string &publicKey, const Resource &resource, ResourceManager::ResourceMap<T>& map)
+    {
+        const auto& publicKeyMap = map.find(publicKey)->second;
+        return publicKeyMap.find(resource)->second;
     }
 }
+
+void ResourceManager::addNetworkResource(const std::string &publicKey, const Resource &resource)
+{
+    std::lock_guard<std::shared_timed_mutex> lock(networkMutex);
+    ::addResource<NetworkResourceInfo>(publicKey, resource, networkResources);
+}
+
+NetworkResourceInfo ResourceManager::getNetworkResourceInfo(const std::string &publicKey, const Resource &resource)
+{
+    std::shared_lock<std::shared_timed_mutex> lock(networkMutex);
+    return ::getResourceInfo<NetworkResourceInfo>(publicKey, resource, networkResources);
+}
+
+void ResourceManager::addLocalResource(const std::string &publicKey, const Resource &resource)
+{
+    std::lock_guard<std::shared_timed_mutex> lock(localMutex);
+    ::addResource<LocalResourceInfo>(publicKey, resource, localResources);
+}
+
+LocalResourceInfo ResourceManager::getLocalResourceInfo(const std::string &publicKey, const Resource &resource)
+{
+    std::shared_lock<std::shared_timed_mutex> lock(localMutex);
+    return ::getResourceInfo<LocalResourceInfo>(publicKey, resource, localResources);
+}
+
+void ResourceManager::addOwnedResource(const std::string &publicKey, const Resource &resource)
+{
+    std::lock_guard<std::shared_timed_mutex> lock(ownedMutex);
+    ::addResource<LocalResourceInfo>(publicKey, resource, ownedResources);
+}
+
+LocalResourceInfo ResourceManager::getOwnedResourceInfo(const std::string &publicKey, const Resource &resource)
+{
+    std::shared_lock<std::shared_timed_mutex> lock(ownedMutex);
+    return ::getResourceInfo<LocalResourceInfo>(publicKey, resource, ownedResources);
+}
+
+
+
+
+
+
+
+
 
 
 
