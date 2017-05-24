@@ -9,7 +9,8 @@ namespace
 {
      //TODO check whether resource exists in this map or not
     template <typename T>
-    void addResource(const std::string &publicKey, const Resource &resource, ResourceManager::ResourceMap<T>& map)
+    void addResource(const std::string &publicKey, const Resource &resource, ResourceManager::ResourceMap<T>& map,
+                     const T& info = T{})
     {
         map[publicKey].insert(std::make_pair(resource, T{}));
     }
@@ -21,12 +22,25 @@ namespace
         const auto& publicKeyMap = map.find(publicKey)->second;
         return publicKeyMap.find(resource)->second;
     }
+
+    void addNetworkResource(const std::string &publicKey, const Resource &resource,
+                     ResourceManager::ResourceMap<NetworkResourceInfo>& map,
+                     const NetworkResourceInfo& info)
+    {
+        auto &keyMap = map[publicKey];
+        const auto res = keyMap.find(resource);
+        if (res == keyMap.end())
+            keyMap[resource] = info;
+        else
+            res->second.addSeeders(info.getSeeders());
+    }
 }
 
-void ResourceManager::addNetworkResource(const std::string &publicKey, const Resource &resource)
+void ResourceManager::addNetworkResource(const std::string &publicKey, const Resource &resource,
+                                         const NetworkResourceInfo& info)
 {
     std::lock_guard<std::shared_timed_mutex> lock(networkMutex);
-    ::addResource<NetworkResourceInfo>(publicKey, resource, networkResources);
+    ::addNetworkResource(publicKey, resource, networkResources, info);
 }
 
 NetworkResourceInfo ResourceManager::getNetworkResourceInfo(const std::string &publicKey, const Resource &resource)
@@ -59,9 +73,13 @@ LocalResourceInfo ResourceManager::getOwnedResourceInfo(const std::string &publi
     return ::getResourceInfo<LocalResourceInfo>(publicKey, resource, ownedResources);
 }
 
+ResourceManager::ResourceMap<NetworkResourceInfo> ResourceManager::getNetworkResources()
+{
+    std::shared_lock<std::shared_timed_mutex> lock(networkMutex);
+    return networkResources;
+}
 
-
-
+ResourceManager resourceManager;
 
 
 

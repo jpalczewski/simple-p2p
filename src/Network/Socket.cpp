@@ -186,11 +186,11 @@ int Socket::writeTo(const char *input, int length, std::string address, int port
 int Socket::readFrom(char *output, int length, std::string &receiveAddress)
 {
     struct sockaddr_in socketAddress;
-    socklen_t addressLength;
+    socklen_t addressLength = sizeof(socketAddress);
     
     int result = recvfrom(socketDescriptor, output, length, 0, (struct sockaddr *)&socketAddress, &addressLength);
     if (result < 0)
-        throw std::runtime_error("Error during reading from socket");
+        throw std::runtime_error("Error during reading from socket. Errno: " + std::string(strerror(errno)));
 
     char address[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(socketAddress.sin_addr), address, INET_ADDRSTRLEN);

@@ -17,7 +17,7 @@
 class ResourceManager
 {
 public:
-    void addNetworkResource(const std::string &publicKey, const Resource &resource);
+    void addNetworkResource(const std::string &publicKey, const Resource &resource, const NetworkResourceInfo& info = NetworkResourceInfo());
     NetworkResourceInfo getNetworkResourceInfo(const std::string &publicKey, const Resource &resource);
 
     void addLocalResource(const std::string &publicKey, const Resource &resource);
@@ -28,6 +28,8 @@ public:
 
     template <typename Type>
     using ResourceMap = std::unordered_map<std::string, std::unordered_map<Resource, Type, ResourceHash>>;
+
+    ResourceManager::ResourceMap<NetworkResourceInfo> getNetworkResources();
 private:
     // network resources - available for download
     ResourceMap<NetworkResourceInfo> networkResources;
@@ -43,5 +45,6 @@ private:
     std::shared_timed_mutex networkMutex;
 };
 
+extern ResourceManager resourceManager;
 
 #endif //SIMPLE_P2P_RESOURCEMANAGER_H

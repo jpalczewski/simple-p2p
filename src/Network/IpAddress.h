@@ -9,6 +9,12 @@
 
 struct IpAddress
 {
+    IpAddress(const std::string &address) : address(address)
+    { }
+    IpAddress() = default;
+
+    friend bool operator<(const IpAddress& left, const IpAddress& right);
+
     std::string address; // TODO maybe some better representation? bytes or whatever
 };
 

@@ -1,12 +1,14 @@
 #include <iostream>
 #include "Network/Socket.h"
-#include "Dispatcher.h"
 #include <thread>
 #include <unistd.h>
+#include <unordered_map>
 
 #include "CryptoUtils.h"
-#include "examples.h"
-#include "UdpListener.h"
+#include "Network/UdpListener.h"
+#include "Resources/Resource.h"
+#include "Messages/BroadcastMessage.h"
+#include "Resources/ResourceManager.h"
 
 void serverFunc(int port)
 {
@@ -16,20 +18,59 @@ void serverFunc(int port)
 
 void clientFunc(int serverPort)
 {
-    Socket socket(Socket::Domain::Ip4, Socket::Type::Udp);
-//    socket.connect("localhost", serverPort, 0);
-    socket.enableBroadcast();
-    std::cout << "Connected to server.\n";
-    char buffer[1024];
     while (true)
     {
-        std::cout << "--- Sending broadcast." << std::endl;
-        char message[] = {0x00};
-        socket.writeTo(message, sizeof(message), "127.255.255.255", serverPort);
-        sleep(3);
+        int a;
+        std::cin >> a;
+        if (a == 0)
+        {
+            std::string publicKey = "-----BEGIN RSA PUBLIC KEY-----\n"
+                    "MIGJAoGBANLVDLEKgzjGBqiNPTqRqPQynEbbNZbY2T2K+Fn3YMX8hbZ8QLn48CZI\n"
+                    "n4mKDQSVND1qxBCeRBxYeaavwyZ8LCqVYPCXZwkRH0QlyReQOCxyw7duEIl/F7tc\n"
+                    "N3/34qht2DK8lOp9IQS7sY9L5Oy73JW4jQUMcPUUg52bq7pzccWFAgMBAAE=\n"
+                    "-----END RSA PUBLIC KEY-----\n";
+            int size = 55;
+            const char *testHash = "0123456789012345";
+            unsigned char *hashBytes = (unsigned char *) testHash;
+            std::vector<unsigned char> hash(testHash, testHash + 16);
+            std::vector<unsigned char> sign(128, 0x55);
+            Resource resource("name1", size, hash, sign);
+
+            Socket socket(Socket::Domain::Ip4, Socket::Type::Udp);
+            socket.enableBroadcast();
+            std::cout << "Connected to server.\n";
+            std::unordered_map<std::string, std::vector<Resource>> map;
+            map[publicKey] = std::vector<Resource>{resource};
+            BroadcastMessage message(map);
+            const auto bytes = message.toByteStream();
+            std::cout << "--- Sending broadcast." << std::endl;
+            socket.writeTo((const char *) &bytes[0], bytes.size(), "127.255.255.255", serverPort);
+            std::cout << std::to_string(bytes.size()) << "bytes sent." << std::endl;
+            sleep(3);
+            socket.close();
+        }
+        else
+        {
+            const auto resources = resourceManager.getNetworkResources();
+            for (const auto &keyRes : resources)
+            {
+                std::cout << "key: " << std::endl;
+                std::cout << keyRes.first << std::endl;
+                for (const auto &res : keyRes.second)
+                {
+                    std::cout << "name: " << std::endl;
+                    std::cout << res.first.getName() << std::endl;
+                    std::cout << "size: " << std::endl;
+                    std::cout << res.first.getSize() << std::endl;
+                    for (const auto& ip : res.second.getSeeders())
+                        std::cout << "ip: " << ip.address << std::endl;
+                }
+                std::cout << std::endl;
+            }
+        }
     }
-    socket.close();
 }
+
 
 int main(int argc, char** argv)
 {
