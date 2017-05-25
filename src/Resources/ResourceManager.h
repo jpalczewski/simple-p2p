@@ -30,6 +30,7 @@ public:
     using ResourceMap = std::unordered_map<std::string, std::unordered_map<Resource, Type, ResourceHash>>;
 
     ResourceManager::ResourceMap<NetworkResourceInfo> getNetworkResources();
+    ResourceManager::ResourceMap<LocalResourceInfo> getOwnedResources();
 private:
     // network resources - available for download
     ResourceMap<NetworkResourceInfo> networkResources;

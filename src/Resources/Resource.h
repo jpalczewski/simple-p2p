@@ -28,6 +28,8 @@ public:
     const std::vector<unsigned char>& getHash() const;
     const std::vector<unsigned char>& getSign() const;
 
+    std::string toString() const;
+
 private:
     std::string name;
     int64_t size;

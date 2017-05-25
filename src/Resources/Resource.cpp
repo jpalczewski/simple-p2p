@@ -61,3 +61,11 @@ const std::string &Resource::getName() const
 {
     return name;
 }
+
+std::string Resource::toString() const
+{
+    // TODO print hash and sign
+    const std::string string = "Name: " + name + "\n Size: " + std::to_string(size);
+    return string;
+}
+

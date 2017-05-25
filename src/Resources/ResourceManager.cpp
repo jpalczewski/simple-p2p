@@ -79,6 +79,13 @@ ResourceManager::ResourceMap<NetworkResourceInfo> ResourceManager::getNetworkRes
     return networkResources;
 }
 
+ResourceManager::ResourceMap<LocalResourceInfo> ResourceManager::getOwnedResources()
+{
+    std::shared_lock<std::shared_timed_mutex> lock(ownedMutex);
+    return ownedResources;
+}
+
+
 ResourceManager resourceManager;
 
 

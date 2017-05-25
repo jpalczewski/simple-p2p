@@ -17,11 +17,14 @@ public:
     void addSeeders(const std::set<IpAddress>& seeders);
     const std::set<IpAddress>& getSeeders() const;
 
+    std::string toString() const;
+
 private:
     State state;
     std::set<IpAddress> seeders;
     // TODO a list of nodes(IP addresses) with this resource? threads which send this networkResources to other nodes?
 };
 
+std::string toString(NetworkResourceInfo::State state);
 
 #endif //SIMPLE_P2P_RESOURCEINFO_H

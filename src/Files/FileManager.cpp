@@ -15,9 +15,9 @@ void FileManager::setWorkingDirectory(const std::string &cwdPath) {
     path cwd(cwdPath);
 
     if(!exists(cwdPath))
-        throw new std::runtime_error("FileManager::setWorkingDirectory received not-existent path!");
+        throw std::runtime_error("FileManager::setWorkingDirectory received not-existent path!");
     if(!is_directory(cwd))
-        throw new std::runtime_error("FileManager::setWorkingDirectory received path that isn't directory!");
+        throw std::runtime_error("FileManager::setWorkingDirectory received path that isn't directory!");
 
     for(auto & file : boost::make_iterator_range(directory_iterator(cwdPath), {}))
     {
@@ -60,11 +60,11 @@ FileManager::findFileFromTable(const GenericFileRequest &request) const
 {
     auto authorFiles = authorLookupMap.find(request.authorKey);
     if(authorFiles == authorLookupMap.end())
-       throw new std::runtime_error("Author not found!");
+       throw std::runtime_error("Author not found!");
 
     auto file = authorFiles->second.find(request.fileHash);
     if(file == authorFiles->second.end())
-        throw new std::runtime_error("File not found!");
+        throw std::runtime_error("File not found!");
 
     return file->second;
 }
@@ -73,7 +73,7 @@ AuthorFilesHashList FileManager::getAllFilesFromAuthor(const AuthorKey &author_k
     AuthorFilesHashList author_hash_list;
     auto authorFiles = authorLookupMap.find(author_key);
     if(authorFiles==authorLookupMap.end())
-        throw new std::runtime_error("Author not found!");
+        throw std::runtime_error("Author not found!");
 
     for(auto & it : authorFiles->second)
     {
@@ -90,7 +90,7 @@ bool FileManager::createFile(const FileCreateRequest &request)
     std::cout << filepath.native() << " a cwd:" << cwd;
     ofstream ofs{filepath};
     if(!ofs.good())
-        throw new std::runtime_error("FileManager::createFile can't create file!");
+        throw std::runtime_error("FileManager::createFile can't create file!");
     ofs.close();
     resize_file(filepath, request.length);
 

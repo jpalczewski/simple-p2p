@@ -7,14 +7,19 @@
 
 #include <string>
 
-struct IpAddress
+class IpAddress
 {
+public:
     IpAddress(const std::string &address) : address(address)
     { }
     IpAddress() = default;
 
     friend bool operator<(const IpAddress& left, const IpAddress& right);
 
+    std::string getAddress() const;
+    std::string toString() const;
+
+private:
     std::string address; // TODO maybe some better representation? bytes or whatever
 };
 
