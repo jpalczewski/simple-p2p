@@ -8,11 +8,11 @@
 #include <vector>
 #include <set>
 #include "../Network/IpAddress.h"
+#include "Resource.h"
 
 class NetworkResourceInfo
 {
 public:
-    enum class State {Active, Blocked, Invalid};
 
     void addSeeders(const std::set<IpAddress>& seeders);
     const std::set<IpAddress>& getSeeders() const;
@@ -20,11 +20,8 @@ public:
     std::string toString() const;
 
 private:
-    State state;
+    Resource::State state;
     std::set<IpAddress> seeders;
     // TODO a list of nodes(IP addresses) with this resource? threads which send this networkResources to other nodes?
 };
-
-std::string toString(NetworkResourceInfo::State state);
-
 #endif //SIMPLE_P2P_RESOURCEINFO_H

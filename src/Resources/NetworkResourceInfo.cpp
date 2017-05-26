@@ -19,18 +19,6 @@ const std::set<IpAddress>& NetworkResourceInfo::getSeeders() const
     return this->seeders;
 }
 
-std::string toString(NetworkResourceInfo::State state)
-{
-    switch (state)
-    {
-        case NetworkResourceInfo::State::Active:
-            return "active";
-        case NetworkResourceInfo::State::Blocked:
-            return "blocked";
-        case NetworkResourceInfo::State::Invalid:
-            return "invalid";
-    }
-}
 
 std::string NetworkResourceInfo::toString() const
 {

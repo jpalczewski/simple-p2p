@@ -30,6 +30,8 @@ public:
 
     std::string toString() const;
 
+    enum class State {Active, Blocked, Invalid};
+
 private:
     std::string name;
     int64_t size;
@@ -40,7 +42,8 @@ private:
     friend bool operator==(const Resource& left, const Resource& right);
 };
 
-// would be used to place Resource as a map key
+std::string toString(Resource::State state);
+
 struct ResourceHash
 {
     size_t operator()(const Resource& resource) const

@@ -12,7 +12,7 @@ namespace
     void addResource(const std::string &publicKey, const Resource &resource, ResourceManager::ResourceMap<T>& map,
                      const T& info = T{})
     {
-        map[publicKey].insert(std::make_pair(resource, T{}));
+        map[publicKey].insert(std::make_pair(resource, info));
     }
 
     // TODO check if first (publicKey as key) map is found

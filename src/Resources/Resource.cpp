@@ -62,10 +62,24 @@ const std::string &Resource::getName() const
     return name;
 }
 
+std::string toString(Resource::State state)
+{
+    switch (state)
+    {
+        case Resource::State::Active:
+            return "active";
+        case Resource::State::Blocked:
+            return "blocked";
+        case Resource::State::Invalid:
+            return "invalid";
+    }
+}
+
+
 std::string Resource::toString() const
 {
     // TODO print hash and sign
-    const std::string string = "Name: " + name + "\n Size: " + std::to_string(size);
+    const std::string string = "Name: " + name + "\nSize: " + std::to_string(size);
     return string;
 }
 

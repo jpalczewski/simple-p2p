@@ -5,12 +5,17 @@
 #ifndef SIMPLE_P2P_LOCALRESOURCEINFO_H
 #define SIMPLE_P2P_LOCALRESOURCEINFO_H
 
+#include <string>
+#include "Resource.h"
 
 class LocalResourceInfo
 {
+public:
     enum class State {Active, Blocked, Invalid};
+    std::string toString() const;
 
-    State state;
+private:
+    Resource::State state;
 
     // TODO: more resource properties
 };

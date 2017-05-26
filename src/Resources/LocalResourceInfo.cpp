@@ -3,3 +3,10 @@
 //
 
 #include "LocalResourceInfo.h"
+
+std::string LocalResourceInfo::toString() const
+{
+    const std::string string = "State: " + ::toString(state) + "\n";
+    return string;
+}
+

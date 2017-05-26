@@ -7,12 +7,14 @@
 
 
 #include <unordered_map>
-#include "Resources/Resource.h"
-#include "Network/Socket.h"
-#include "Resources/LocalResourceInfo.h"
-#include "Resources/ResourceManager.h"
+#include "../Resources/Resource.h"
+#include "../Network/Socket.h"
+#include "../Resources/LocalResourceInfo.h"
+#include "../Resources/ResourceManager.h"
+#include "Visitor.h"
+#include "CommandInterface.h"
 
-class UserCommandsHandler
+class UserCommandsHandler : public Visitor
 {
 public:
     UserCommandsHandler(int port);
@@ -20,20 +22,18 @@ public:
 
     void handleUserInput();
 
+    void handle(BroadcastCommand* command);
+    void handle(DisplayCommand* command);
+    void handle(AddCommand* command);
+    void handle(UnknownCommand* command);
+
 private:
     int port;
     Socket socket;
-
-    void handleAdd();
-
-    void handleDisplay();
-
-    void handleBroadcast();
+    std::unique_ptr<CommandInterface> commandInterface;
 
     Resource resourceFromFile(std::string basic_string);
-
     std::string readPublicKey();
-
     std::unordered_map<std::string, std::vector<Resource>> convertInfoMapToResourceMap(ResourceManager::ResourceMap<LocalResourceInfo>);
 };
 
