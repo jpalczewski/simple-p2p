@@ -86,7 +86,7 @@ void UserCommandsHandler::handle(BroadcastCommand *command)
     BroadcastMessage message(map);
     const auto bytes = message.toByteStream();
     std::cout << "--- Sending broadcast." << std::endl;
-    socket.writeTo((const char *) &bytes[0], bytes.size(), "127.255.255.255", port);
+    socket.writeTo(&bytes[0], bytes.size(), "127.255.255.255", port);
     std::cout << std::to_string(bytes.size()) << "bytes sent." << std::endl;
 }
 

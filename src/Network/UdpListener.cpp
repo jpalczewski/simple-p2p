@@ -15,7 +15,7 @@ UdpListener::UdpListener(int listenPort) : socket(Socket::Domain::Ip4, Socket::T
 void UdpListener::start()
 {
     const int size = 1024;
-    char buffer[size];
+    unsigned char buffer[size];
     while (true)
     {
         // TODO make it multithreaded and remember sender ip in resource info

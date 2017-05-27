@@ -127,7 +127,7 @@ Socket::Type Socket::getType(int socket) const
     return static_cast<Type>(type);
 }
 
-int Socket::read(char* output, int length)
+int Socket::read(unsigned char* output, int length)
 {
     int bytesRead = ::read(socketDescriptor, output, length);
 
@@ -140,7 +140,7 @@ int Socket::read(char* output, int length)
     return bytesRead;
 }
 
-int Socket::write(const char* input, int length)
+int Socket::write(const unsigned char* input, int length)
 {
     int bytesSent = ::write(socketDescriptor, input, length);
 
@@ -168,7 +168,7 @@ void Socket::enableBroadcast()
         throw std::runtime_error("Enabling broadcast failed.");
 }
 
-int Socket::writeTo(const char *input, int length, std::string address, int port)
+int Socket::writeTo(const unsigned char *input, int length, std::string address, int port)
 {
     struct sockaddr_in socketAddress;
     if (!inet_pton(AF_INET, address.c_str(), &(socketAddress.sin_addr)))
@@ -183,7 +183,7 @@ int Socket::writeTo(const char *input, int length, std::string address, int port
     return bytesSent;
 }
 
-int Socket::readFrom(char *output, int length, std::string &receiveAddress)
+int Socket::readFrom(unsigned char *output, int length, std::string &receiveAddress)
 {
     struct sockaddr_in socketAddress;
     socklen_t addressLength = sizeof(socketAddress);

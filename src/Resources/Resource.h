@@ -33,8 +33,8 @@ public:
     enum class State {Active, Blocked, Invalid};
 
 private:
-    std::string name;
-    int64_t size;
+    const std::string name;
+    const int64_t size;
     const std::vector<unsigned char> hash; // 16B
     const std::vector<unsigned char> sign; // 128B
 
