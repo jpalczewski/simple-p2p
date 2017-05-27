@@ -7,6 +7,7 @@
 #include <boost/filesystem.hpp>
 #include <iostream>
 #include <Files/FileRecord.h>
+#include <Files/FileManager.h>
 #include "Files/MD5Utils.h"
 using namespace boost::filesystem;
 
@@ -109,5 +110,31 @@ BOOST_AUTO_TEST_SUITE(filerecord)
         }
         auto response = fileRecord.getFilePart(filePartRequest);
         BOOST_REQUIRE_EQUAL_COLLECTIONS(response.received.begin(), response.received.end(), test_vec.begin(), test_vec.end());
+    }
+BOOST_AUTO_TEST_SUITE_END()
+BOOST_AUTO_TEST_SUITE(fileManager)
+    BOOST_AUTO_TEST_CASE(addFileFromDisk)
+    {
+        std::string test_string = "TIN TEST #2";
+        std::vector<char> test_vec(test_string.begin(), test_string.end());
+        boost::filesystem::path path = boost::filesystem::unique_path();
+        FileRecord fileRecord(0, path, {0});
+
+        fileRecord.create();
+
+        ofstream ofs(path);
+        ofs << test_string;
+        ofs.close();
+
+        FileManager fm;
+        AddFileRequest afr({0}, path.native());
+        auto result = fm.addFile(afr);
+
+        FilePartRequest fpr({0}, result.second, 0, test_string.size());
+        auto response = fm.getFilePart(fpr);
+        BOOST_REQUIRE_EQUAL_COLLECTIONS(response.received.begin(), response.received.end(), test_vec.begin(), test_vec.end());
+
+        remove(path);
+
     }
 BOOST_AUTO_TEST_SUITE_END()

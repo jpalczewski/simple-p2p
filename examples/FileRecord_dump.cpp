@@ -7,7 +7,7 @@
 int main()
 {
     FileManager fm;
-    HASH_ARRAY newFileHash = {1,2,3};
+    HashArray newFileHash = {1,2,3};
     std::string newFileName = "test.txt";
     fm.setWorkingDirectory("../../examples/test-resources");
     //FileRecord fr(0, boost::filesystem::unique_path(), {0});

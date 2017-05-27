@@ -19,7 +19,7 @@ bool FileRecord::isValid() {
             return false;
 }
 
-FileRecord::FileRecord(time_t lastKnownWriteTime, const path &location, const HASH_ARRAY &md5) : lastKnownWriteTime(
+FileRecord::FileRecord(time_t lastKnownWriteTime, const path &location, const HashArray &md5) : lastKnownWriteTime(
         lastKnownWriteTime), location(location), md5(md5) {}
 
 FileRecord::FileRecord() {}
@@ -28,7 +28,7 @@ const path &FileRecord::getLocation() const {
     return location;
 }
 
-HASH_ARRAY FileRecord::getHashFromCWD() {
+HashArray FileRecord::getHashFromCWD() {
     return MD5Utils::boostPathToHashArray(location);
 }
 

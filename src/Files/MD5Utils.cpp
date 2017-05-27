@@ -8,13 +8,13 @@
 
 const int buffer_size = 4096;
 
-HASH_ARRAY MD5Utils::textToHashArray(const std::string &input) {
-    HASH_ARRAY md5;
+HashArray MD5Utils::textToHashArray(const std::string &input) {
+    HashArray md5;
     MD5((unsigned char*)input.c_str(), input.length(), md5.data());
     return md5;
 }
 
-const std::string MD5Utils::hashArrayToHashASCII(HASH_ARRAY ha) {
+const std::string MD5Utils::hashArrayToHashASCII(HashArray ha) {
     std::ostringstream ostringstream;
     ostringstream << std::hex << std::setfill('0');
 
@@ -24,8 +24,8 @@ const std::string MD5Utils::hashArrayToHashASCII(HASH_ARRAY ha) {
     return ostringstream.str();
 }
 
-HASH_ARRAY MD5Utils::ifstreamToHashArray(std::istream &ifs) {
-    HASH_ARRAY md5;
+HashArray MD5Utils::ifstreamToHashArray(std::istream &ifs) {
+    HashArray md5;
     std::array<char, buffer_size> readBuffer;
 
     MD5_CTX CTX;
@@ -46,10 +46,10 @@ HASH_ARRAY MD5Utils::ifstreamToHashArray(std::istream &ifs) {
     return md5;
 }
 
-HASH_ARRAY MD5Utils::boostPathToHashArray(const boost::filesystem::path &p) {
+HashArray MD5Utils::boostPathToHashArray(const boost::filesystem::path &p) {
     using namespace boost::filesystem;
     std::ifstream filestream = ifstream{p, std::ios::binary};
-    HASH_ARRAY md5fromCWD = MD5Utils::ifstreamToHashArray(filestream);
+    HashArray md5fromCWD = MD5Utils::ifstreamToHashArray(filestream);
     filestream.close();
     return md5fromCWD;
 }
