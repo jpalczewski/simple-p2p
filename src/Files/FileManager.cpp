@@ -21,7 +21,7 @@ void FileManager::setWorkingDirectory(const std::string &cwdPath) {
 
     for(auto & file : boost::make_iterator_range(directory_iterator(cwdPath), {}))
     {
-        const HASH_ARRAY &ha = MD5Utils::boostPathToHashArray(file.path());
+        const HashArray &ha = MD5Utils::boostPathToHashArray(file.path());
         std::cout << file << " " << MD5Utils::hashArrayToHashASCII(ha) << std::endl;
         auto result = findInResourcesManager(ha);
         if(result.first)
@@ -35,7 +35,7 @@ void FileManager::setWorkingDirectory(const std::string &cwdPath) {
     this->cwd = cwdPath;
 }
 
-ResourcesFindResult FileManager::findInResourcesManager(const HASH_ARRAY &hash) {
+ResourcesFindResult FileManager::findInResourcesManager(const HashArray &hash) {
     return std::make_pair(true, std::vector<unsigned char>(1)); //TODO: to be implemented
 }
 
@@ -110,4 +110,22 @@ bool FileManager::saveFilePart(const FileSavePartRequest &request)
 {
     auto file = findFileFromTable(request);
     file.saveFilePart(request);
+}
+
+std::pair<bool, HashArray> FileManager::addFile(const AddFileRequest &request) {
+    using namespace boost::filesystem;
+
+    path suggestedFile(request.path);
+    if(!exists(suggestedFile))
+        throw std::runtime_error("FileManager::addFile - file doesn't exist!");
+
+    if(!is_regular(suggestedFile))
+        throw std::runtime_error("FileManager::addFile - file isn't a regular file!");
+
+    HashArray ha = MD5Utils::boostPathToHashArray(suggestedFile);
+
+    FileRecord fr = FileRecord(0, suggestedFile, ha);
+    authorLookupMap[request.authorKey][ha] = fr;
+
+    return std::make_pair(true, ha);
 }

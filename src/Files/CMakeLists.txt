@@ -1,7 +1,7 @@
 set(MD5UTILS MD5Utils.cpp)
 
 
-set(FILEMESSAGES FilePartRequest.h FilePartRequest.h FilePartResponse.h GenericFileRequest.h FileCreateRequest.h FileSavePartRequest.h)
+set(FILEMESSAGES FilePartRequest.h FilePartRequest.h FilePartResponse.h GenericFileRequest.h FileCreateRequest.h FileSavePartRequest.h AddFileRequest.h)
 set(FILEMANAGER FileManagerTypes.h FileManager.cpp FileRecord.cpp AuthorKeyHasher.h ${FILEMESSAGES})
 
 set (CMAKE_CXX_FLAGS "-mcmodel=large ${CMAKE_CXX_FLAGS}")

@@ -15,11 +15,11 @@
 class FileRecord;
 
 typedef     std::vector<unsigned char>                                                  AuthorKey;
-typedef     std::unordered_map<HASH_ARRAY, FileRecord, AuthorKeyHasher<HASH_ARRAY> >    AuthorFiles;
+typedef     std::unordered_map<HashArray, FileRecord, AuthorKeyHasher<HashArray> >    AuthorFiles;
 typedef     std::unordered_map<AuthorKey, AuthorFiles, AuthorKeyHasher<AuthorKey> >     AuthorLookupMap;
 typedef     std::pair<bool, AuthorKey>                                                  ResourcesFindResult;
 typedef     std::vector<AuthorKey>                                                      AuthorsList;
-typedef     std::vector<HASH_ARRAY>                                                     AuthorFilesHashList;
+typedef     std::vector<HashArray>                                                     AuthorFilesHashList;
 
 
 #endif //SIMPLE_P2P_FILEMANAGERTYPES_H

@@ -23,10 +23,10 @@ class FileRecord {
 
     std::time_t lastKnownWriteTime;
     path        location;
-    HASH_ARRAY  md5;
+    HashArray  md5;
 
 public:
-    FileRecord(time_t lastKnownWriteTime, const path &location, const HASH_ARRAY &md5);
+    FileRecord(time_t lastKnownWriteTime, const path &location, const HashArray &md5);
     FileRecord();
     const path &getLocation() const;
     FilePartResponse    getFilePart(const FilePartRequest& request);
@@ -58,7 +58,7 @@ private:
     }
     BOOST_SERIALIZATION_SPLIT_MEMBER()
 
-    HASH_ARRAY getHashFromCWD();
+    HashArray getHashFromCWD();
 };
 
 
