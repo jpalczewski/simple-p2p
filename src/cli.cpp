@@ -28,9 +28,10 @@ int main(int argc, char** argv)
     int serverPort = atoi(argv[1]);
     int targetPort = atoi(argv[2]);
     std::thread serverThread(serverFunc, serverPort);
-    std::cout << "Server started. Press any key to connect to other server." << std::endl;
+    std::cout << "Server started. Press any key to start receiving commands." << std::endl;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
     UserCommandsHandler commandsHandler(targetPort);
+    std::cout << "User commands handler started." << std::endl;
     commandsHandler.handleUserInput();
     serverThread.join();
     return 0;

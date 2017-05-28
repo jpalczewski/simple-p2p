@@ -12,6 +12,7 @@ class SimpleCommandInterface : public CommandInterface
 {
 public:
     std::unique_ptr<Command> getNextCommand();
+    void sendResponse(std::string response);
 
 private:
     std::string getFileName();

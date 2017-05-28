@@ -7,6 +7,7 @@
 
 #include <string>
 #include <sys/socket.h>
+#include "IpAddress.h"
 
 class Socket
 {
@@ -27,6 +28,7 @@ public:
     Socket accept();
     int read(unsigned char* output, int length);
     int readFrom(unsigned char* output, int length, std::string& receiveAddress);
+    int readFrom(unsigned char* output, int length, IpAddress& receiveAddress);
     int write(const unsigned char* input, int length);
     int writeTo(const unsigned char *input, int length, std::string address, int port);
     int close();

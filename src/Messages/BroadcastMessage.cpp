@@ -8,7 +8,7 @@
 #include "../ConversionUtils.h"
 
 BroadcastMessage::BroadcastMessage(std::unordered_map<std::string, std::vector<Resource>> resources) :
-        resources(resources)
+        resources(std::move(resources))
 {
 }
 
@@ -51,14 +51,14 @@ BroadcastMessage BroadcastMessage::fromByteStream(std::vector<unsigned char> byt
     int currentIndex = 5; // 1B - message type, 4B - number of public keys
     for (int i = 0; i < publicKeyCount; ++i)
     {
-        const std::string publicKey(reinterpret_cast<const char*>(&byteArray[currentIndex]), 251);
+        std::string publicKey(reinterpret_cast<const char*>(&byteArray[currentIndex]), 251);
         currentIndex += 251;
         const int resourceCount = intFromBytes(byteArray, currentIndex);
         currentIndex += 4;
         std::vector<Resource> publicKeyResources;
         for (int i = 0; i < resourceCount; ++i)
         {
-            const Resource resource = Resource::fromByteStream(byteArray, currentIndex);
+            Resource resource = Resource::fromByteStream(byteArray, currentIndex);
             publicKeyResources.push_back(std::move(resource));
         }
         resources[std::move(publicKey)] = std::move(publicKeyResources);

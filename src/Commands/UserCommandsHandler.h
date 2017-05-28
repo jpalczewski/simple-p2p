@@ -7,6 +7,7 @@
 
 
 #include <unordered_map>
+#include <iostream>
 #include "../Resources/Resource.h"
 #include "../Network/Socket.h"
 #include "../Resources/LocalResourceInfo.h"
@@ -31,6 +32,7 @@ private:
     int port;
     Socket socket;
     std::unique_ptr<CommandInterface> commandInterface;
+    std::ostream& log = std::cout;
 
     Resource resourceFromFile(std::string basic_string);
     std::string readPublicKey();

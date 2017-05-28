@@ -30,7 +30,7 @@ void UdpListener::start()
             std::cout << std::to_string(received) << " bytes received" << std::endl;
             if (received == size)
                 throw std::runtime_error("buffer too small");
-            const std::vector<unsigned char> bytes = std::vector<unsigned char>(buffer, buffer + received);
+            std::vector<unsigned char> bytes = std::vector<unsigned char>(buffer, buffer + received);
             BroadcastMessage message = BroadcastMessage::fromByteStream(std::move(bytes));
             for (const auto& keyResource : message.getResources())
             {

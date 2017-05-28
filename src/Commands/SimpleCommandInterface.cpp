@@ -37,5 +37,12 @@ std::string SimpleCommandInterface::getFileName()
     return fileName;
 }
 
+void SimpleCommandInterface::sendResponse(std::string response)
+{
+    std::cout << response << std::endl;
+}
+
+
+
 
 
