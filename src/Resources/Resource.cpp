@@ -37,9 +37,9 @@ Resource Resource::fromByteStream(const std::vector<unsigned char>& vector, int&
     return Resource(std::move(name), size, std::move(hash), std::move(sign));
 }
 
-bool Resource::operator==(const Resource& other)
+bool operator==(const Resource& left, const Resource& right)
 {
-    return name == other.name && size == other.size && hash == other.hash && sign == other.sign;
+    return left.name == right.name && left.size == right.size && right.hash == left.hash && left.sign == right.sign;
 }
 
 const std::vector<unsigned char> &Resource::getSign() const
@@ -61,3 +61,25 @@ const std::string &Resource::getName() const
 {
     return name;
 }
+
+std::string toString(Resource::State state)
+{
+    switch (state)
+    {
+        case Resource::State::Active:
+            return "active";
+        case Resource::State::Blocked:
+            return "blocked";
+        case Resource::State::Invalid:
+            return "invalid";
+    }
+}
+
+
+std::string Resource::toString() const
+{
+    // TODO print hash and sign
+    const std::string string = "Name: " + name + "\nSize: " + std::to_string(size);
+    return string;
+}
+

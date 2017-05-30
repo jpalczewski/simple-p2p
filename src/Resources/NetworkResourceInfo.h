@@ -5,15 +5,31 @@
 #ifndef SIMPLE_P2P_RESOURCEINFO_H
 #define SIMPLE_P2P_RESOURCEINFO_H
 
+#include <vector>
+#include <set>
+#include <cstdint>
+#include "../Network/IpAddress.h"
+#include "Resource.h"
 
 class NetworkResourceInfo
 {
-    enum class State {Active, Blocked, Invalid};
+public:
+    NetworkResourceInfo(uint64_t localId) : localId(localId), state(Resource::State::Active)
+    { }
+    NetworkResourceInfo(const NetworkResourceInfo& other) = default;
 
-    State state;
+    void addSeeders(const std::vector<IpAddress>& seeders);
 
-    // TODO a list of nodes(IP addresses) with this resource? threads which send this networkResources to other nodes?
+    const std::set<IpAddress>& getSeeders() const;
+
+    uint64_t getLocalId() const;
+
+    std::string toString() const;
+
+private:
+    Resource::State state;
+    std::set<IpAddress> seeders;
+    uint64_t localId;
 };
-
 
 #endif //SIMPLE_P2P_RESOURCEINFO_H

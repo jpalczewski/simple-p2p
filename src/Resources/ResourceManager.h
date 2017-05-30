@@ -16,25 +16,44 @@
 
 class ResourceManager
 {
-private:
-    // TODO use a map instead of a list? but unique_ptr cannot be a map key...
+public:
+    NetworkResourceInfo getNetworkResourceInfo(const std::string &publicKey, const Resource &resource);
 
+    void addLocalResource(const std::string &publicKey, const Resource &resource);
+    LocalResourceInfo getLocalResourceInfo(const std::string &publicKey, const Resource &resource);
+
+    void addOwnedResource(const std::string &publicKey, const Resource &resource);
+    LocalResourceInfo getOwnedResourceInfo(const std::string &publicKey, const Resource &resource);
+
+    std::pair<std::string, Resource> getResourceById(uint64_t id);
+    void addNetworkResource(const std::string &publicKey, const Resource &resource, const std::vector<IpAddress> &seeders);
+
+    template <typename Type>
+    using ResourceMap = std::unordered_map<std::string, std::unordered_map<Resource, Type, ResourceHash>>;
+
+    ResourceManager::ResourceMap<NetworkResourceInfo> getNetworkResources();
+    ResourceManager::ResourceMap<LocalResourceInfo> getOwnedResources();
+private:
     // network resources - available for download
-    std::unordered_map<std::string, std::list<std::pair<std::unique_ptr<Resource>, std::unique_ptr<NetworkResourceInfo>>>> networkResources;
+    ResourceMap<NetworkResourceInfo> networkResources;
 
     // resources downloaded from other nodes - can be shared, but can't be blocked/invalidated/deleted
-    std::unordered_map<std::string, std::list<std::pair<std::unique_ptr<Resource>, std::unique_ptr<LocalResourceInfo>>>> localResources;
+    ResourceMap<LocalResourceInfo> localResources;
 
     // owned resources - can be shared and blocked/invalidated/deleted
-    std::unordered_map<std::string, std::list<std::pair<std::unique_ptr<Resource>, std::unique_ptr<LocalResourceInfo>>>> ownedResources;
+    ResourceMap<LocalResourceInfo> ownedResources;
 
-    // will probably need 3 different mutexes for 3 maps
-    std::shared_timed_mutex mutex;
+    // we need a convenient way for user to identify resources - full identifier with
+    // key, hash, name and so on is too long so we create a local id which is valid only in this node
+    std::unordered_map<uint64_t, std::pair<const std::string*, const Resource*>> localIdsMap;
 
-public:
-    void addResource(std::string publicKey, std::unique_ptr<Resource> resource);
-    NetworkResourceInfo getResourceInfo(const std::string& publicKey, const Resource& resource);
+    static uint64_t lastLocalId;
+
+    std::shared_timed_mutex localMutex;
+    std::shared_timed_mutex ownedMutex;
+    std::shared_timed_mutex networkMutex;
 };
 
+extern ResourceManager resourceManager;
 
 #endif //SIMPLE_P2P_RESOURCEMANAGER_H

@@ -2,9 +2,8 @@ cmake_minimum_required(VERSION 3.2.2)
 project(simple_p2p)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
-if(CYGWIN)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mcmodel=medium")
-endif()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mcmodel=medium")
+
 find_package(PkgConfig REQUIRED)
 
 
@@ -42,7 +41,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 
-add_subdirectory(examples)
+#add_subdirectory(examples)
 add_subdirectory(src)
 add_subdirectory(test)
 

@@ -10,7 +10,7 @@
 
 struct FilePartRequest : public GenericFileRequest {
     FilePartRequest(const AuthorKey &authorKey,
-                    const HASH_ARRAY &fileHash,
+                    const HashArray &fileHash,
                     std::size_t offset_,
                     std::size_t size_,
                     bool allowInvalid_ = false) : GenericFileRequest(authorKey,

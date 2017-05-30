@@ -15,13 +15,13 @@ void FileManager::setWorkingDirectory(const std::string &cwdPath) {
     path cwd(cwdPath);
 
     if(!exists(cwdPath))
-        throw new std::runtime_error("FileManager::setWorkingDirectory received not-existent path!");
+        throw std::runtime_error("FileManager::setWorkingDirectory received not-existent path!");
     if(!is_directory(cwd))
-        throw new std::runtime_error("FileManager::setWorkingDirectory received path that isn't directory!");
+        throw std::runtime_error("FileManager::setWorkingDirectory received path that isn't directory!");
 
     for(auto & file : boost::make_iterator_range(directory_iterator(cwdPath), {}))
     {
-        const HASH_ARRAY &ha = MD5Utils::boostPathToHashArray(file.path());
+        const HashArray &ha = MD5Utils::boostPathToHashArray(file.path());
         std::cout << file << " " << MD5Utils::hashArrayToHashASCII(ha) << std::endl;
         auto result = findInResourcesManager(ha);
         if(result.first)
@@ -35,7 +35,7 @@ void FileManager::setWorkingDirectory(const std::string &cwdPath) {
     this->cwd = cwdPath;
 }
 
-ResourcesFindResult FileManager::findInResourcesManager(const HASH_ARRAY &hash) {
+ResourcesFindResult FileManager::findInResourcesManager(const HashArray &hash) {
     return std::make_pair(true, std::vector<unsigned char>(1)); //TODO: to be implemented
 }
 
@@ -60,11 +60,11 @@ FileManager::findFileFromTable(const GenericFileRequest &request) const
 {
     auto authorFiles = authorLookupMap.find(request.authorKey);
     if(authorFiles == authorLookupMap.end())
-       throw new std::runtime_error("Author not found!");
+       throw std::runtime_error("Author not found!");
 
     auto file = authorFiles->second.find(request.fileHash);
     if(file == authorFiles->second.end())
-        throw new std::runtime_error("File not found!");
+        throw std::runtime_error("File not found!");
 
     return file->second;
 }
@@ -73,7 +73,7 @@ AuthorFilesHashList FileManager::getAllFilesFromAuthor(const AuthorKey &author_k
     AuthorFilesHashList author_hash_list;
     auto authorFiles = authorLookupMap.find(author_key);
     if(authorFiles==authorLookupMap.end())
-        throw new std::runtime_error("Author not found!");
+        throw std::runtime_error("Author not found!");
 
     for(auto & it : authorFiles->second)
     {
@@ -90,7 +90,7 @@ bool FileManager::createFile(const FileCreateRequest &request)
     std::cout << filepath.native() << " a cwd:" << cwd;
     ofstream ofs{filepath};
     if(!ofs.good())
-        throw new std::runtime_error("FileManager::createFile can't create file!");
+        throw std::runtime_error("FileManager::createFile can't create file!");
     ofs.close();
     resize_file(filepath, request.length);
 
@@ -110,4 +110,22 @@ bool FileManager::saveFilePart(const FileSavePartRequest &request)
 {
     auto file = findFileFromTable(request);
     file.saveFilePart(request);
+}
+
+std::pair<bool, HashArray> FileManager::addFile(const AddFileRequest &request) {
+    using namespace boost::filesystem;
+
+    path suggestedFile(request.path);
+    if(!exists(suggestedFile))
+        throw std::runtime_error("FileManager::addFile - file doesn't exist!");
+
+    if(!is_regular(suggestedFile))
+        throw std::runtime_error("FileManager::addFile - file isn't a regular file!");
+
+    HashArray ha = MD5Utils::boostPathToHashArray(suggestedFile);
+
+    FileRecord fr = FileRecord(0, suggestedFile, ha);
+    authorLookupMap[request.authorKey][ha] = fr;
+
+    return std::make_pair(true, ha);
 }

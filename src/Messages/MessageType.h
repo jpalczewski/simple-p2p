@@ -9,7 +9,7 @@
 enum class MessageType : unsigned char
 {
     BroadcastResource = 0x00,
-    DownloadResource = 0x01,
+    ResourceRequest = 0x01,
     DeleteResource = 0x02,
     InvalidateResource = 0x03,
     BlockResource = 0x04,

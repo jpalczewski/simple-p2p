@@ -6,7 +6,7 @@
 #define SIMPLE_P2P_UDPLISTENER_H
 
 
-#include "Network/Socket.h"
+#include "Socket.h"
 
 class UdpListener
 {

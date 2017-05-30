@@ -8,7 +8,7 @@
 
 struct FileSavePartRequest : public FilePartRequest
 {
-    FileSavePartRequest(const AuthorKey &authorKey, const HASH_ARRAY &fileHash, size_t offset_, size_t size_)
+    FileSavePartRequest(const AuthorKey &authorKey, const HashArray &fileHash, size_t offset_, size_t size_)
             : FilePartRequest(authorKey, fileHash, offset_, size_), bytes() {bytes.resize(size_, 0xDE);}
 
     std::vector<char> bytes;

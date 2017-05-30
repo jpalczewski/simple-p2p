@@ -3,6 +3,7 @@
 //
 
 #include "Socket.h"
+#include "IpAddress.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -57,7 +58,7 @@ Socket& Socket::operator=(Socket &&other)
 void Socket::bind(int port)
 {
     struct sockaddr_in serv_addr;
-    serv_addr.sin_family = static_cast<int>(domain);
+    serv_addr.sin_family = (sa_family_t) static_cast<int>(domain);
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons(port);
 
@@ -83,7 +84,7 @@ void Socket::connect(std::string host, int port, int timeout)
         throw std::runtime_error("Error: no such host");
     }
 
-    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_family = (sa_family_t)domain;
     memcpy((char *)server->h_addr, (char *)&serv_addr.sin_addr.s_addr, server->h_length);
     serv_addr.sin_port = htons(port);
 
@@ -127,7 +128,7 @@ Socket::Type Socket::getType(int socket) const
     return static_cast<Type>(type);
 }
 
-int Socket::read(char* output, int length)
+int Socket::read(unsigned char* output, int length)
 {
     int bytesRead = ::read(socketDescriptor, output, length);
 
@@ -140,7 +141,7 @@ int Socket::read(char* output, int length)
     return bytesRead;
 }
 
-int Socket::write(const char* input, int length)
+int Socket::write(const unsigned char* input, int length)
 {
     int bytesSent = ::write(socketDescriptor, input, length);
 
@@ -168,7 +169,7 @@ void Socket::enableBroadcast()
         throw std::runtime_error("Enabling broadcast failed.");
 }
 
-int Socket::writeTo(const char *input, int length, std::string address, int port)
+int Socket::writeTo(const unsigned char *input, int length, std::string address, int port)
 {
     struct sockaddr_in socketAddress;
     if (!inet_pton(AF_INET, address.c_str(), &(socketAddress.sin_addr)))
@@ -183,14 +184,32 @@ int Socket::writeTo(const char *input, int length, std::string address, int port
     return bytesSent;
 }
 
-int Socket::readFrom(char *output, int length, std::string &receiveAddress)
+
+//TODO merge 2 readFrom functions or at least call one from the other
+int Socket::readFrom(unsigned char *output, int length, IpAddress& receiveAddress)
 {
     struct sockaddr_in socketAddress;
-    socklen_t addressLength;
+    socklen_t addressLength = sizeof(socketAddress);
     
     int result = recvfrom(socketDescriptor, output, length, 0, (struct sockaddr *)&socketAddress, &addressLength);
     if (result < 0)
-        throw std::runtime_error("Error during reading from socket");
+        throw std::runtime_error("Error during reading from socket. Errno: " + std::string(strerror(errno)));
+
+    char address[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &(socketAddress.sin_addr), address, INET_ADDRSTRLEN);
+    receiveAddress.setAddress(address);
+    receiveAddress.setPort(ntohs(socketAddress.sin_port));
+    return result;
+}
+
+int Socket::readFrom(unsigned char *output, int length, std::string& receiveAddress)
+{
+    struct sockaddr_in socketAddress;
+    socklen_t addressLength = sizeof(socketAddress);
+
+    int result = recvfrom(socketDescriptor, output, length, 0, (struct sockaddr *)&socketAddress, &addressLength);
+    if (result < 0)
+        throw std::runtime_error("Error during reading from socket. Errno: " + std::string(strerror(errno)));
 
     char address[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(socketAddress.sin_addr), address, INET_ADDRSTRLEN);

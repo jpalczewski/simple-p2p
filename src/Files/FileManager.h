@@ -17,6 +17,7 @@
 #include "FilePartResponse.h"
 #include "FileCreateRequest.h"
 #include "FileSavePartRequest.h"
+#include "AddFileRequest.h"
 
 class FileManager {
 
@@ -39,11 +40,12 @@ public:
     FilePartResponse    getFilePart(const FilePartRequest &request);
     bool                saveFilePart(const FileSavePartRequest &request);
     bool                createFile(const FileCreateRequest & request);
+    std::pair<bool, HashArray> addFile(const AddFileRequest &request);
 private:
     AuthorLookupMap   authorLookupMap;
     std::string         cwd;
 
-    ResourcesFindResult findInResourcesManager(const HASH_ARRAY &hash);
+    ResourcesFindResult findInResourcesManager(const HashArray &hash);
 
     boost::filesystem::path createFilePath(const FileCreateRequest & request);
 

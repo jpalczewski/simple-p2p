@@ -7,6 +7,7 @@
 
 #include <string>
 #include <sys/socket.h>
+#include "IpAddress.h"
 
 class Socket
 {
@@ -25,10 +26,11 @@ public:
     void connect(std::string host, int port, int timeout);
     void listen(int maxQueueLength);
     Socket accept();
-    int read(char* output, int length);
-    int readFrom(char* output, int length, std::string& receiveAddress);
-    int write(const char* input, int length);
-    int writeTo(const char *input, int length, std::string address, int port);
+    int read(unsigned char* output, int length);
+    int readFrom(unsigned char* output, int length, std::string& receiveAddress);
+    int readFrom(unsigned char* output, int length, IpAddress& receiveAddress);
+    int write(const unsigned char* input, int length);
+    int writeTo(const unsigned char *input, int length, std::string address, int port);
     int close();
     void enableBroadcast();
 
