@@ -4,7 +4,7 @@
 
 #include "NetworkResourceInfo.h"
 
-void NetworkResourceInfo::addSeeders(const std::set<IpAddress> &seeders)
+void NetworkResourceInfo::addSeeders(const std::vector<IpAddress> &seeders)
 {
     for (const auto& seeder : seeders)
     {
@@ -19,6 +19,10 @@ const std::set<IpAddress>& NetworkResourceInfo::getSeeders() const
     return this->seeders;
 }
 
+uint64_t NetworkResourceInfo::getLocalId() const
+{
+    return localId;
+}
 
 std::string NetworkResourceInfo::toString() const
 {

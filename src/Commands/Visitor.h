@@ -8,6 +8,7 @@
 class BroadcastCommand;
 class DisplayCommand;
 class AddCommand;
+class DownloadCommand;
 class UnknownCommand;
 
 class Visitor
@@ -16,6 +17,7 @@ public:
     virtual void handle(BroadcastCommand* command) = 0;
     virtual void handle(DisplayCommand* command) = 0;
     virtual void handle(AddCommand* command) = 0;
+    virtual void handle(DownloadCommand* command) = 0;
     virtual void handle(UnknownCommand* command) = 0;
 
     virtual ~Visitor() { }

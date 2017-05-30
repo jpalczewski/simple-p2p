@@ -7,21 +7,29 @@
 
 #include <vector>
 #include <set>
+#include <cstdint>
 #include "../Network/IpAddress.h"
 #include "Resource.h"
 
 class NetworkResourceInfo
 {
 public:
+    NetworkResourceInfo(uint64_t localId) : localId(localId), state(Resource::State::Active)
+    { }
+    NetworkResourceInfo(const NetworkResourceInfo& other) = default;
 
-    void addSeeders(const std::set<IpAddress>& seeders);
+    void addSeeders(const std::vector<IpAddress>& seeders);
+
     const std::set<IpAddress>& getSeeders() const;
+
+    uint64_t getLocalId() const;
 
     std::string toString() const;
 
 private:
     Resource::State state;
     std::set<IpAddress> seeders;
-    // TODO a list of nodes(IP addresses) with this resource? threads which send this networkResources to other nodes?
+    uint64_t localId;
 };
+
 #endif //SIMPLE_P2P_RESOURCEINFO_H

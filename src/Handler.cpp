@@ -14,11 +14,11 @@ void Handler::handle(Socket connection)
     if (buffer[0] == (char) MessageType::ResourceRequest)
     {
         std::cout << "Received resource request." << std::endl;
-        proceedResourceRequest(std::move(buffer), connection);
+        processResourceRequest(std::move(buffer), connection);
     }
 }
 
-void Handler::proceedResourceRequest(std::vector<unsigned char> buffer, Socket& connection)
+void Handler::processResourceRequest(std::vector<unsigned char> buffer, Socket &connection)
 {
     while (buffer.size() < 5) // we need first 5 bytes to read the file name length and know the message size
     {
@@ -29,7 +29,7 @@ void Handler::proceedResourceRequest(std::vector<unsigned char> buffer, Socket& 
     const int messageSize = 1 + nameLength + + 8 + 16 + 128 + 8 + 8;
     readBytes(connection, buffer, messageSize);
     ResourceRequestMessage message = ResourceRequestMessage::fromByteStream(std::move(buffer));
-    proceedResourceRequestMessage(std::move(message));
+    processResourceRequestMessage(std::move(message));
 }
 
 void Handler::readBytes(Socket& connection, std::vector<unsigned char>& buffer, const int size)
@@ -43,7 +43,7 @@ void Handler::readBytes(Socket& connection, std::vector<unsigned char>& buffer, 
     }
 }
 
-void Handler::proceedResourceRequestMessage(ResourceRequestMessage message)
+void Handler::processResourceRequestMessage(ResourceRequestMessage message)
 {
     std::cout << "File " << message.getResource().getName() << "requested. " << std::endl;
 }

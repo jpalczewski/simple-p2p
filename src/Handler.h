@@ -13,11 +13,11 @@ public:
     void handle(Socket connection);
 
 private:
-    void proceedResourceRequest(std::vector<unsigned char> vector, Socket& connection);
+    void processResourceRequest(std::vector<unsigned char> vector, Socket &connection);
 
     void readBytes(Socket &socket, std::vector<unsigned char>& buffer, const int size);
 
-    void proceedResourceRequestMessage(ResourceRequestMessage message);
+    void processResourceRequestMessage(ResourceRequestMessage message);
 };
 
 

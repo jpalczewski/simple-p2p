@@ -13,6 +13,7 @@ class LocalResourceInfo
 public:
     enum class State {Active, Blocked, Invalid};
     std::string toString() const;
+    uint64_t getLocalId() const;
 
 private:
     Resource::State state;

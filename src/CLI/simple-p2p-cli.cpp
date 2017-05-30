@@ -15,7 +15,9 @@ int main(int argc, char** argv)
             ("help", "produce this help message")
             ("broadcast", "broadcast local resources to other nodes")
             ("add", po::value<std::string>(), "add the file to local resources")
-            ("display", "display local and network resources");
+            ("download", po::value<uint64_t>(), "download a file with a given local id")
+            ("display", "display local and network resources")
+            ("port", po::value<int>(), "specify daemon port");
 
     po::variables_map vm;
 
@@ -39,7 +41,8 @@ int main(int argc, char** argv)
 
     try
     {
-        DaemonClient client("127.0.0.1", 6000);
+        int daemonPort = vm.count("port") ? vm["port"].as<int>() : 6000;
+        DaemonClient client("127.0.0.1", daemonPort);
 
         if (vm.count("display"))
             std::cout << client.sendDisplay().getContent() << std::endl;
@@ -52,6 +55,11 @@ int main(int argc, char** argv)
         if (vm.count("broadcast"))
         {
             std::cout << client.sendBroadcast().getContent() << std::endl;
+        }
+
+        if (vm.count("download"))
+        {
+            std::cout << client.sendDownload(vm["download"].as<uint64_t>()).getContent() << std::endl;
         }
     }
     catch (const std::exception exception)

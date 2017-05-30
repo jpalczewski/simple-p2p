@@ -18,7 +18,7 @@
 class UserCommandsHandler : public Visitor
 {
 public:
-    UserCommandsHandler(int port);
+    UserCommandsHandler(int broadCastPort, int clientPort);
     virtual ~UserCommandsHandler();
 
     void handleUserInput();
@@ -27,9 +27,10 @@ public:
     void handle(DisplayCommand* command);
     void handle(AddCommand* command);
     void handle(UnknownCommand* command);
+    void handle(DownloadCommand* command);
 
 private:
-    int port;
+    int broadcastPort;
     Socket socket;
     std::unique_ptr<CommandInterface> commandInterface;
     std::ostream& log = std::cout;

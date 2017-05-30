@@ -17,7 +17,6 @@
 class ResourceManager
 {
 public:
-    void addNetworkResource(const std::string &publicKey, const Resource &resource, const NetworkResourceInfo& info = NetworkResourceInfo());
     NetworkResourceInfo getNetworkResourceInfo(const std::string &publicKey, const Resource &resource);
 
     void addLocalResource(const std::string &publicKey, const Resource &resource);
@@ -25,6 +24,9 @@ public:
 
     void addOwnedResource(const std::string &publicKey, const Resource &resource);
     LocalResourceInfo getOwnedResourceInfo(const std::string &publicKey, const Resource &resource);
+
+    std::pair<std::string, Resource> getResourceById(uint64_t id);
+    void addNetworkResource(const std::string &publicKey, const Resource &resource, const std::vector<IpAddress> &seeders);
 
     template <typename Type>
     using ResourceMap = std::unordered_map<std::string, std::unordered_map<Resource, Type, ResourceHash>>;
@@ -40,6 +42,12 @@ private:
 
     // owned resources - can be shared and blocked/invalidated/deleted
     ResourceMap<LocalResourceInfo> ownedResources;
+
+    // we need a convenient way for user to identify resources - full identifier with
+    // key, hash, name and so on is too long so we create a local id which is valid only in this node
+    std::unordered_map<uint64_t, std::pair<const std::string*, const Resource*>> localIdsMap;
+
+    static uint64_t lastLocalId;
 
     std::shared_timed_mutex localMutex;
     std::shared_timed_mutex ownedMutex;

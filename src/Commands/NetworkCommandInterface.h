@@ -12,14 +12,14 @@
 class NetworkCommandInterface : public CommandInterface
 {
 public:
-    NetworkCommandInterface();
+    NetworkCommandInterface(int listenPort);
 
     std::unique_ptr<Command> getNextCommand();
     void sendResponse(std::string response);
 
 private:
     Socket socket;
-    const int listenPort = 6000;
+    const int listenPort;
     IpAddress lastSender;
 };
 

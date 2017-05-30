@@ -5,6 +5,8 @@
 #include <algorithm>
 #include "ResourceManager.h"
 
+uint64_t ResourceManager::lastLocalId = 0;
+
 namespace
 {
      //TODO check whether resource exists in this map or not
@@ -22,25 +24,22 @@ namespace
         const auto& publicKeyMap = map.find(publicKey)->second;
         return publicKeyMap.find(resource)->second;
     }
-
-    void addNetworkResource(const std::string &publicKey, const Resource &resource,
-                     ResourceManager::ResourceMap<NetworkResourceInfo>& map,
-                     const NetworkResourceInfo& info)
-    {
-        auto &keyMap = map[publicKey];
-        const auto res = keyMap.find(resource);
-        if (res == keyMap.end())
-            keyMap[resource] = info;
-        else
-            res->second.addSeeders(info.getSeeders());
-    }
 }
 
 void ResourceManager::addNetworkResource(const std::string &publicKey, const Resource &resource,
-                                         const NetworkResourceInfo& info)
+                                         const std::vector<IpAddress>& seeders)
 {
     std::lock_guard<std::shared_timed_mutex> lock(networkMutex);
-    ::addNetworkResource(publicKey, resource, networkResources, info);
+    auto &keyMap = networkResources[publicKey];
+    auto keyMapIterator = networkResources.find(publicKey);
+    auto localId = lastLocalId++;
+    NetworkResourceInfo info{localId};
+    auto inserted = keyMap.insert(std::make_pair(resource, info));
+    if (inserted.second)
+        localIdsMap[localId] = std::make_pair(&keyMapIterator->first, &inserted.first->first);
+    else
+        --lastLocalId; // no new resource, and we incremented last id earlier so now need to decrement it
+    inserted.first->second.addSeeders(seeders);
 }
 
 NetworkResourceInfo ResourceManager::getNetworkResourceInfo(const std::string &publicKey, const Resource &resource)
@@ -83,6 +82,16 @@ ResourceManager::ResourceMap<LocalResourceInfo> ResourceManager::getOwnedResourc
 {
     std::shared_lock<std::shared_timed_mutex> lock(ownedMutex);
     return ownedResources;
+}
+
+std::pair<std::string, Resource> ResourceManager::getResourceById(uint64_t id)
+{
+    std::shared_lock<std::shared_timed_mutex> lock(networkMutex);
+    const auto& found = localIdsMap.find(id);
+    if (found == localIdsMap.end())
+        throw std::runtime_error("Requested resource not found");
+    const auto& entry = found->second;
+    return std::make_pair(*entry.first, *entry.second);
 }
 
 

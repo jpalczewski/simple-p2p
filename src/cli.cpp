@@ -22,7 +22,7 @@ int main(int argc, char** argv)
     initOpenSsl();
     if (argc < 3)
     {
-        std::cout << "Usage: " << argv[0] << " SERVER_PORT CLIENT_PORT" << std::endl;
+        std::cout << "Usage: " << argv[0] << " SERVER_PORT CLIENT_PORT [opt CLIENT_HANDLER_PORT - default 6000]" << std::endl;
         return 0;
     }
     int serverPort = atoi(argv[1]);
@@ -30,7 +30,8 @@ int main(int argc, char** argv)
     std::thread serverThread(serverFunc, serverPort);
     std::cout << "Server started. Press any key to start receiving commands." << std::endl;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
-    UserCommandsHandler commandsHandler(targetPort);
+    int userHandlerPort = argc > 3 ? atoi(argv[3]) : 6000;
+    UserCommandsHandler commandsHandler(targetPort, userHandlerPort);
     std::cout << "User commands handler started." << std::endl;
     commandsHandler.handleUserInput();
     serverThread.join();

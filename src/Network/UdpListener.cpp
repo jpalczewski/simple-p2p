@@ -36,9 +36,8 @@ void UdpListener::start()
             {
                 for (const auto &resource : keyResource.second)
                 {
-                    NetworkResourceInfo info{};
-                    info.addSeeders(std::set<IpAddress>{sender});
-                    resourceManager.addNetworkResource(keyResource.first, resource, info);
+                    const std::vector<IpAddress> seeders = {sender};
+                    resourceManager.addNetworkResource(keyResource.first, resource, seeders);
                 }
             }
         }

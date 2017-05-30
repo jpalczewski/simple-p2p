@@ -10,3 +10,11 @@ std::string LocalResourceInfo::toString() const
     return string;
 }
 
+uint64_t LocalResourceInfo::getLocalId() const
+{
+    // TODO implement when needed. It would be used to identify resources to delete/block
+    return 0;
+}
+
+
+

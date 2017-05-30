@@ -3,10 +3,9 @@
 //
 
 #include "UserCommandsHandler.h"
-#include <iostream>
 #include "../Messages/BroadcastMessage.h"
 #include "AddCommand.h"
-#include "SimpleCommandInterface.h"
+#include "DownloadCommand.h"
 #include "NetworkCommandInterface.h"
 
 namespace
@@ -20,6 +19,7 @@ namespace
             stream << keyRes.first << std::endl;
             for (const auto &res : keyRes.second)
             {
+                stream << "Id: " << res.second.getLocalId() << std::endl;
                 stream << res.first.toString() << std::endl;
                 stream << res.second.toString() << std::endl;
             }
@@ -27,8 +27,8 @@ namespace
     }
 }
 
-UserCommandsHandler::UserCommandsHandler(int port) : port(port), socket(Socket::Domain::Ip4, Socket::Type::Udp),
-                                                     commandInterface(std::make_unique<NetworkCommandInterface>())
+UserCommandsHandler::UserCommandsHandler(int port, int clientPort) : broadcastPort(port), socket(Socket::Domain::Ip4, Socket::Type::Udp),
+                                                     commandInterface(std::make_unique<NetworkCommandInterface>(clientPort))
 {
     socket.enableBroadcast();
 }
@@ -88,7 +88,7 @@ void UserCommandsHandler::handle(BroadcastCommand *command)
     auto map = convertInfoMapToResourceMap(ownedResources);
     BroadcastMessage message(std::move(map));
     const auto bytes = message.toByteStream();
-    socket.writeTo(&bytes[0], bytes.size(), "127.255.255.255", port);
+    socket.writeTo(&bytes[0], bytes.size(), "127.255.255.255", broadcastPort);
     std::stringstream stream;
     log << "--- Sending broadcast." << std::endl;
     stream << "--- Sending broadcast." << std::endl;
@@ -125,6 +125,23 @@ void UserCommandsHandler::handle(UnknownCommand *command)
     log << "Unknown command." << std::endl;
     commandInterface->sendResponse("Daemon unable to recognize the command");
 }
+
+void UserCommandsHandler::handle(DownloadCommand *command)
+{
+    try
+    {
+        const auto resource = resourceManager.getResourceById(command->getLocalId());
+        log << "Downloading file: " << resource.second.getName() << std::endl;
+        commandInterface->sendResponse("Not yet implemented. Stay tuned.");
+    }
+    catch (const std::runtime_error& e)
+    {
+        log << e.what() << std::endl;
+        commandInterface->sendResponse(e.what());
+    }
+}
+
+
 
 
 

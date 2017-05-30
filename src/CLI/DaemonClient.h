@@ -17,6 +17,7 @@ public:
     DaemonClientResponse sendAdd(std::string filePath);
     DaemonClientResponse sendBroadcast();
     DaemonClientResponse sendDisplay();
+    DaemonClientResponse sendDownload(uint64_t localId);
 
 private:
     Socket socket;

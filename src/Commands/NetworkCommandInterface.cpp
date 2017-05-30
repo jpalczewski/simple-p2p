@@ -9,10 +9,12 @@
 #include "AddCommand.h"
 #include "DisplayCommand.h"
 #include "BroadcastCommand.h"
+#include "DownloadCommand.h"
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 
-NetworkCommandInterface::NetworkCommandInterface() : socket(Socket::Domain::Ip4, Socket::Type::Udp)
+NetworkCommandInterface::NetworkCommandInterface(int listenPort)
+        : socket(Socket::Domain::Ip4, Socket::Type::Udp), listenPort(listenPort)
 {
     socket.bind(listenPort);
 }
@@ -36,6 +38,15 @@ std::unique_ptr<Command> NetworkCommandInterface::getNextCommand()
         archive >> command;
         return std::make_unique<AddCommand>(command);
     }
+
+    if (buffer[0] == static_cast<unsigned char>(Command::Type::Download))
+    {
+        boost::archive::binary_iarchive archive(stream);
+        DownloadCommand command;
+        archive >> command;
+        return std::make_unique<DownloadCommand>(command);
+    }
+
     throw std::runtime_error("Received unknown command");
 }
 

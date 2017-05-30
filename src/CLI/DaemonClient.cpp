@@ -5,6 +5,7 @@
 #include <sstream>
 #include "DaemonClient.h"
 #include "../Commands/AddCommand.h"
+#include "../Commands/DownloadCommand.h"
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 
@@ -46,6 +47,19 @@ DaemonClientResponse DaemonClient::sendMessage(std::string message)
         throw std::runtime_error("Couldn't get any response from daemon");
     return DaemonClientResponse(std::string(reinterpret_cast<char*>(response.data())));
 }
+
+DaemonClientResponse DaemonClient::sendDownload(uint64_t localId)
+{
+    DownloadCommand command(localId);
+    std::stringstream stream;
+    boost::archive::binary_oarchive archive(stream);
+    archive << command;
+    std::string message(1, static_cast<char>(Command::Type::Download));
+    message += stream.str();
+    return sendMessage(std::move(message));
+}
+
+
 
 
 
