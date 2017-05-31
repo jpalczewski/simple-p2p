@@ -5,6 +5,7 @@ include(Commands/Commands.cmake)
 include(common.cmake)
 add_subdirectory(Files)
 add_subdirectory(CLI)
+add_subdirectory(Crypto)
 
 add_executable(cli cli.cpp ${COMMON} ${RESOURCES} ${NETWORK} ${MESSAGES} ${COMMANDS})
 target_link_libraries(cli Threads::Threads)

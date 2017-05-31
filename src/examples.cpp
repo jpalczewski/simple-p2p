@@ -69,7 +69,7 @@ void testMessageConversion()
     Resource res = fromBytes.getResources().find(publicKey2)->second[1];
     assert(res.getName() == "name4");
     assert(res.getSize() == size);
-    assert(res.getHash() == hash);
+    assert(res.getHashFromInputStream() == hash);
     assert(res.getSign() == sign);
     std::cout << "asserts passed" << std::endl;
 }

@@ -5,7 +5,7 @@
 #ifndef SIMPLE_P2P_FILEPARTREQUEST_H
 #define SIMPLE_P2P_FILEPARTREQUEST_H
 
-#include "FileManagerTypes.h"
+#include "Files/FileManagerTypes.h"
 #include "GenericFileRequest.h"
 
 struct FilePartRequest : public GenericFileRequest {

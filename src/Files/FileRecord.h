@@ -5,10 +5,10 @@
 #ifndef SIMPLE_P2P_FILERECORD_H
 #define SIMPLE_P2P_FILERECORD_H
 
-#include "FilePartResponse.h"
-#include "FilePartRequest.h"
+#include "Files/Requests/FilePartResponse.h"
+#include "Files/Requests/FilePartRequest.h"
 #include "MD5Utils.h"
-#include "FileSavePartRequest.h"
+#include "Files/Requests/FileSavePartRequest.h"
 #include <boost/filesystem.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/archive/xml_iarchive.hpp>

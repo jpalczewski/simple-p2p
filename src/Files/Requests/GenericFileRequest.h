@@ -6,8 +6,8 @@
 #define SIMPLE_P2P_GENERICFILEREQUEST_HPP
 
 
-#include "FileManagerTypes.h"
-#include "MD5Utils.h"
+#include "Files/FileManagerTypes.h"
+#include "Files/MD5Utils.h"
 
 struct GenericFileRequest
 {

@@ -13,11 +13,11 @@
 #include "FileRecord.h"
 #include "AuthorKeyHasher.h"
 #include "FileManagerTypes.h"
-#include "FilePartRequest.h"
-#include "FilePartResponse.h"
-#include "FileCreateRequest.h"
-#include "FileSavePartRequest.h"
-#include "AddFileRequest.h"
+#include "Files/Requests/FilePartRequest.h"
+#include "Files/Requests/FilePartResponse.h"
+#include "Files/Requests/FileCreateRequest.h"
+#include "Files/Requests/FileSavePartRequest.h"
+#include "Requests/AddFileRequest.h"
 
 class FileManager {
 
