@@ -5,7 +5,7 @@
 #ifndef SIMPLE_P2P_FILEPARTRESPONSE_H
 #define SIMPLE_P2P_FILEPARTRESPONSE_H
 
-#include "Files/FileManagerTypes.h"
+#include "../FileManagerTypes.h"
 
 struct FilePartResponse {
     std::vector<char> received;

@@ -21,8 +21,9 @@ void FileManager::setWorkingDirectory(const std::string &cwdPath) {
 
     for(auto & file : boost::make_iterator_range(directory_iterator(cwdPath), {}))
     {
-        const HashArray &ha = MD5Utils::boostPathToHashArray(file.path());
-        std::cout << file << " " << MD5Utils::hashArrayToHashASCII(ha) << std::endl;
+        //const HashArray &ha = MD5Utils::boostPathToHashArray(file.path());
+        const Hash ha(file.path());
+        std::cout << file << " " << ha << std::endl;
         auto result = findInResourcesManager(ha);
         if(result.first)
         {
@@ -35,7 +36,7 @@ void FileManager::setWorkingDirectory(const std::string &cwdPath) {
     this->cwd = cwdPath;
 }
 
-ResourcesFindResult FileManager::findInResourcesManager(const HashArray &hash) {
+ResourcesFindResult FileManager::findInResourcesManager(const Hash &hash) {
     return std::make_pair(true, std::vector<unsigned char>(1)); //TODO: to be implemented
 }
 

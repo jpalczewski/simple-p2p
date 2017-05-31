@@ -6,16 +6,17 @@
 #define SIMPLE_P2P_GENERICFILEREQUEST_HPP
 
 
-#include "Files/FileManagerTypes.h"
-#include "Files/MD5Utils.h"
+#include "../FileManagerTypes.h"
+#include "../MD5Utils.h"
+#include "../../Crypto/Hash.h"
 
 struct GenericFileRequest
 {
-    GenericFileRequest(const AuthorKey &authorKey, const HashArray &fileHash) : authorKey(authorKey),
-                                                                                  fileHash(fileHash) {}
+    GenericFileRequest(const AuthorKey &authorKey, const Hash &fileHash) : authorKey(authorKey),
+                                                                           fileHash(fileHash) {}
 
     AuthorKey authorKey;
-    HashArray fileHash;
+    Hash fileHash;
 };
 
 

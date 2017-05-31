@@ -24,6 +24,12 @@ Hash::Hash(const std::string &inputText, InputTextType inputType) {
         MD5((unsigned char*)inputText.c_str(), inputText.length(), hash.data());
     else if(inputType == InputTextType::Hash)
         throw std::logic_error("Not implemented yet"); //TODO: https://stackoverflow.com/questions/17261798/converting-a-hex-string-to-a-byte-array
+    else if(inputType == InputTextType::File)
+    {
+        std::ifstream ifstream(inputText, std::ios::binary);
+        getHashFromInputStream(ifstream);
+        ifstream.close();
+    }
 }
 
 Hash::Hash(std::istream &inputStream) {
@@ -51,7 +57,7 @@ void Hash::getHashFromInputStream(std::istream &inputStream)  {
     MD5_Final(hash.data(), &CTX);
 }
 
-Hash::Hash(boost::filesystem::path &p) {
+Hash::Hash(const boost::filesystem::path &p) {
     using namespace boost::filesystem;
     ifstream ifs{p, std::ios::binary};
     getHashFromInputStream(ifs);
@@ -60,4 +66,24 @@ Hash::Hash(boost::filesystem::path &p) {
 
 std::array<unsigned char, 16> Hash::getArray() const {
     return hash;
+}
+
+bool Hash::operator==(const Hash &rhs) const {
+    return hash == rhs.hash;
+}
+
+bool Hash::operator!=(const Hash &rhs) const {
+    return !(rhs == *this);
+}
+
+std::ostream &operator<<(std::ostream &os, const Hash &hash) {
+    os << hash.getString();
+    return os;
+}
+
+Hash::Hash(std::initializer_list<unsigned char> list) {
+    if(list.size() <= hash.size())
+        std::copy(list.begin(), list.end(), hash.begin());
+    else
+        throw std::runtime_error("Initializer list input too big!");
 }

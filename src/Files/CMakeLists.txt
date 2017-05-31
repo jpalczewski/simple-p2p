@@ -15,4 +15,5 @@ target_link_libraries(FileManager
         ${Boost_SYSTEM_LIBRRARY}
         ${Boost_FILESYSTEM_LIBRARY}
         ${Boost_SERIALIZATION_LIBRARY}
+        Hash
         )

@@ -13,15 +13,17 @@
 #include <boost/filesystem/fstream.hpp>
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <ostream>
 
 class Hash {
 public:
-    enum class InputTextType {Text, Hash};
+    enum class InputTextType {Text, Hash, File, Invalid};
 
     Hash(const std::array<unsigned char, 16> &hash);
     Hash(const std::string &inputText, InputTextType inputType = InputTextType::Text);
     Hash(std::istream & inputStream);
-    Hash(boost::filesystem::path &p);
+    Hash(std::initializer_list<unsigned char> list);
+    Hash(const boost::filesystem::path &p);
 
     std::string getString() const;
     std::array<unsigned char, 16> getArray() const;
@@ -31,6 +33,19 @@ public:
     {
         ar & BOOST_SERIALIZATION_NVP(hash);
     }
+
+    bool operator==(const Hash &rhs) const;
+
+    bool operator!=(const Hash &rhs) const;
+
+    friend std::ostream &operator<<(std::ostream &os, const Hash &hash);
+
+     // we can make this generic for any container [1]
+    struct ContainerHasher {
+        std::size_t operator()(Hash const& c) const {
+            return boost::hash_range(c.hash.begin(), c.hash.end());
+        }
+    };
 
 private:
     friend class boost::serialization::access;

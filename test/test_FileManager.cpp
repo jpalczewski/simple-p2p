@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_SUITE(filerecord)
     BOOST_AUTO_TEST_CASE(serialization)
     {
         boost::filesystem::path path = boost::filesystem::unique_path();
-        FileRecord fr(0, boost::filesystem::unique_path().native(), {0});
+        FileRecord fr(0, boost::filesystem::unique_path().native(), Hash("", Hash::InputTextType::Invalid));
         FileRecord fri;
         std::ofstream of(path.native());
         boost::archive::xml_oarchive oa(of);
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_SUITE(filerecord)
         ofstream ofs{path};
         ofs << test_string;
         ofs.close();
-        FileRecord fileRecord(0, path, {0});
+        FileRecord fileRecord(0, path, Hash("", Hash::InputTextType::Invalid));
 
         FilePartRequest fpr({0}, {0}, 0, 1, true);
         auto response = fileRecord.getFilePart(fpr);

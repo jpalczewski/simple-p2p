@@ -13,10 +13,10 @@
 #include "FileRecord.h"
 #include "AuthorKeyHasher.h"
 #include "FileManagerTypes.h"
-#include "Files/Requests/FilePartRequest.h"
-#include "Files/Requests/FilePartResponse.h"
-#include "Files/Requests/FileCreateRequest.h"
-#include "Files/Requests/FileSavePartRequest.h"
+#include "Requests/FilePartRequest.h"
+#include "Requests/FilePartResponse.h"
+#include "Requests/FileCreateRequest.h"
+#include "Requests/FileSavePartRequest.h"
 #include "Requests/AddFileRequest.h"
 
 class FileManager {
@@ -45,7 +45,7 @@ private:
     AuthorLookupMap   authorLookupMap;
     std::string         cwd;
 
-    ResourcesFindResult findInResourcesManager(const HashArray &hash);
+    ResourcesFindResult findInResourcesManager(const Hash &hash);
 
     boost::filesystem::path createFilePath(const FileCreateRequest & request);
 
