@@ -29,11 +29,14 @@ BOOST_AUTO_TEST_SUITE(authorkey_tests)
 
         AuthorKey authorKey(publicKey.native(), privateKey.native());
         const std::string string = "tin test #6";
-
+        const std::string malformed = "tin not test really #6";
         authorKey.generateKey(4096);
         auto result = authorKey.signMessage(string);
 
         BOOST_REQUIRE_EQUAL(true, authorKey.verifySignature(string, &result[0], result.size()));
+        BOOST_REQUIRE_EQUAL(false, authorKey.verifySignature(malformed, &result[0], result.size()));
+        result[5] = ~result[5];
+        BOOST_REQUIRE_EQUAL(false, authorKey.verifySignature(string, &result[0], result.size()));
 
         remove(publicKey);
         remove(privateKey);

@@ -41,6 +41,7 @@ bool AuthorKey::RSASign(std::string privateKeyFile, const unsigned char *Msg, si
 std::vector<unsigned char> AuthorKey::signMessage(const std::string &plainText) {
     unsigned char* encMessage;
     size_t encMessageLength;
+    std::string privateKey = this->loadKey(privateKeyFilename);
     RSASign(privateKeyFilename, (unsigned char*) plainText.c_str(), plainText.length(), &encMessage, &encMessageLength);
     std::vector<unsigned char> signedMessaage(encMessage, encMessage + encMessageLength);
     free(encMessage);
@@ -98,7 +99,8 @@ bool AuthorKey::RSAVerifySignature(RSA *rsa, unsigned char *MsgHash, size_t MsgH
 
 bool AuthorKey::verifySignature(const std::string &plainText, unsigned char *encryptedMessage,
                                 size_t encryptedMessageLength) {
-    RSA* publicRSA = createPublicRSA(publicKeyFilename);
+    std::string key = this->loadKey(publicKeyFilename);
+    RSA* publicRSA = createPublicRSA(key);
     bool authentic;
     bool result = RSAVerifySignature(publicRSA, encryptedMessage, encryptedMessageLength, plainText.c_str(), plainText.length(), &authentic);
     return result && authentic;
@@ -151,4 +153,18 @@ void AuthorKey::generateKey(int bits) {
     rc = PEM_write_bio_RSAPrivateKey(pem4.get(), rsa.get(), NULL, NULL, 0, NULL, NULL);
     if (rc != 1)
         throw std::runtime_error("Public key generation failed on PEM_write_bio");
+}
+
+std::string AuthorKey::loadKey(const std::string &filename) {
+    std::ifstream file(filename);
+    if (!file)
+        throw std::runtime_error("Cannot open file " + filename + " to read a key.");
+    std::string str;
+    std::string fileContents;
+    while (std::getline(file, str))
+    {
+        fileContents += str;
+        fileContents.push_back('\n');
+    }
+    return fileContents;
 }

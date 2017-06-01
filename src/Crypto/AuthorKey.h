@@ -13,6 +13,7 @@
 #include <memory>
 #include <vector>
 #include <openssl/err.h>
+#include <fstream>
 
 using BN_ptr = std::unique_ptr<BIGNUM, decltype(&::BN_free)>;
 using RSA_ptr = std::unique_ptr<RSA, decltype(&::RSA_free)>;
@@ -47,6 +48,8 @@ private:
     RSA* createPrivateRSA(std::string key);
     bool RSAVerifySignature( RSA* rsa, unsigned char* MsgHash, size_t MsgHashLen,
                              const char* Msg, size_t MsgLen, bool* Authentic);
+
+    std::string loadKey(const std::string &filename);
 };
 
 
