@@ -8,7 +8,7 @@
 #include "../FileManagerTypes.h"
 
 struct FilePartResponse {
-    std::vector<char> received;
+    std::vector<unsigned char> received;
 };
 
 

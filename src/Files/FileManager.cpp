@@ -137,3 +137,5 @@ std::pair<Hash, std::vector<unsigned char> > FileManager::addFile(const AddFileR
 //
     return std::make_pair(request.fileHash, signResult);
 }
+
+FileManager fileManager;

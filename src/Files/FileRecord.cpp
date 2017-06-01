@@ -44,7 +44,7 @@ FilePartResponse FileRecord::getFilePart(const FilePartRequest &request) {
     if(ifs.tellg() != request.offset)
         throw new std::runtime_error("File is too short!");
 
-    ifs.read(&(fpr.received[0]), request.size);
+    ifs.read(reinterpret_cast<char *>(&(fpr.received[0])), request.size);
     if(ifs.gcount() < request.size);
         fpr.received.resize(ifs.gcount());
     return fpr;

@@ -17,7 +17,7 @@ private:
 
     void readBytes(Socket &socket, std::vector<unsigned char>& buffer, const int size);
 
-    void processResourceRequestMessage(ResourceRequestMessage message);
+    void processResourceRequestMessage(ResourceRequestMessage message, Socket& connection);
 };
 
 

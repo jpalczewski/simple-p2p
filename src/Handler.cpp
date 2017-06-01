@@ -6,6 +6,8 @@
 #include <vector>
 #include "Handler.h"
 #include "ConversionUtils.h"
+#include "Files/FileManager.h"
+#include "Messages/SendResourceMessage.h"
 
 void Handler::handle(Socket connection)
 {
@@ -29,7 +31,7 @@ void Handler::processResourceRequest(std::vector<unsigned char> buffer, Socket &
     const int messageSize = 1 + nameLength + + 8 + 16 + 128 + 8 + 8;
     readBytes(connection, buffer, messageSize);
     ResourceRequestMessage message = ResourceRequestMessage::fromByteStream(std::move(buffer));
-    processResourceRequestMessage(std::move(message));
+    processResourceRequestMessage(std::move(message), connection);
 }
 
 void Handler::readBytes(Socket& connection, std::vector<unsigned char>& buffer, const int size)
@@ -38,14 +40,19 @@ void Handler::readBytes(Socket& connection, std::vector<unsigned char>& buffer, 
         buffer.reserve(size);
     while (buffer.size() < size)
     {
-        if (connection.read(&buffer[buffer.size()], buffer.capacity() < 0))
+        if (connection.read(&buffer[buffer.size()], buffer.capacity()) < 0)
             throw std::runtime_error("Error during reading message from tcp socket.");
     }
 }
 
-void Handler::processResourceRequestMessage(ResourceRequestMessage message)
+void Handler::processResourceRequestMessage(ResourceRequestMessage message, Socket& connection)
 {
     std::cout << "File " << message.getResource().getName() << "requested. " << std::endl;
+    FilePartRequest request(message.getPublicKey(), message.getResource().getHash(), message.getOffset(), message.getOffset());
+    FilePartResponse part = fileManager.getFilePart(request);
+    SendResourceMessage response(message.getResource(), message.getOffset(), message.getSize(), part.received);
+    const std::vector<unsigned char>& responseStream = response.toByteStream();
+    connection.write(&responseStream[0], responseStream.size());
 }
 
 

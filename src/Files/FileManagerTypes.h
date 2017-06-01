@@ -11,6 +11,7 @@
 #include <boost/serialization/list.hpp>
 #include "AuthorKeyHasher.h"
 #include "MD5Utils.h"
+#include "../Crypto/Hash.h"
 
 class FileRecord;
 
