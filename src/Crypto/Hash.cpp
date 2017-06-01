@@ -26,6 +26,9 @@ Hash::Hash(const std::string &inputText, InputTextType inputType) {
         throw std::logic_error("Not implemented yet"); //TODO: https://stackoverflow.com/questions/17261798/converting-a-hex-string-to-a-byte-array
     else if(inputType == InputTextType::File)
     {
+        if(!boost::filesystem::exists(boost::filesystem::path(inputText)))
+            throw std::runtime_error("Can't hash non-existent file!");
+
         std::ifstream ifstream(inputText, std::ios::binary);
         getHashFromInputStream(ifstream);
         ifstream.close();

@@ -38,6 +38,27 @@ BOOST_AUTO_TEST_SUITE(authorkey_tests)
         result[5] = ~result[5];
         BOOST_REQUIRE_EQUAL(false, authorKey.verifySignature(string, &result[0], result.size()));
 
+
+        remove(publicKey);
+        remove(privateKey);
+    }
+    BOOST_AUTO_TEST_CASE(does_hash_works)
+    {
+        using namespace boost::filesystem;
+
+        path publicKey = boost::filesystem::unique_path(),
+                privateKey = boost::filesystem::unique_path();
+
+        AuthorKey authorKey(publicKey.native(), privateKey.native());
+
+        authorKey.generateKey(4096);
+        auto result = authorKey.getPublicPEMHash();
+        auto final_result = result.getString();
+
+        std::cout << "A crypto ma: " << sizeof(RSA) << std::endl;
+
+        BOOST_REQUIRE_EQUAL(final_result.size(), 32); //TODO: it can be tested in better way
+
         remove(publicKey);
         remove(privateKey);
 

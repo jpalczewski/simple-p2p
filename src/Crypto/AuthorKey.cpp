@@ -168,3 +168,8 @@ std::string AuthorKey::loadKey(const std::string &filename) {
     }
     return fileContents;
 }
+
+Hash AuthorKey::getPublicPEMHash()  {
+   // std::string key = this->loadKey(publicKeyFilename);
+    return Hash(publicKeyFilename, Hash::InputTextType::File);
+}

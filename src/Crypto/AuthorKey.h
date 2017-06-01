@@ -6,6 +6,7 @@
 #define SIMPLE_P2P_AUTHORKEY_H
 
 #include <string>
+#include "Hash.h"
 #include <openssl/bio.h>
 #include <openssl/evp.h>
 #include <openssl/rsa.h>
@@ -28,7 +29,7 @@ public:
                          size_t encryptedMessageLength);
     std::vector<unsigned char> signMessage(const std::string &plainText);
     void generateKey(int bits);
-
+    Hash getPublicPEMHash();
 private:
     std::string publicKeyFilename;
     std::string privateKeyFilename;
