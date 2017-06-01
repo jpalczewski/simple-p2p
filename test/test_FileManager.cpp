@@ -8,6 +8,7 @@
 #include <iostream>
 #include <Files/FileRecord.h>
 #include <Files/FileManager.h>
+#include <Crypto/AuthorKey.h>
 #include "Files/MD5Utils.h"
 using namespace boost::filesystem;
 
@@ -48,7 +49,7 @@ BOOST_AUTO_TEST_SUITE(filerecord)
     BOOST_AUTO_TEST_CASE(serialization)
     {
         boost::filesystem::path path = boost::filesystem::unique_path();
-        FileRecord fr(0, boost::filesystem::unique_path().native(), {0});
+        FileRecord fr(0, boost::filesystem::unique_path().native(), Hash("", Hash::InputTextType::Invalid));
         FileRecord fri;
         std::ofstream of(path.native());
         boost::archive::xml_oarchive oa(of);
@@ -72,7 +73,7 @@ BOOST_AUTO_TEST_SUITE(filerecord)
         ofstream ofs{path};
         ofs << test_string;
         ofs.close();
-        FileRecord fileRecord(0, path, {0});
+        FileRecord fileRecord(0, path, Hash("", Hash::InputTextType::Invalid));
 
         FilePartRequest fpr({0}, {0}, 0, 1, true);
         auto response = fileRecord.getFilePart(fpr);
@@ -115,6 +116,12 @@ BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE(fileManager)
     BOOST_AUTO_TEST_CASE(addFileFromDisk)
     {
+        path publicKey = boost::filesystem::unique_path(),
+                privateKey = boost::filesystem::unique_path();
+
+        AuthorKey authorKey(publicKey.native(), privateKey.native());
+
+        authorKey.generateKey(4096);
         std::string test_string = "TIN TEST #2";
         std::vector<char> test_vec(test_string.begin(), test_string.end());
         boost::filesystem::path path = boost::filesystem::unique_path();
@@ -127,10 +134,10 @@ BOOST_AUTO_TEST_SUITE(fileManager)
         ofs.close();
 
         FileManager fm;
-        AddFileRequest afr({0}, path.native());
+        AddFileRequest afr(authorKey.getPublicKey(), authorKey.getPrivateKey(), path.native());
         auto result = fm.addFile(afr);
 
-        FilePartRequest fpr({0}, result.second, 0, test_string.size());
+        FilePartRequest fpr(authorKey.getPublicKey(), afr.fileHash, 0, test_string.size());
         auto response = fm.getFilePart(fpr);
         BOOST_REQUIRE_EQUAL_COLLECTIONS(response.received.begin(), response.received.end(), test_vec.begin(), test_vec.end());
 

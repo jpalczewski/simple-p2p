@@ -5,10 +5,11 @@
 #ifndef SIMPLE_P2P_FILERECORD_H
 #define SIMPLE_P2P_FILERECORD_H
 
-#include "FilePartResponse.h"
-#include "FilePartRequest.h"
+#include "../Crypto/Hash.h"
+#include "Requests/FilePartResponse.h"
+#include "Requests/FilePartRequest.h"
 #include "MD5Utils.h"
-#include "FileSavePartRequest.h"
+#include "Requests/FileSavePartRequest.h"
 #include <boost/filesystem.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/archive/xml_iarchive.hpp>
@@ -23,16 +24,15 @@ class FileRecord {
 
     std::time_t lastKnownWriteTime;
     path        location;
-    HashArray  md5;
+    Hash        md5;
 
 public:
-    FileRecord(time_t lastKnownWriteTime, const path &location, const HashArray &md5);
-    FileRecord();
+    FileRecord(time_t lastKnownWriteTime, const path &location, const Hash &md5);
+    FileRecord() : md5("", Hash::InputTextType::Invalid) {};
     const path &getLocation() const;
     FilePartResponse    getFilePart(const FilePartRequest& request);
     bool                saveFilePart(const FileSavePartRequest& request);
     void                create();
-    void                allocate(std::size_t size);
 
 private:
     bool isValid(); // last_write_time from boost::filesystem
@@ -58,7 +58,7 @@ private:
     }
     BOOST_SERIALIZATION_SPLIT_MEMBER()
 
-    HashArray getHashFromCWD();
+    Hash getHashFromCWD();
 };
 
 

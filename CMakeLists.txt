@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.2.2)
 project(simple_p2p)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mcmodel=medium")
+set (CMAKE_CXX_FLAGS "-m64 -mcmodel=medium ${CMAKE_CXX_FLAGS}")
 
 find_package(PkgConfig REQUIRED)
 
@@ -46,7 +46,9 @@ add_subdirectory(src)
 add_subdirectory(test)
 
 enable_testing()
-add_test(NAME testCli COMMAND test_cli)
+add_test(NAME testCrypto COMMAND test_Crypto)
+add_test(NAME testFileManager COMMAND test_FileManager)
+add_test(name testResourceFile COMMAND test_ResourceFIle)
 
 #;set(SOURCE_CLI src/cli.cpp)
 #add_executable(simple_cli ${SOURCE_CLI})

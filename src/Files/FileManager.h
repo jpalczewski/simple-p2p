@@ -13,12 +13,13 @@
 #include "FileRecord.h"
 #include "AuthorKeyHasher.h"
 #include "FileManagerTypes.h"
-#include "FilePartRequest.h"
-#include "FilePartResponse.h"
-#include "FileCreateRequest.h"
-#include "FileSavePartRequest.h"
-#include "AddFileRequest.h"
-
+#include "Requests/FilePartRequest.h"
+#include "Requests/FilePartResponse.h"
+#include "Requests/FileCreateRequest.h"
+#include "Requests/FileSavePartRequest.h"
+#include "Requests/AddFileRequest.h"
+#include "../Crypto/AuthorKey.h"
+#include "../Crypto/Hash.h"
 class FileManager {
 
     friend class boost::serialization::access;
@@ -35,17 +36,17 @@ public:
     void setWorkingDirectory(const std::string & path);
 
     AuthorsList        getAllAuthors();
-    AuthorFilesHashList    getAllFilesFromAuthor(const AuthorKey & author_key);
+    AuthorFilesHashList    getAllFilesFromAuthor(const AuthorKeyType & author_key);
 
     FilePartResponse    getFilePart(const FilePartRequest &request);
     bool                saveFilePart(const FileSavePartRequest &request);
     bool                createFile(const FileCreateRequest & request);
-    std::pair<bool, HashArray> addFile(const AddFileRequest &request);
+    std::pair<Hash, std::vector<unsigned char> > addFile(const AddFileRequest &request);
 private:
     AuthorLookupMap   authorLookupMap;
     std::string         cwd;
 
-    ResourcesFindResult findInResourcesManager(const HashArray &hash);
+    ResourcesFindResult findInResourcesManager(const Hash &hash);
 
     boost::filesystem::path createFilePath(const FileCreateRequest & request);
 

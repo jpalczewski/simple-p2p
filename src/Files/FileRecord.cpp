@@ -19,17 +19,15 @@ bool FileRecord::isValid() {
             return false;
 }
 
-FileRecord::FileRecord(time_t lastKnownWriteTime, const path &location, const HashArray &md5) : lastKnownWriteTime(
+FileRecord::FileRecord(time_t lastKnownWriteTime, const path &location, const Hash &md5) : lastKnownWriteTime(
         lastKnownWriteTime), location(location), md5(md5) {}
-
-FileRecord::FileRecord() {}
 
 const path &FileRecord::getLocation() const {
     return location;
 }
 
-HashArray FileRecord::getHashFromCWD() {
-    return MD5Utils::boostPathToHashArray(location);
+Hash FileRecord::getHashFromCWD() {
+    return Hash(location);
 }
 
 FilePartResponse FileRecord::getFilePart(const FilePartRequest &request) {
@@ -76,23 +74,5 @@ void FileRecord::create() {
     ofstream ofs{location};
     ofs.close();
 
-}
-
-#ifndef _WIN32
-#define O_BINARY 0
-#endif
-
-void FileRecord::allocate(std::size_t size) {
-    if(!exists(location))
-        throw new std::runtime_error("FileRecord::allocate error - file doesn't exist!");
-    if(file_size(location)!=0)
-        throw new std::runtime_error("FileRecord::allocate error - allocating space on non-empty file!");
-
-    auto fh = open(location.native().c_str(), O_RDWR | O_BINARY);
-    if(fh == -1)
-        throw new std::runtime_error("FileRecord::allocate error - cannot open file!");
-
-    if(posix_fallocate(fh, 0, size)!=0)
-        throw new std::runtime_error("FileRecord::allocate error - fallocate failed");
 }
 

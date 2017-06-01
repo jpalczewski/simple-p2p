@@ -10,7 +10,7 @@
 
 struct FileCreateRequest : public GenericFileRequest
 {
-    FileCreateRequest(const AuthorKey &authorKey, const HashArray &fileHash, std::string & name_, std::size_t length_)
+    FileCreateRequest(const AuthorKeyType &authorKey, const HashArray &fileHash, std::string & name_, std::size_t length_)
             : GenericFileRequest(authorKey,
                                  fileHash),
             name(name_),

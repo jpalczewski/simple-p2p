@@ -14,12 +14,12 @@
 
 class FileRecord;
 
-typedef     std::vector<unsigned char>                                                  AuthorKey;
-typedef     std::unordered_map<HashArray, FileRecord, AuthorKeyHasher<HashArray> >    AuthorFiles;
-typedef     std::unordered_map<AuthorKey, AuthorFiles, AuthorKeyHasher<AuthorKey> >     AuthorLookupMap;
-typedef     std::pair<bool, AuthorKey>                                                  ResourcesFindResult;
-typedef     std::vector<AuthorKey>                                                      AuthorsList;
-typedef     std::vector<HashArray>                                                     AuthorFilesHashList;
+typedef     std::string                                                                     AuthorKeyType;
+typedef     std::unordered_map<Hash, FileRecord, Hash::ContainerHasher >                    AuthorFiles;
+typedef     std::unordered_map<AuthorKeyType, AuthorFiles>                                  AuthorLookupMap;
+typedef     std::pair<bool, AuthorKeyType>                                                  ResourcesFindResult;
+typedef     std::vector<AuthorKeyType>                                                      AuthorsList;
+typedef     std::vector<Hash>                                                               AuthorFilesHashList;
 
 
 #endif //SIMPLE_P2P_FILEMANAGERTYPES_H
