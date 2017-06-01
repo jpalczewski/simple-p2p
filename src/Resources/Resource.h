@@ -18,6 +18,7 @@ class Resource
 public:
     Resource(const std::string &name, int64_t size, const std::vector<unsigned char> &hash,
              const std::vector<unsigned char> &sign);
+
     Resource() = default;
 
     void toByteStream(std::vector<unsigned char>& byteArray) const;

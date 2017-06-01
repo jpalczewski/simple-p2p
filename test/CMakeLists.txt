@@ -1,6 +1,6 @@
 find_package (Boost COMPONENTS unit_test_framework REQUIRED)
 
-set (CMAKE_CXX_FLAGS "-mcmodel=large ${CMAKE_CXX_FLAGS}")
+#set (CMAKE_CXX_FLAGS "-mcmodel=large ${CMAKE_CXX_FLAGS}")
 
 if (Boost_UNIT_TEST_FRAMEWORK_FOUND )
     message(STATUS "Boost UTF found!")
@@ -17,13 +17,9 @@ set(BOOST_TEST
         ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
         )
 
-add_executable(test_cli test_cli.cpp)
 add_executable(test_FileManager test_FileManager.cpp)
 add_executable(test_Crypto test_Crypto.cpp)
-
-target_link_libraries(test_cli
-        ${BOOST_TEST}
-        )
+add_executable(test_ResourceFile test_ResourceFile.cpp)
 
 target_link_libraries(test_FileManager
         ${BOOST_TEST}
@@ -32,4 +28,9 @@ target_link_libraries(test_FileManager
 
 target_link_libraries(test_Crypto
         ${BOOST_TEST}
-        Hash)
+        Crypto)
+
+target_link_libraries(test_ResourceFile
+        ${BOOST_TEST}
+        Crypto
+        FileManager)

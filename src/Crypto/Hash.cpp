@@ -87,3 +87,13 @@ Hash::Hash(std::initializer_list<unsigned char> list) {
     else
         throw std::runtime_error("Initializer list input too big!");
 }
+
+Hash::Hash(const std::vector<unsigned char> &inputVector) {
+    if(inputVector.size()!=16)
+        throw std::runtime_error("Input vector has wrong size!");
+    std::copy(inputVector.begin(), inputVector.end(), hash.begin());
+}
+
+const std::vector<unsigned char> Hash::getVector() const {
+    return std::vector<unsigned char>(hash.begin(), hash.end());
+}

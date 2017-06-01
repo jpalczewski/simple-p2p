@@ -1,10 +1,6 @@
-set(HASH Hash.cpp)
-
-set (CMAKE_CXX_FLAGS "-mcmodel=large ${CMAKE_CXX_FLAGS}")
-
-add_library(Hash HASH)
-link_directories(Hash ${Boost_LIBRARY_DIRS})
-target_link_libraries(Hash
+add_library(Crypto Hash.cpp AuthorKey.cpp)
+link_directories(Crypto ${Boost_LIBRARY_DIRS})
+target_link_libraries(Crypto
         ${OPENSSL_LIBRARIES}
         ${Boost_SYSTEM_LIBRRARY}
         ${Boost_FILESYSTEM_LIBRARY}

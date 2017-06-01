@@ -24,9 +24,13 @@ public:
     Hash(std::istream & inputStream);
     Hash(std::initializer_list<unsigned char> list);
     Hash(const boost::filesystem::path &p);
+    Hash(const std::vector<unsigned char> & inputVector);
+
+
 
     std::string getString() const;
     std::array<unsigned char, 16> getArray() const;
+    const std::vector<unsigned char> getVector() const;
 
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
