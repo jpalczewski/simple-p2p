@@ -1,4 +1,4 @@
-set(RESOURCEMANAGER LocalResourceInfo.cpp NetworkResourceInfo.cpp Resource.cpp ResourceManager.cpp)
+set(RESOURCEMANAGER LocalResourceInfo.cpp NetworkResourceInfo.cpp Resource.cpp ResourceManager.cpp Resource.cpp ../ConversionUtils.cpp)
 
 
 add_library(ResourceManager ${RESOURCEMANAGER})

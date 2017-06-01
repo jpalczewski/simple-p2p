@@ -46,7 +46,9 @@ add_subdirectory(src)
 add_subdirectory(test)
 
 enable_testing()
-add_test(NAME testCli COMMAND test_cli)
+add_test(NAME testCrypto COMMAND test_Crypto)
+add_test(NAME testFileManager COMMAND test_FileManager)
+add_test(name testResourceFile COMMAND test_ResourceFIle)
 
 #;set(SOURCE_CLI src/cli.cpp)
 #add_executable(simple_cli ${SOURCE_CLI})

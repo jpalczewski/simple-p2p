@@ -10,10 +10,13 @@
 
 struct AddFileRequest : public GenericFileRequest {
     std::string path;
+    std::string privateKey;
+    AddFileRequest(const AuthorKeyType &publicKey,const AuthorKeyType &privateKey_, std::string path_)
+            : GenericFileRequest(publicKey, Hash(path_, Hash::InputTextType::File)),
+              path(path_),
+              privateKey(privateKey_) {}
 
-    AddFileRequest(const AuthorKey &authorKey, std::string path_) : GenericFileRequest(authorKey, Hash(path_, Hash::InputTextType::File)), path(path_) {
 
-    }
 
 };
 

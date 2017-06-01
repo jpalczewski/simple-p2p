@@ -23,6 +23,7 @@ using BIO_FILE_ptr = std::unique_ptr<BIO, decltype(&::BIO_free)>;
 
 class AuthorKey {
 public:
+    AuthorKey();
     AuthorKey(const std::string &publicKeyFilename, const std::string &privateKeyFilename);
 
     bool verifySignature(const std::string &plainText, unsigned char* encryptedMessage,
@@ -30,9 +31,17 @@ public:
     std::vector<unsigned char> signMessage(const std::string &plainText);
     void generateKey(int bits);
     Hash getPublicPEMHash();
+
+    void loadPublicKeyFromString(const std::string &key);
+    void loadPrivateKeyFromString(const std::string &key);
+    std::string getPrivateKey();
+    std::string getPublicKey();
 private:
     std::string publicKeyFilename;
     std::string privateKeyFilename;
+
+    std::string cachedPublicKey;
+    std::string cachedPrivateKey;
 
     static bool initialized;
 

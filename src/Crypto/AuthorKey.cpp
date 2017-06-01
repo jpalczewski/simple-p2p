@@ -17,10 +17,18 @@ AuthorKey::AuthorKey(const std::string &publicKeyFilename, const std::string &pr
 bool AuthorKey::RSASign(std::string privateKeyFile, const unsigned char *Msg, size_t MsgLen, unsigned char **EncMsg,
                         size_t *MsgLenEnc) {
     EVP_MD_CTX* m_RSASignCtx = EVP_MD_CTX_create();
-    EVP_PKEY* priKey = NULL;
-    FILE *keyFile = fopen(privateKeyFile.c_str(), "r");
+    RSA* rsa = NULL;
+    if(cachedPrivateKey.empty())
+    {
+        cachedPrivateKey = loadKey(privateKeyFilename);
+    }
+    rsa = createPrivateRSA(cachedPrivateKey);
+    //EVP_PKEY* priKey = NULL;
+    //FILE *keyFile = fopen(privateKeyFile.c_str(), "r");
+    EVP_PKEY* priKey  = EVP_PKEY_new();
+    EVP_PKEY_assign_RSA(priKey, rsa);
 
-    priKey = PEM_read_PrivateKey(keyFile,NULL,NULL,NULL);
+    //priKey = PEM_read_PrivateKey(keyFile,NULL,NULL,NULL);
     if (EVP_DigestSignInit(m_RSASignCtx,NULL, EVP_md5(), NULL,priKey)<=0) {
         return false;
     }
@@ -41,7 +49,7 @@ bool AuthorKey::RSASign(std::string privateKeyFile, const unsigned char *Msg, si
 std::vector<unsigned char> AuthorKey::signMessage(const std::string &plainText) {
     unsigned char* encMessage;
     size_t encMessageLength;
-    std::string privateKey = this->loadKey(privateKeyFilename);
+    //std::string privateKey = this->loadKey(privateKeyFilename);
     RSASign(privateKeyFilename, (unsigned char*) plainText.c_str(), plainText.length(), &encMessage, &encMessageLength);
     std::vector<unsigned char> signedMessaage(encMessage, encMessage + encMessageLength);
     free(encMessage);
@@ -99,7 +107,14 @@ bool AuthorKey::RSAVerifySignature(RSA *rsa, unsigned char *MsgHash, size_t MsgH
 
 bool AuthorKey::verifySignature(const std::string &plainText, unsigned char *encryptedMessage,
                                 size_t encryptedMessageLength) {
-    std::string key = this->loadKey(publicKeyFilename);
+    std::string key;
+    if(cachedPublicKey.empty()) {
+        key = this->loadKey(publicKeyFilename);
+        cachedPublicKey = key;
+    }
+    else
+        key = cachedPublicKey;
+
     RSA* publicRSA = createPublicRSA(key);
     bool authentic;
     bool result = RSAVerifySignature(publicRSA, encryptedMessage, encryptedMessageLength, plainText.c_str(), plainText.length(), &authentic);
@@ -172,4 +187,28 @@ std::string AuthorKey::loadKey(const std::string &filename) {
 Hash AuthorKey::getPublicPEMHash()  {
    // std::string key = this->loadKey(publicKeyFilename);
     return Hash(publicKeyFilename, Hash::InputTextType::File);
+}
+
+AuthorKey::AuthorKey() {
+
+}
+
+void AuthorKey::loadPublicKeyFromString(const std::string &key) {
+    cachedPublicKey = key;
+}
+
+void AuthorKey::loadPrivateKeyFromString(const std::string &key) {
+    cachedPrivateKey = key;
+}
+
+std::string AuthorKey::getPrivateKey() {
+    if(cachedPublicKey.empty())
+        cachedPrivateKey = loadKey(privateKeyFilename);
+    return cachedPrivateKey;
+}
+
+std::string AuthorKey::getPublicKey() {
+    if(cachedPublicKey.empty())
+        cachedPublicKey = loadKey(publicKeyFilename);
+    return cachedPublicKey;
 }

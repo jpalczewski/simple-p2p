@@ -12,10 +12,10 @@
 
 struct GenericFileRequest
 {
-    GenericFileRequest(const AuthorKey &authorKey, const Hash &fileHash) : authorKey(authorKey),
+    GenericFileRequest(const AuthorKeyType &authorKey, const Hash &fileHash) : authorKey(authorKey),
                                                                            fileHash(fileHash) {}
 
-    AuthorKey authorKey;
+    AuthorKeyType authorKey;
     Hash fileHash;
 };
 

@@ -18,7 +18,8 @@
 #include "Requests/FileCreateRequest.h"
 #include "Requests/FileSavePartRequest.h"
 #include "Requests/AddFileRequest.h"
-
+#include "../Crypto/AuthorKey.h"
+#include "../Crypto/Hash.h"
 class FileManager {
 
     friend class boost::serialization::access;
@@ -35,12 +36,12 @@ public:
     void setWorkingDirectory(const std::string & path);
 
     AuthorsList        getAllAuthors();
-    AuthorFilesHashList    getAllFilesFromAuthor(const AuthorKey & author_key);
+    AuthorFilesHashList    getAllFilesFromAuthor(const AuthorKeyType & author_key);
 
     FilePartResponse    getFilePart(const FilePartRequest &request);
     bool                saveFilePart(const FileSavePartRequest &request);
     bool                createFile(const FileCreateRequest & request);
-    std::pair<bool, HashArray> addFile(const AddFileRequest &request);
+    std::pair<Hash, std::vector<unsigned char> > addFile(const AddFileRequest &request);
 private:
     AuthorLookupMap   authorLookupMap;
     std::string         cwd;

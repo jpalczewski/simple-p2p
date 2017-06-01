@@ -37,7 +37,7 @@ void FileManager::setWorkingDirectory(const std::string &cwdPath) {
 }
 
 ResourcesFindResult FileManager::findInResourcesManager(const Hash &hash) {
-    return std::make_pair(true, std::vector<unsigned char>(1)); //TODO: to be implemented
+    return std::make_pair(true, std::string()); //TODO: to be implemented
 }
 
 AuthorsList FileManager::getAllAuthors() {
@@ -70,7 +70,7 @@ FileManager::findFileFromTable(const GenericFileRequest &request) const
     return file->second;
 }
 
-AuthorFilesHashList FileManager::getAllFilesFromAuthor(const AuthorKey &author_key) {
+AuthorFilesHashList FileManager::getAllFilesFromAuthor(const AuthorKeyType &author_key) {
     AuthorFilesHashList author_hash_list;
     auto authorFiles = authorLookupMap.find(author_key);
     if(authorFiles==authorLookupMap.end())
@@ -113,7 +113,7 @@ bool FileManager::saveFilePart(const FileSavePartRequest &request)
     file.saveFilePart(request);
 }
 
-std::pair<bool, HashArray> FileManager::addFile(const AddFileRequest &request) {
+std::pair<Hash, std::vector<unsigned char> > FileManager::addFile(const AddFileRequest &request) {
     using namespace boost::filesystem;
 
     path suggestedFile(request.path);
@@ -123,10 +123,17 @@ std::pair<bool, HashArray> FileManager::addFile(const AddFileRequest &request) {
     if(!is_regular(suggestedFile))
         throw std::runtime_error("FileManager::addFile - file isn't a regular file!");
 
-    HashArray ha = MD5Utils::boostPathToHashArray(suggestedFile);
 
-    FileRecord fr = FileRecord(0, suggestedFile, ha);
-    authorLookupMap[request.authorKey][ha] = fr;
+    AuthorKey ak;
+    ak.loadPrivateKeyFromString(request.privateKey);
+    std::vector<unsigned char> signResult = ak.signMessage(request.fileHash.getString());
 
-    return std::make_pair(true, ha);
+   // Hash fileHash = Hash(suggestedFile);
+
+//    HashArray ha = MD5Utils::boostPathToHashArray(suggestedFile);
+//
+    FileRecord fr = FileRecord(0, suggestedFile, request.fileHash);
+    authorLookupMap[request.authorKey][request.fileHash] = fr;
+//
+    return std::make_pair(request.fileHash, signResult);
 }

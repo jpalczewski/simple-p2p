@@ -9,8 +9,8 @@
 #include "GenericFileRequest.h"
 
 struct FilePartRequest : public GenericFileRequest {
-    FilePartRequest(const AuthorKey &authorKey,
-                    const HashArray &fileHash,
+    FilePartRequest(const AuthorKeyType &authorKey,
+                    const Hash &fileHash,
                     std::size_t offset_,
                     std::size_t size_,
                     bool allowInvalid_ = false) : GenericFileRequest(authorKey,

@@ -33,4 +33,5 @@ target_link_libraries(test_Crypto
 target_link_libraries(test_ResourceFile
         ${BOOST_TEST}
         Crypto
-        FileManager)
+        FileManager
+        ResourceManager)
