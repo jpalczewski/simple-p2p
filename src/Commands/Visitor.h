@@ -10,6 +10,8 @@ class DisplayCommand;
 class AddCommand;
 class DownloadCommand;
 class UnknownCommand;
+class BlockCommand;
+class OneIntegerParamCommand;
 
 class Visitor
 {
@@ -19,6 +21,7 @@ public:
     virtual void handle(AddCommand* command) = 0;
     virtual void handle(DownloadCommand* command) = 0;
     virtual void handle(UnknownCommand* command) = 0;
+    virtual void handle(OneIntegerParamCommand* command) = 0;
 
     virtual ~Visitor() { }
 };

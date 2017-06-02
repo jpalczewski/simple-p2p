@@ -16,6 +16,7 @@ int main(int argc, char** argv)
             ("broadcast", "broadcast local resources to other nodes")
             ("add", po::value<std::string>(), "add the file to local resources")
             ("download", po::value<uint64_t>(), "download a file with a given local id")
+            ("block", po::value<uint64_t>(), "block a file with a given local id")
             ("display", "display local and network resources")
             ("port", po::value<int>(), "specify daemon port");
 
@@ -60,6 +61,14 @@ int main(int argc, char** argv)
         if (vm.count("download"))
         {
             std::cout << client.sendDownload(vm["download"].as<uint64_t>()).getContent() << std::endl;
+        }
+        if (vm.count("block"))
+        {
+            std::cout << client.sendOneParam<BlockCommand>(vm["block"].as<uint64_t>()).getContent() << std::endl;
+        }
+        if (vm.count("unblock"))
+        {
+            std::cout << client.sendOneParam<UnblockCommand>(vm["block"].as<uint64_t>()).getContent() << std::endl;
         }
     }
     catch (const std::exception exception)

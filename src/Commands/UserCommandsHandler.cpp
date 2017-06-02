@@ -6,6 +6,7 @@
 #include "../Messages/BroadcastMessage.h"
 #include "AddCommand.h"
 #include "DownloadCommand.h"
+#include "BlockCommand.h"
 #include "NetworkCommandInterface.h"
 
 namespace
@@ -139,6 +140,21 @@ void UserCommandsHandler::handle(DownloadCommand *command)
         log << e.what() << std::endl;
         commandInterface->sendResponse(e.what());
     }
+}
+
+void UserCommandsHandler::handle(OneIntegerParamCommand *command) {
+    if(command->getType()==Command::Type::Block)
+        handle(static_cast<BlockCommand*>(command));
+    else
+        throw std::runtime_error("It shouldn't come here");
+}
+
+void UserCommandsHandler::handle(BlockCommand *command) {
+    //auto result = resourceManager.getResourceById(command->getLocalId());
+    std::stringstream stream;
+    stream << "File " << command->getLocalId() << " is blocked. Maybe. Not.";
+    log << stream.str() << std::endl;
+    commandInterface->sendResponse(stream.str());
 }
 
 

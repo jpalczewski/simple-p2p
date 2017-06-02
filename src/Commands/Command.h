@@ -10,7 +10,14 @@
 class Command : public Visitable
 {
 public:
-    enum class Type : unsigned char {Broadcast, Display, Add, Unknown, Download };
+    enum class Type : unsigned char {
+        Broadcast,
+        Display,
+        Add,
+        Unknown,
+        Download,
+        Block,
+        Unblock};
     virtual Type getType() = 0;
 };
 

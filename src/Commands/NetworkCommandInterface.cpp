@@ -10,6 +10,7 @@
 #include "DisplayCommand.h"
 #include "BroadcastCommand.h"
 #include "DownloadCommand.h"
+#include "BlockCommand.h"
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 
@@ -45,6 +46,13 @@ std::unique_ptr<Command> NetworkCommandInterface::getNextCommand()
         DownloadCommand command;
         archive >> command;
         return std::make_unique<DownloadCommand>(command);
+    }
+    if (buffer[0] == static_cast<unsigned char>(Command::Type::Block))
+    {
+        boost::archive::binary_iarchive archive(stream);
+        BlockCommand command;
+        archive >> command;
+        return std::make_unique<BlockCommand>(command);
     }
 
     throw std::runtime_error("Received unknown command");

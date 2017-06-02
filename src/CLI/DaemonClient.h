@@ -6,9 +6,13 @@
 #define SIMPLE_P2P_DAEMONCLIENT_H
 
 #include <string>
+#include <boost/archive/binary_oarchive.hpp>
 #include "DaemonClientResponse.h"
 #include "../Network/Socket.h"
-
+#include "../Commands/Command.h"
+#include "../Commands/OneIntegerParamCommand.h"
+#include "../Commands/BlockCommand.h"
+#include "../Commands/UnblockCommand.h"
 class DaemonClient
 {
 public:
@@ -18,6 +22,18 @@ public:
     DaemonClientResponse sendBroadcast();
     DaemonClientResponse sendDisplay();
     DaemonClientResponse sendDownload(uint64_t localId);
+
+    template <class O>
+    DaemonClientResponse sendOneParam(uint64_t localId) {
+        O command(localId);
+        std::stringstream stream;
+        boost::archive::binary_oarchive archive(stream);
+
+        archive << command;
+        std::string message(1, static_cast<char>(command.getType()));
+        message += stream.str();
+        return sendMessage(std::move(message));
+    }
 
 private:
     Socket socket;

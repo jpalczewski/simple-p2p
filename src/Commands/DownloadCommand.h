@@ -9,24 +9,16 @@
 #include <boost/serialization/access.hpp>
 #include "Visitor.h"
 #include "Command.h"
+#include "OneIntegerParamCommand.h"
 
-class DownloadCommand : public Command
+class DownloadCommand : public OneIntegerParamCommand
 {
 public:
-    DownloadCommand(uint64_t localId) : localId(localId) { }
-    DownloadCommand() = default;
-    void accept(Visitor* visitor) {visitor->handle(this);};
-    Type getType() {return Type::Download;}
-    uint64_t getLocalId() { return localId; }
+    DownloadCommand(uint64_t localId) : OneIntegerParamCommand(localId) {}
 
-    template<class Archive>
-    void serialize(Archive &ar, const unsigned int version)
-    {
-        ar & localId;
-    }
-private:
-    uint64_t localId;
-    friend class boost::serialization::access;
+    DownloadCommand() {}
+
+    Command::Type getType() {return Command::Type::Download;}
 };
 
 

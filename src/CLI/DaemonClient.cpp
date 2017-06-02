@@ -6,6 +6,7 @@
 #include "DaemonClient.h"
 #include "../Commands/AddCommand.h"
 #include "../Commands/DownloadCommand.h"
+#include "../Commands/BlockCommand.h"
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 
@@ -55,6 +56,16 @@ DaemonClientResponse DaemonClient::sendDownload(uint64_t localId)
     boost::archive::binary_oarchive archive(stream);
     archive << command;
     std::string message(1, static_cast<char>(Command::Type::Download));
+    message += stream.str();
+    return sendMessage(std::move(message));
+}
+
+DaemonClientResponse DaemonClient::sendBlock(uint64_t localId) {
+    BlockCommand command(localId);
+    std::stringstream stream;
+    boost::archive::binary_oarchive archive(stream);
+    archive << command;
+    std::string message(1, static_cast<char>(Command::Type::Block));
     message += stream.str();
     return sendMessage(std::move(message));
 }
