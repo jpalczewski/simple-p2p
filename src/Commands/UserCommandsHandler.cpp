@@ -7,6 +7,8 @@
 #include "AddCommand.h"
 #include "DownloadCommand.h"
 #include "NetworkCommandInterface.h"
+#include "ResourceDownloadHandler.h"
+#include "../Files/FileManager.h"
 
 namespace
 {
@@ -47,23 +49,15 @@ void UserCommandsHandler::handleUserInput()
     }
 }
 
-Resource UserCommandsHandler::resourceFromFile(std::string fileName)
+std::pair<AuthorKeyType, Resource> UserCommandsHandler::resourceFromFile(std::string fileName)
 {
-    int size = 1111;
-    const char *testHash = "0123456789012345";
-    unsigned char *hashBytes = (unsigned char *) testHash;
-    std::vector<unsigned char> hash(testHash, testHash + 16);
-    std::vector<unsigned char> sign(128, 0x55);
-    return Resource(fileName, size, hash, sign);
-}
-
-std::string UserCommandsHandler::readPublicKey()
-{
-    return "-----BEGIN RSA PUBLIC KEY-----\n"
-            "MIGJAoGBANLVDLEKgzjGBqiNPTqRqPQynEbbNZbY2T2K+Fn3YMX8hbZ8QLn48CZI\n"
-            "n4mKDQSVND1qxBCeRBxYeaavwyZ8LCqVYPCXZwkRH0QlyReQOCxyw7duEIl/F7tc\n"
-            "N3/34qht2DK8lOp9IQS7sY9L5Oy73JW4jQUMcPUUg52bq7pzccWFAgMBAAE=\n"
-            "-----END RSA PUBLIC KEY-----\n";
+    const std::string publicKeyFileName = "/home/kamil/Projects/simple-p2p/src/rsa_public.pem";
+    const std::string privateKeyFileName = "/home/kamil/Projects/simple-p2p/src/rsa_private.pem";
+    AuthorKey key(publicKeyFileName, privateKeyFileName);
+    AddFileRequest request(key.getPublicKey(), key.getPrivateKey(), fileName);
+    auto hashAndSign = fileManagerInstance.addFile(request);
+    size_t size = file_size(fileName);
+    return std::make_pair(key.getPublicKey(), Resource(fileName, size, hashAndSign.first.getVector(), hashAndSign.second));
 }
 
 std::unordered_map<std::string, std::vector<Resource>> UserCommandsHandler::convertInfoMapToResourceMap(ResourceManager::ResourceMap<LocalResourceInfo> map)
@@ -111,9 +105,8 @@ void UserCommandsHandler::handle(DisplayCommand *command)
 
 void UserCommandsHandler::handle(AddCommand *command)
 {
-    Resource resource = resourceFromFile(command->getFileName());
-    std::string publicKey = readPublicKey();
-    resourceManager.addOwnedResource(publicKey, resource);
+    std::pair<AuthorKeyType, Resource> resource = resourceFromFile(command->getFileName());
+    resourceManager.addOwnedResource(resource.first, resource.second);
     std::stringstream stream;
     stream << "File " << command->getFileName() << " added to local resources.";
     log << stream.str() << std::endl;
@@ -132,7 +125,9 @@ void UserCommandsHandler::handle(DownloadCommand *command)
     {
         const auto resource = resourceManager.getResourceById(command->getLocalId());
         log << "Downloading file: " << resource.second.getName() << std::endl;
-        commandInterface->sendResponse("Not yet implemented. Stay tuned.");
+        commandInterface->sendResponse("Downloading in progress.");
+        ResourceDownloadHandler handler;
+        handler.downloadResource(std::move(resource));
     }
     catch (const std::runtime_error& e)
     {

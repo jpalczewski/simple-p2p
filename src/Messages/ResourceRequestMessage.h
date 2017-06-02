@@ -26,7 +26,7 @@ public:
     const int64_t getSize() const;
 
 private:
-    const MessageType type = MessageType::BroadcastResource;
+    const MessageType type = MessageType::ResourceRequest;
 
     const AuthorKeyType publicKey;
     const Resource resource;

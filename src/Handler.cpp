@@ -11,7 +11,7 @@
 
 void Handler::handle(Socket connection)
 {
-    std::vector<unsigned char> buffer(1024);
+    std::vector<unsigned char> buffer(5);
     int received = connection.read(&buffer[0], 1);
     if (buffer[0] == (char) MessageType::ResourceRequest)
     {
@@ -22,36 +22,47 @@ void Handler::handle(Socket connection)
 
 void Handler::processResourceRequest(std::vector<unsigned char> buffer, Socket &connection)
 {
-    while (buffer.size() < 5) // we need first 5 bytes to read the file name length and know the message size
+    int readTotal = 1; // we already read message type
+    while (readTotal < 5) // we need first 5 bytes to read the file name length and know the message size
     {
-        if (connection.read(&buffer[1], buffer.capacity())< 0)
+        int read;
+        if ((read = connection.read(&buffer[readTotal], buffer.capacity())) < 0)
             throw std::runtime_error("Error during reading resource request from tcp socket.");
+        readTotal += read;
     }
     int nameLength = intFromBytes(buffer, 1);
-    const int messageSize = 1 + nameLength + + 8 + 16 + 128 + 8 + 8;
-    readBytes(connection, buffer, messageSize);
-    ResourceRequestMessage message = ResourceRequestMessage::fromByteStream(std::move(buffer));
+    const int messageSize = 1 + nameLength + 8 + 16 + 128 + 8 + 8 + 251;
+    auto allBytes = readBytes(connection, std::move(buffer), messageSize);
+    ResourceRequestMessage message = ResourceRequestMessage::fromByteStream(std::move(allBytes));
     processResourceRequestMessage(std::move(message), connection);
 }
 
-void Handler::readBytes(Socket& connection, std::vector<unsigned char>& buffer, const int size)
+std::vector<unsigned char> Handler::readBytes(Socket& connection, std::vector<unsigned char> buffer, const int size)
 {
-    if (buffer.capacity() < size)
-        buffer.reserve(size);
-    while (buffer.size() < size)
+    std::vector<unsigned char> output(size);
+    // why this fucking line doesnt work?
+//    output.insert(output.end(), buffer.begin(), buffer.end());
+    for(int i = 0; i < 5; ++i)
+        output[i] = buffer[i];
+    int readTotal = 5; // we already read message type and name length
+    while (readTotal < size)
     {
-        if (connection.read(&buffer[buffer.size()], buffer.capacity()) < 0)
-            throw std::runtime_error("Error during reading message from tcp socket.");
+        int read;
+        if ((read = connection.read(&output[readTotal], size - readTotal)) < 0)
+            throw std::runtime_error("Error during reading resource request from tcp socket.");
+        readTotal += read;
     }
+    return output;
 }
 
 void Handler::processResourceRequestMessage(ResourceRequestMessage message, Socket& connection)
 {
-    std::cout << "File " << message.getResource().getName() << "requested. " << std::endl;
+    std::cout << "File " << message.getResource().getName() << " requested. " << std::endl;
     FilePartRequest request(message.getPublicKey(), message.getResource().getHash(), message.getOffset(), message.getOffset());
     FilePartResponse part = fileManagerInstance.getFilePart(request);
     SendResourceMessage response(message.getResource(), message.getOffset(), message.getSize(), part.received);
     const std::vector<unsigned char>& responseStream = response.toByteStream();
+    std::cout << "Sending file " << message.getResource().getName() << " to other node. " << std::endl;
     connection.write(&responseStream[0], responseStream.size());
 }
 

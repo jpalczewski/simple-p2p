@@ -58,7 +58,7 @@ bool FileRecord::saveFilePart(const FileSavePartRequest &request)
     ofs.seekp(request.offset);
     if(ofs.tellp()!=request.offset)
         throw new std::runtime_error("Can't write to file!");
-    ofs.write(&request.bytes[0], request.bytes.size());
+    ofs.write(reinterpret_cast<const char*>(&request.bytes[0]), request.bytes.size());
     if(ofs.fail())
         throw new std::runtime_error("FR:saveFilePart - failbit is set!");
     if(ofs.bad())

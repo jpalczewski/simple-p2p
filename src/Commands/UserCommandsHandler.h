@@ -14,6 +14,7 @@
 #include "../Resources/ResourceManager.h"
 #include "Visitor.h"
 #include "CommandInterface.h"
+#include "../Files/FileManagerTypes.h"
 
 class UserCommandsHandler : public Visitor
 {
@@ -35,8 +36,7 @@ private:
     std::unique_ptr<CommandInterface> commandInterface;
     std::ostream& log = std::cout;
 
-    Resource resourceFromFile(std::string basic_string);
-    std::string readPublicKey();
+    std::pair<AuthorKeyType, Resource> resourceFromFile(std::string basic_string);
     std::unordered_map<std::string, std::vector<Resource>> convertInfoMapToResourceMap(ResourceManager::ResourceMap<LocalResourceInfo>);
 };
 

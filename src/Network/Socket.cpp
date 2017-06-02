@@ -94,6 +94,20 @@ void Socket::connect(std::string host, int port, int timeout)
     }
 }
 
+void Socket::connectByIp(std::string hostIp, int port)
+{
+    struct sockaddr_in serv_addr;
+    if (!inet_pton(AF_INET, hostIp.c_str(), &(serv_addr.sin_addr)))
+        throw std::runtime_error("Invalid address. Pton failed");
+    serv_addr.sin_port = htons(port);
+    serv_addr.sin_family = static_cast<sa_family_t>(domain);
+
+    if (::connect(socketDescriptor, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0)
+    {
+        throw std::runtime_error("Error: cannot connect. Errno: " + std::string(strerror(errno)));
+    }
+}
+
 void Socket::listen(int maxQueueLength)
 {
     ::listen(socketDescriptor, maxQueueLength);
