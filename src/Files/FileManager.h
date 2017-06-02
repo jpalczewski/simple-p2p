@@ -10,6 +10,8 @@
 #include <boost/serialization/unordered_map.hpp>
 #include <boost/serialization/list.hpp>
 #include <unordered_map>
+#include <mutex>
+#include <shared_mutex>
 #include "FileRecord.h"
 #include "AuthorKeyHasher.h"
 #include "FileManagerTypes.h"
@@ -38,19 +40,18 @@ public:
     AuthorsList        getAllAuthors();
     AuthorFilesHashList    getAllFilesFromAuthor(const AuthorKeyType & author_key);
 
-    FilePartResponse    getFilePart(const FilePartRequest &request);
-    bool                saveFilePart(const FileSavePartRequest &request);
-    bool                createFile(const FileCreateRequest & request);
+    FilePartResponse                             getFilePart(const FilePartRequest &request);
+    bool                                         saveFilePart(const FileSavePartRequest &request);
+    bool                                         createFile(const FileCreateRequest & request);
     std::pair<Hash, std::vector<unsigned char> > addFile(const AddFileRequest &request);
 private:
-    AuthorLookupMap   authorLookupMap;
+    AuthorLookupMap     authorLookupMap;
     std::string         cwd;
+    std::shared_timed_mutex almMutex;
 
     ResourcesFindResult findInResourcesManager(const Hash &hash);
-
-    boost::filesystem::path createFilePath(const FileCreateRequest & request);
-
-    FileRecord findFileFromTable(const GenericFileRequest &request) const;
+    boost::filesystem::path createFilePath(const FileCreateRequest &request, AuthorKey authorKey);
+    FileRecord findFileFromTable(const GenericFileRequest &request);
 };
 
 

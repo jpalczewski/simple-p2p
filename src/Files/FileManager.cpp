@@ -41,6 +41,8 @@ ResourcesFindResult FileManager::findInResourcesManager(const Hash &hash) {
 }
 
 AuthorsList FileManager::getAllAuthors() {
+    std::shared_lock<std::shared_timed_mutex> lock(almMutex);
+
     AuthorsList al;
     for(auto kv : authorLookupMap)
     {
@@ -51,14 +53,16 @@ AuthorsList FileManager::getAllAuthors() {
 }
 
 FilePartResponse FileManager::getFilePart(const FilePartRequest &request) {
+    std::shared_lock<std::shared_timed_mutex> lock(almMutex);
     auto file = findFileFromTable(request);
 
     return file.getFilePart(request);
 }
 
 FileRecord
-FileManager::findFileFromTable(const GenericFileRequest &request) const
+FileManager::findFileFromTable(const GenericFileRequest &request)
 {
+    std::shared_lock<std::shared_timed_mutex> lock(almMutex);
     auto authorFiles = authorLookupMap.find(request.authorKey);
     if(authorFiles == authorLookupMap.end())
        throw std::runtime_error("Author not found!");
@@ -71,6 +75,8 @@ FileManager::findFileFromTable(const GenericFileRequest &request) const
 }
 
 AuthorFilesHashList FileManager::getAllFilesFromAuthor(const AuthorKeyType &author_key) {
+    std::shared_lock<std::shared_timed_mutex> lock(almMutex);
+
     AuthorFilesHashList author_hash_list;
     auto authorFiles = authorLookupMap.find(author_key);
     if(authorFiles==authorLookupMap.end())
@@ -86,9 +92,12 @@ AuthorFilesHashList FileManager::getAllFilesFromAuthor(const AuthorKeyType &auth
 
 bool FileManager::createFile(const FileCreateRequest &request)
 {
+    std::lock_guard<std::shared_timed_mutex> lock(almMutex);
+
     using namespace boost::filesystem;
-    auto filepath = createFilePath(request);
-    std::cout << filepath.native() << " a cwd:" << cwd;
+    AuthorKey authorKey;
+    authorKey.loadPublicKeyFromString(request.authorKey);
+    auto filepath = createFilePath(request, authorKey);
     ofstream ofs{filepath};
     if(!ofs.good())
         throw std::runtime_error("FileManager::createFile can't create file!");
@@ -102,19 +111,27 @@ bool FileManager::createFile(const FileCreateRequest &request)
 
 }
 
-boost::filesystem::path FileManager::createFilePath(const FileCreateRequest &request)
+boost::filesystem::path FileManager::createFilePath(const FileCreateRequest &request, AuthorKey authorKey)
 {
-    return boost::filesystem::path(cwd + boost::filesystem::path::preferred_separator + request.name);
+    return boost::filesystem::path(
+            cwd +
+            boost::filesystem::path::preferred_separator +
+            authorKey.getPublicPEMHash().getString() +
+            boost::filesystem::path::preferred_separator +
+            request.name);
 }
 
 bool FileManager::saveFilePart(const FileSavePartRequest &request)
 {
+    std::lock_guard<std::shared_timed_mutex> lock(almMutex);
+
     auto file = findFileFromTable(request);
     file.saveFilePart(request);
 }
 
 std::pair<Hash, std::vector<unsigned char> > FileManager::addFile(const AddFileRequest &request) {
     using namespace boost::filesystem;
+    std::lock_guard<std::shared_timed_mutex> lock(almMutex);
 
     path suggestedFile(request.path);
     if(!exists(suggestedFile))
@@ -128,12 +145,8 @@ std::pair<Hash, std::vector<unsigned char> > FileManager::addFile(const AddFileR
     ak.loadPrivateKeyFromString(request.privateKey);
     std::vector<unsigned char> signResult = ak.signMessage(request.fileHash.getString());
 
-   // Hash fileHash = Hash(suggestedFile);
-
-//    HashArray ha = MD5Utils::boostPathToHashArray(suggestedFile);
-//
     FileRecord fr = FileRecord(0, suggestedFile, request.fileHash);
     authorLookupMap[request.authorKey][request.fileHash] = fr;
-//
+
     return std::make_pair(request.fileHash, signResult);
 }

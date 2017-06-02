@@ -16,4 +16,5 @@ target_link_libraries(FileManager
         ${Boost_FILESYSTEM_LIBRARY}
         ${Boost_SERIALIZATION_LIBRARY}
         Crypto
+        Threads::Threads
         )
