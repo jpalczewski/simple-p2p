@@ -28,6 +28,6 @@ BOOST_AUTO_TEST_SUITE(resourceFile)
 
         AddFileRequest addFileRequest(authorKey.getPublicKey(), authorKey.getPrivateKey(), publicKey.native());
         auto result = fm.addFile(addFileRequest);
-        Resource resource(publicKey.native(), publicKey.size(), result.first.getVector(), result.second);
+        Resource resource(publicKey.native(), file_size(publicKey), result.first.getVector(), result.second);
     }
 BOOST_AUTO_TEST_SUITE_END()

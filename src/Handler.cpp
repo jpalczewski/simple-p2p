@@ -49,7 +49,7 @@ void Handler::processResourceRequestMessage(ResourceRequestMessage message, Sock
 {
     std::cout << "File " << message.getResource().getName() << "requested. " << std::endl;
     FilePartRequest request(message.getPublicKey(), message.getResource().getHash(), message.getOffset(), message.getOffset());
-    FilePartResponse part = fileManager.getFilePart(request);
+    FilePartResponse part = fileManagerInstance.getFilePart(request);
     SendResourceMessage response(message.getResource(), message.getOffset(), message.getSize(), part.received);
     const std::vector<unsigned char>& responseStream = response.toByteStream();
     connection.write(&responseStream[0], responseStream.size());
