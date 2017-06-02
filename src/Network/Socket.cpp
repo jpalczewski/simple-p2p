@@ -103,8 +103,11 @@ Socket Socket::accept()
 {
     unsigned clilen;
     struct sockaddr_in cli_addr;
+#ifndef __CYGWIN__
     int newSocket = ::accept(socketDescriptor, (struct sockaddr *)&cli_addr, &clilen);
-
+#else
+    int newSocket = ::accept(socketDescriptor, (struct sockaddr *)&cli_addr, reinterpret_cast<int*>(&clilen));
+#endif
     if (newSocket < 0)
     {
         std::cout << errno << std::endl;
@@ -121,7 +124,9 @@ Socket::Type Socket::getType(int socket) const
 {
     int type;
     socklen_t length = sizeof(type);
-
+#ifdef __CYGWIN__
+#define SO_DOMAIN 0xDEAD
+#endif
     if (::getsockopt(socket, SOL_SOCKET, SO_DOMAIN, &type, &length) < 0)
         throw std::runtime_error("Cannot get socket type");
 
