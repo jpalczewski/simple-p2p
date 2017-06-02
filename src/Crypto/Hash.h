@@ -13,6 +13,7 @@
 #include <boost/filesystem/fstream.hpp>
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/array.hpp>
 #include <ostream>
 
 class Hash {
