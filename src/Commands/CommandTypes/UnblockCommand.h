@@ -12,7 +12,7 @@ class UnblockCommand : public OneIntegerParamCommand {
 public:
     UnblockCommand(uint64_t localId) : OneIntegerParamCommand(localId) {}
     UnblockCommand() {}
-
+    void accept(Visitor* visitor) {visitor->handle(this);};
     Type getType() override {
         return Command::Type::Unblock;
     }

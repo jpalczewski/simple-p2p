@@ -12,7 +12,7 @@ class CancelCommand : public OneIntegerParamCommand {
 public:
     CancelCommand(uint64_t localId) : OneIntegerParamCommand(localId) {}
     CancelCommand() {}
-
+    void accept(Visitor* visitor) {visitor->handle(this);};
     Type getType() override {
         return Command::Type::Cancel;
     }

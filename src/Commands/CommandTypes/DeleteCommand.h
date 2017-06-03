@@ -11,7 +11,7 @@
 class DeleteCommand : public OneIntegerParamCommand {
 public:
     DeleteCommand(uint64_t localId) : OneIntegerParamCommand(localId) {}
-
+    void accept(Visitor* visitor) {visitor->handle(this);};
     DeleteCommand() {}
 
     Type getType() override {

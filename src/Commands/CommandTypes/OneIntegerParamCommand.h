@@ -14,7 +14,7 @@ class OneIntegerParamCommand : public Command
 public:
     OneIntegerParamCommand(uint64_t localId) : localId(localId) { }
     OneIntegerParamCommand() = default;
-    void accept(Visitor* visitor) {visitor->handle(this);};
+    virtual void accept(Visitor* visitor) = 0;
     virtual Type getType() = 0;
     uint64_t getLocalId() {return localId; }
 

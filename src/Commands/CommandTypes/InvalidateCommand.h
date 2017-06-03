@@ -11,7 +11,7 @@
 class InvalidateCommand : public OneIntegerParamCommand {
 public:
     InvalidateCommand(uint64_t localId) : OneIntegerParamCommand(localId) {}
-
+    void accept(Visitor* visitor) {visitor->handle(this);};
     InvalidateCommand() {}
 
     Type getType() override {

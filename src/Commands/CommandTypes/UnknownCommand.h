@@ -12,6 +12,7 @@
 class UnknownCommand: public Command
 {
 public:
+    UnknownCommand() : command("lol i'm unknown") {}
     UnknownCommand(const std::string &command) : command(command) { }
     void accept(Visitor* visitor) {visitor->handle(this);};
     Type getType() {return Type::Unknown;}

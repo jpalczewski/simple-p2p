@@ -46,7 +46,7 @@ int main(int argc, char** argv)
         DaemonClient client("127.0.0.1", daemonPort);
 
         if (vm.count("display"))
-            std::cout << client.sendDisplay().getContent() << std::endl;
+            std::cout << client.sendNoParam<DisplayCommand>().getContent() << std::endl;
 
         if (vm.count("add"))
         {
@@ -60,7 +60,7 @@ int main(int argc, char** argv)
 
         if (vm.count("download"))
         {
-            std::cout << client.sendDownload(vm["download"].as<uint64_t>()).getContent() << std::endl;
+            std::cout << client.sendOneParam<DownloadCommand>(vm["download"].as<uint64_t>()).getContent() << std::endl;
         }
         if (vm.count("block"))
         {

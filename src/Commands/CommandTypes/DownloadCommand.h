@@ -15,7 +15,7 @@ class DownloadCommand : public OneIntegerParamCommand
 {
 public:
     DownloadCommand(uint64_t localId) : OneIntegerParamCommand(localId) {}
-
+    void accept(Visitor* visitor) {visitor->handle(this);};
     DownloadCommand() {}
 
     Command::Type getType() {return Command::Type::Download;}

@@ -7,8 +7,9 @@
 
 #include "Command.h"
 #include "../Visitor.h"
+#include "NoParamCommand.h"
 
-class BroadcastCommand : public Command
+class BroadcastCommand : public NoParamCommand
 {
 public:
     void accept(Visitor* visitor) {visitor->handle(this);};

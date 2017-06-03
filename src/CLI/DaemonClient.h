@@ -10,19 +10,13 @@
 #include "DaemonClientResponse.h"
 #include "../Network/Socket.h"
 #include "../Commands/CommandTypes/Command.h"
-#include "../Commands/CommandTypes/OneIntegerParamCommand.h"
-#include "../Commands/CommandTypes/BlockCommand.h"
-#include "../Commands/CommandTypes/UnblockCommand.h"
-#include "../Commands/CommandTypes/BroadcastCommand.h"
+#include "../Commands/CommandTypes/Commands.h"
 class DaemonClient
 {
 public:
     DaemonClient(std::string daemonAddress, int daemonPort);
 
     DaemonClientResponse sendAdd(std::string filePath);
-    DaemonClientResponse sendBroadcast();
-    DaemonClientResponse sendDisplay();
-    DaemonClientResponse sendDownload(uint64_t localId);
 
     template <class O>
     DaemonClientResponse sendOneParam(uint64_t localId) {
@@ -39,6 +33,7 @@ public:
 
     template <class T>
     DaemonClientResponse sendNoParam() {
+        static_assert(std::is_base_of<NoParamCommand, T>::value, "Wrong class");
         T command;
         std::string message(1, static_cast<char>(command.getType()));
         return sendMessage(std::move(message));
