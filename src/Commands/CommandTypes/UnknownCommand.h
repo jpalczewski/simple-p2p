@@ -7,7 +7,7 @@
 
 #include <string>
 #include "Command.h"
-#include "Visitor.h"
+#include "../Visitor.h"
 
 class UnknownCommand: public Command
 {

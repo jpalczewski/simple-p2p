@@ -7,7 +7,7 @@
 
 #include <cstdint>
 #include <boost/serialization/access.hpp>
-#include "Visitor.h"
+#include "../Visitor.h"
 #include "Command.h"
 #include "OneIntegerParamCommand.h"
 

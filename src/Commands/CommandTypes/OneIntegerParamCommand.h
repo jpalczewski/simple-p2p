@@ -5,7 +5,7 @@
 #ifndef SIMPLE_P2P_ONEPARAMCOMMAND_H
 #define SIMPLE_P2P_ONEPARAMCOMMAND_H
 #include <boost/serialization/access.hpp>
-#include "Visitor.h"
+#include "../Visitor.h"
 #include "Command.h"
 #include <cstdint>
 

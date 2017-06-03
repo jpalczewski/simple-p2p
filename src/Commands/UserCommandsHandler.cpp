@@ -4,9 +4,9 @@
 
 #include "UserCommandsHandler.h"
 #include "../Messages/BroadcastMessage.h"
-#include "AddCommand.h"
-#include "DownloadCommand.h"
-#include "BlockCommand.h"
+#include "CommandTypes/AddCommand.h"
+#include "CommandTypes/DownloadCommand.h"
+#include "CommandTypes/BlockCommand.h"
 #include "NetworkCommandInterface.h"
 
 namespace

@@ -5,7 +5,7 @@
 #ifndef SIMPLE_P2P_COMMAND_H
 #define SIMPLE_P2P_COMMAND_H
 
-#include "Visitable.h"
+#include "../Visitable.h"
 
 class Command : public Visitable
 {
@@ -17,7 +17,12 @@ public:
         Unknown,
         Download,
         Block,
-        Unblock};
+        Unblock,
+        Cancel,
+        Invalidate,
+        Delete,
+        Status
+    };
     virtual Type getType() = 0;
 };
 

@@ -8,7 +8,7 @@
 #include <string>
 #include <boost/serialization/access.hpp>
 #include "Command.h"
-#include "Visitor.h"
+#include "../Visitor.h"
 
 class AddCommand : public Command
 {

@@ -6,7 +6,7 @@
 #define SIMPLE_P2P_DISPLAYCOMMAND_H
 
 #include "Command.h"
-#include "Visitor.h"
+#include "../Visitor.h"
 
 class DisplayCommand : public Command
 {

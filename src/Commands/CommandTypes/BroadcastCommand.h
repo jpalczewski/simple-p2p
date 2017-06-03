@@ -6,7 +6,7 @@
 #define SIMPLE_P2P_BROADCASTCOMMAND_H
 
 #include "Command.h"
-#include "Visitor.h"
+#include "../Visitor.h"
 
 class BroadcastCommand : public Command
 {

@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 
         if (vm.count("broadcast"))
         {
-            std::cout << client.sendBroadcast().getContent() << std::endl;
+            std::cout << client.sendNoParam<BroadcastCommand>().getContent() << std::endl;
         }
 
         if (vm.count("download"))

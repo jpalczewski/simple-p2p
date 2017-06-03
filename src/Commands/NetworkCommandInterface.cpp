@@ -6,11 +6,11 @@
 #include <sstream>
 #include <iterator>
 #include "NetworkCommandInterface.h"
-#include "AddCommand.h"
-#include "DisplayCommand.h"
-#include "BroadcastCommand.h"
-#include "DownloadCommand.h"
-#include "BlockCommand.h"
+#include "CommandTypes/AddCommand.h"
+#include "CommandTypes/DisplayCommand.h"
+#include "CommandTypes/BroadcastCommand.h"
+#include "CommandTypes/DownloadCommand.h"
+#include "CommandTypes/BlockCommand.h"
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 
@@ -27,6 +27,12 @@ std::unique_ptr<Command> NetworkCommandInterface::getNextCommand()
     socket.readFrom(&buffer[0], 1024, lastSender);
     std::stringstream stream;
     std::copy(buffer.begin() + 1, buffer.end(), std::ostream_iterator<unsigned char>(stream));
+    switch(static_cast<Command::Type>(buffer[0]))
+    {
+        case Command::Type::Display:
+            return std::make_unique<DisplayCommand>();
+
+    }
     if (buffer[0] == static_cast<unsigned char>(Command::Type::Display))
         return std::make_unique<DisplayCommand>();
     if (buffer[0] == static_cast<unsigned char>(Command::Type::Broadcast))
