@@ -12,9 +12,14 @@
 class ResourceDownloadHandler
 {
 public:
-    void downloadResource(std::pair<std::string, Resource> resource);
+    ResourceDownloadHandler(int targetPort) : targetPort(targetPort) { }
+
+    void downloadResource(std::pair<std::string, Resource> keyResource);
 
     std::vector<unsigned char> getWholeMessage(Socket& socket, size_t size);
+
+private:
+    int targetPort;
 };
 
 

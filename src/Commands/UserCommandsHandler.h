@@ -15,6 +15,7 @@
 #include "Visitor.h"
 #include "CommandInterface.h"
 #include "../Files/FileManagerTypes.h"
+#include "ResourceDownloadHandler.h"
 
 class UserCommandsHandler : public Visitor
 {
@@ -34,6 +35,7 @@ private:
     int broadcastPort;
     Socket socket;
     std::unique_ptr<CommandInterface> commandInterface;
+    ResourceDownloadHandler downloader;
     std::ostream& log = std::cout;
 
     std::pair<AuthorKeyType, Resource> resourceFromFile(std::string basic_string);

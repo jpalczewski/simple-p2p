@@ -7,6 +7,7 @@
 #include <Messages/SendResourceMessage.h>
 #include <Files/FileManagerTypes.h>
 #include <Messages/ResourceRequestMessage.h>
+#include <Messages/BroadcastMessage.h>
 
 BOOST_AUTO_TEST_SUITE(messagesTests)
 
@@ -17,7 +18,7 @@ namespace
         std::vector<unsigned char> sign(128, 0x66);
         std::vector<unsigned char> hash(16, 0x55);
         std::string name = "foo";
-        size_t size = 1234;
+        int64_t size = 0x12345678;
         return Resource(name, size, hash, sign);
     }
 
@@ -47,7 +48,23 @@ BOOST_AUTO_TEST_CASE(requestResourceMessageConversion)
     ResourceRequestMessage fromBytes = ResourceRequestMessage::fromByteStream(bytes);
     BOOST_CHECK_EQUAL(message.getOffset(), fromBytes.getOffset());
     BOOST_CHECK_EQUAL(key, fromBytes.getPublicKey());
+    BOOST_CHECK_EQUAL(55, fromBytes.getSize());
+    BOOST_CHECK_EQUAL(0x12345678, fromBytes.getResource().getSize());
+    BOOST_CHECK_EQUAL("foo", fromBytes.getResource().getName());
 }
 
+BOOST_AUTO_TEST_CASE(broadcastResourceMessageConversion)
+{
+    Resource resource = getTestResource();
+    AuthorKeyType key = getTestKey();
+    std::unordered_map<std::string, std::vector<Resource>> map{{key, std::vector<Resource>{resource}}};
+    BroadcastMessage message(map);
+    auto bytes = message.toByteStream();
+    BroadcastMessage fromBytes = BroadcastMessage::fromByteStream(bytes);
+    const auto resourceMap = fromBytes.getResources();
+    Resource receivedResource = resourceMap.find(key)->second[0];
+    BOOST_CHECK_EQUAL(0x12345678, receivedResource.getSize());
+    BOOST_CHECK_EQUAL("foo", receivedResource.getName());
+}
 
 BOOST_AUTO_TEST_SUITE_END()

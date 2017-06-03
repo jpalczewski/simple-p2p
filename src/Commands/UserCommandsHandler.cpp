@@ -30,7 +30,8 @@ namespace
 }
 
 UserCommandsHandler::UserCommandsHandler(int port, int clientPort) : broadcastPort(port), socket(Socket::Domain::Ip4, Socket::Type::Udp),
-                                                     commandInterface(std::make_unique<NetworkCommandInterface>(clientPort))
+                                                     commandInterface(std::make_unique<NetworkCommandInterface>(clientPort)),
+                                                                     downloader(port)
 {
     socket.enableBroadcast();
 }
@@ -126,8 +127,7 @@ void UserCommandsHandler::handle(DownloadCommand *command)
         const auto resource = resourceManager.getResourceById(command->getLocalId());
         log << "Downloading file: " << resource.second.getName() << std::endl;
         commandInterface->sendResponse("Downloading in progress.");
-        ResourceDownloadHandler handler;
-        handler.downloadResource(std::move(resource));
+        downloader.downloadResource(std::move(resource));
     }
     catch (const std::runtime_error& e)
     {
