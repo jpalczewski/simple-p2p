@@ -10,11 +10,13 @@
 #include <cstdint>
 #include "../Network/IpAddress.h"
 #include "Resource.h"
+#include "GenericResourceInfo.h"
 
-class NetworkResourceInfo
+class NetworkResourceInfo : public GenericResourceInfo
 {
 public:
-    NetworkResourceInfo(uint64_t localId) : localId(localId), state(Resource::State::Active)
+    NetworkResourceInfo(uint64_t localId) :
+            localId(localId)
     { }
     NetworkResourceInfo(const NetworkResourceInfo& other) = default;
 
@@ -22,12 +24,12 @@ public:
 
     const std::set<IpAddress>& getSeeders() const;
 
-    uint64_t getLocalId() const;
+    //uint64_t getLocalId() const;
 
     std::string toString() const;
 
 private:
-    Resource::State state;
+    //Resource::State state;
     std::set<IpAddress> seeders;
     uint64_t localId;
 };

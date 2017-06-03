@@ -22,8 +22,11 @@ public:
     void addLocalResource(const std::string &publicKey, const Resource &resource);
     LocalResourceInfo getLocalResourceInfo(const std::string &publicKey, const Resource &resource);
 
+
     void addOwnedResource(const std::string &publicKey, const Resource &resource);
     LocalResourceInfo getOwnedResourceInfo(const std::string &publicKey, const Resource &resource);
+    void
+    setOwnedResourceInfoState(const std::string &publicKey, const Resource &resource, const Resource::State &newState);
 
     std::pair<std::string, Resource> getResourceById(uint64_t id);
     void addNetworkResource(const std::string &publicKey, const Resource &resource, const std::vector<IpAddress> &seeders);
@@ -52,6 +55,7 @@ private:
     std::shared_timed_mutex localMutex;
     std::shared_timed_mutex ownedMutex;
     std::shared_timed_mutex networkMutex;
+    std::shared_timed_mutex localIdMutex;
 };
 
 extern ResourceManager resourceManager;

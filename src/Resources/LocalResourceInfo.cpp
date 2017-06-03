@@ -6,15 +6,20 @@
 
 std::string LocalResourceInfo::toString() const
 {
-    const std::string string = "State: " + ::toString(state) + "\n";
-    return string;
+    std::string works = "It works!";
+    std::stringstream ss;
+    ss << "State:" << ::toString(getResourceState()) << std::endl;
+    //std::string string = "State: " + ::toString(getResourceState()) + "\n";
+    return ss.str();
 }
 
-uint64_t LocalResourceInfo::getLocalId() const
-{
-    // TODO implement when needed. It would be used to identify resources to delete/block
-    return 0;
-}
+LocalResourceInfo::LocalResourceInfo(uint64_t localId) : GenericResourceInfo(localId) {}
+
+//uint64_t LocalResourceInfo::getLocalId() const
+//{
+//    // TODO implement when needed. It would be used to identify resources to delete/block
+//    return 0;
+//}
 
 
 

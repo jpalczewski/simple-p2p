@@ -7,16 +7,19 @@
 
 #include <string>
 #include "Resource.h"
+#include "GenericResourceInfo.h"
 
-class LocalResourceInfo
+class LocalResourceInfo : public GenericResourceInfo
 {
 public:
     enum class State {Active, Blocked, Invalid};
+
+    LocalResourceInfo(uint64_t localId);
+    LocalResourceInfo() = default;
     std::string toString() const;
-    uint64_t getLocalId() const;
+    //uint64_t getLocalId() const;
 
 private:
-    Resource::State state;
 
     // TODO: more resource properties
 };

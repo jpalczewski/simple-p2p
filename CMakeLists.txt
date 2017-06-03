@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.2.2)
 project(simple_p2p)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
-set (CMAKE_CXX_FLAGS "-m64 -mcmodel=medium ${CMAKE_CXX_FLAGS}")
+set (CMAKE_CXX_FLAGS "-g -m64 -mcmodel=medium ${CMAKE_CXX_FLAGS}")
 
 find_package(PkgConfig REQUIRED)
 

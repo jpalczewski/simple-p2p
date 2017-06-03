@@ -49,27 +49,20 @@ int main(int argc, char** argv)
             std::cout << client.sendNoParam<DisplayCommand>().getContent() << std::endl;
 
         if (vm.count("add"))
-        {
             std::cout << client.sendAdd(vm["add"].as<std::string>()).getContent() << std::endl;
-        }
 
         if (vm.count("broadcast"))
-        {
             std::cout << client.sendNoParam<BroadcastCommand>().getContent() << std::endl;
-        }
 
         if (vm.count("download"))
-        {
             std::cout << client.sendOneParam<DownloadCommand>(vm["download"].as<uint64_t>()).getContent() << std::endl;
-        }
+
         if (vm.count("block"))
-        {
             std::cout << client.sendOneParam<BlockCommand>(vm["block"].as<uint64_t>()).getContent() << std::endl;
-        }
+
         if (vm.count("unblock"))
-        {
-            std::cout << client.sendOneParam<UnblockCommand>(vm["block"].as<uint64_t>()).getContent() << std::endl;
-        }
+            std::cout << client.sendOneParam<UnblockCommand>(vm["unblock"].as<uint64_t>()).getContent() << std::endl;
+
     }
     catch (const std::exception exception)
     {

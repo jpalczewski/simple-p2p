@@ -39,6 +39,8 @@ private:
     Resource resourceFromFile(std::string basic_string);
     std::string readPublicKey();
     std::unordered_map<std::string, std::vector<Resource>> convertInfoMapToResourceMap(ResourceManager::ResourceMap<LocalResourceInfo>);
+
+    std::stringstream broadcastOnDemand();
 };
 
 #endif //SIMPLE_P2P_USERCOMMANDSHANDLER_H
