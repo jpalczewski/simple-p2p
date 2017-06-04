@@ -14,7 +14,7 @@ UdpListener::UdpListener(int listenPort) : socket(Socket::Domain::Ip4, Socket::T
 
 void UdpListener::start()
 {
-    const int size = 1024;
+    const int size = 2048;
     unsigned char buffer[size];
     while (true)
     {

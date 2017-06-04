@@ -9,6 +9,9 @@
 #include "Commands/UserCommandsHandler.h"
 #include "Dispatcher.h"
 
+#include "Crypto/AuthorKey.h"
+
+
 void serverFunc(int port)
 {
     UdpListener listener(port);
@@ -23,7 +26,10 @@ void dispatcherFunc(int port)
 
 int main(int argc, char** argv)
 {
+
+
     initOpenSsl();
+
     if (argc < 3)
     {
         std::cout << "Usage: " << argv[0] << " SERVER_PORT CLIENT_PORT [opt CLIENT_HANDLER_PORT - default 6000]" << std::endl;
@@ -31,6 +37,13 @@ int main(int argc, char** argv)
     }
     int serverPort = atoi(argv[1]);
     int targetPort = atoi(argv[2]);
+
+
+    AuthorKey authorKey("/simple-p2p/rsa_keys/rsa_public.pem", "/simple-p2p/rsa_keys/rsa_private.pem");
+
+    authorKey.generateKey(1024);
+
+
     std::thread serverThread(serverFunc, serverPort);
     std::thread dispatcherThread(dispatcherFunc, serverPort);
     std::cout << "Server started." << std::endl;

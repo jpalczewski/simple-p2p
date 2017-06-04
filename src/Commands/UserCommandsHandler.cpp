@@ -53,8 +53,8 @@ void UserCommandsHandler::handleUserInput()
 
 std::pair<AuthorKeyType, Resource> UserCommandsHandler::resourceFromFile(std::string filePath)
 {
-    const std::string publicKeyFileName = "/home/kamil/Projects/simple-p2p/src/rsa_public.pem";
-    const std::string privateKeyFileName = "/home/kamil/Projects/simple-p2p/src/rsa_private.pem";
+    const std::string publicKeyFileName = "/simple-p2p/rsa_keys/rsa_public.pem";
+    const std::string privateKeyFileName = "/simple-p2p/rsa_keys/rsa_private.pem";
     AuthorKey key(publicKeyFileName, privateKeyFileName);
     AddFileRequest request(key.getPublicKey(), key.getPrivateKey(), filePath);
     auto hashAndSign = fileManagerInstance.addFile(request);
@@ -90,7 +90,7 @@ std::stringstream UserCommandsHandler::broadcastOnDemand() {
     auto map = convertInfoMapToResourceMap(ownedResources);
     BroadcastMessage message(move(map));
     const auto bytes = message.toByteStream();
-    socket.writeTo(&bytes[0], bytes.size(), "127.255.255.255", broadcastPort);
+    socket.writeTo(&bytes[0], bytes.size(), "172.18.255.255", broadcastPort);
     std::stringstream stream;
     log << "--- Sending broadcast." << std::endl;
     stream << "--- Sending broadcast." << std::endl;
