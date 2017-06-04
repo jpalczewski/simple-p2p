@@ -137,6 +137,13 @@ void ResourceManager::setOwnedResourceInfoState(const std::string &publicKey, co
     ::setResourceInfoState(publicKey, resource, ownedResources, newState);
 }
 
+void ResourceManager::setNetworkResourceInfoState(const std::string &publicKey, const Resource &resource,
+                                                  const Resource::State &newState)
+{
+    std::lock_guard<std::shared_timed_mutex> lock(networkMutex);
+    ::setResourceInfoState(publicKey, resource, networkResources, newState);
+}
+
 
 ResourceManager resourceManager;
 

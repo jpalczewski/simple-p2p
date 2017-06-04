@@ -34,6 +34,7 @@ void ResourceDownloadHandler::downloadResource(std::pair<AuthorKeyType, Resource
     FileSavePartRequest saveRequest(key, (const HashArray &) resource.getHash(), 0, resource.getSize());
     saveRequest.bytes = contentMessage.getData();
     fileManagerInstance.saveFilePart(std::move(saveRequest));
+    // TODO add this resource to local resource in resource manager
     std::cout << "Completed downloading resource " << contentMessage.getResource().getName() << std::endl;
 }
 

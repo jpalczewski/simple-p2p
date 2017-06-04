@@ -10,6 +10,10 @@
 #include "NetworkCommandInterface.h"
 #include "ResourceDownloadHandler.h"
 #include "../Files/FileManager.h"
+#include "../Messages/ResourceManagementMessage.h"
+#include "CommandTypes/UnblockCommand.h"
+#include "CommandTypes/InvalidateCommand.h"
+#include "CommandTypes/DeleteCommand.h"
 
 namespace
 {
@@ -146,6 +150,13 @@ void UserCommandsHandler::handle(DownloadCommand *command)
 void UserCommandsHandler::handle(OneIntegerParamCommand *command) {
     if(command->getType()==Command::Type::Block)
         handle(static_cast<BlockCommand*>(command));
+    // TODO implement other 'handle' functions:
+    if(command->getType()==Command::Type::Unblock)
+        handle(static_cast<UnblockCommand*>(command));
+    if(command->getType()==Command::Type::Delete)
+        handle(static_cast<DeleteCommand*>(command));
+    if(command->getType()==Command::Type::Invalidate)
+        handle(static_cast<InvalidateCommand*>(command));
     else
         throw std::runtime_error("It shouldn't come here");
 }
@@ -155,7 +166,13 @@ void UserCommandsHandler::handle(BlockCommand *command) {
     resourceManager.setOwnedResourceInfoState(result.first, result.second, Resource::State::Blocked);
     std::stringstream stream;
     stream << "File " << result.first << " is blocked.";
-    broadcastOnDemand();
+//    broadcastOnDemand();
+    std::vector<unsigned char> sign(128, 0x44);
+    ResourceManagementMessage message(result.first, result.second, sign);
+    std::vector<unsigned char> binaryMessage {static_cast<unsigned char>(MessageType::BlockResource)};
+    auto messageData = message.toByteStream();
+    binaryMessage.insert(binaryMessage.end(), messageData.begin(), messageData.end());
+    socket.writeTo(&binaryMessage[0], binaryMessage.size(), "127.255.255.255", broadcastPort);
     log << stream.str() << std::endl;
     commandInterface->sendResponse(stream.str());
 }

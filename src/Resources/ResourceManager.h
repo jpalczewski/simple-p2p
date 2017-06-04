@@ -30,6 +30,8 @@ public:
 
     std::pair<std::string, Resource> getResourceById(uint64_t id);
     void addNetworkResource(const std::string &publicKey, const Resource &resource, const std::vector<IpAddress> &seeders);
+    void setNetworkResourceInfoState(const std::string &publicKey, const Resource &resource,
+                                     const Resource::State &newState);
 
     template <typename Type>
     using ResourceMap = std::unordered_map<std::string, std::unordered_map<Resource, Type, ResourceHash>>;

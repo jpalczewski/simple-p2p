@@ -11,7 +11,7 @@ bool operator<(const IpAddress& left, const IpAddress& right)
 
 std::string IpAddress::toString() const
 {
-    return address + (port == 0 ? "" : ":" + port);
+    return address + (port == 0 ? "" : ":" + std::to_string(port));
 }
 
 std::string IpAddress::getAddress() const

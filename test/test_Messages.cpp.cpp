@@ -8,6 +8,7 @@
 #include <Files/FileManagerTypes.h>
 #include <Messages/ResourceRequestMessage.h>
 #include <Messages/BroadcastMessage.h>
+#include <Messages/ResourceManagementMessage.h>
 
 BOOST_AUTO_TEST_SUITE(messagesTests)
 
@@ -65,6 +66,20 @@ BOOST_AUTO_TEST_CASE(broadcastResourceMessageConversion)
     Resource receivedResource = resourceMap.find(key)->second[0];
     BOOST_CHECK_EQUAL(0x12345678, receivedResource.getSize());
     BOOST_CHECK_EQUAL("foo", receivedResource.getName());
+}
+
+BOOST_AUTO_TEST_CASE(resourceManagementMessageConversion)
+{
+    Resource resource = getTestResource();
+    AuthorKeyType key = getTestKey();
+    std::vector<unsigned char> sign(128, 0x11);
+    ResourceManagementMessage message(key, resource, sign);
+    auto bytes = message.toByteStream();
+    ResourceManagementMessage fromBytes = ResourceManagementMessage::fromByteStream(bytes, 0);
+    BOOST_CHECK_EQUAL(key, fromBytes.getPublicKey());
+    BOOST_CHECK_EQUAL("foo", fromBytes.getResource().getName());
+//    BOOST_CHECK_EQUAL(sign, fromBytes.getSign());
+    BOOST_CHECK_EQUAL(0x12345678, fromBytes.getResource().getSize());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
