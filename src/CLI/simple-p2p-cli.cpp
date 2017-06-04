@@ -17,7 +17,9 @@ int main(int argc, char** argv)
             ("add", po::value<std::string>(), "add the file to local resources")
             ("download", po::value<uint64_t>(), "download a file with a given local id")
             ("block", po::value<uint64_t>(), "block a file with a given local id")
+            ("unblock", po::value<uint64_t>(), "unblock a file with a given local id")
             ("delete", po::value<uint64_t>(), "delete a file with a given local id")
+            ("cancel", po::value<uint64_t>(), "cancel a file with a given local id")
             ("invalidate", po::value<uint64_t>(), "invalidate a file with a given local id")
             ("display", "display local and network resources")
             ("port", po::value<int>(), "specify daemon port");
@@ -70,6 +72,9 @@ int main(int argc, char** argv)
 
         if (vm.count("delete"))
             std::cout << client.sendOneParam<DeleteCommand>(vm["delete"].as<uint64_t>()).getContent() << std::endl;
+
+        if (vm.count("cancel"))
+            std::cout << client.sendOneParam<CancelCommand>(vm["cancel"].as<uint64_t>()).getContent() << std::endl;
     }
     catch (const std::exception exception)
     {

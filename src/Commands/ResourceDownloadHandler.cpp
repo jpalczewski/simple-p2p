@@ -9,6 +9,7 @@
 #include "../Messages/ResourceRequestMessage.h"
 #include "../Messages/SendResourceMessage.h"
 #include "../Files/FileManager.h"
+#include <iostream>
 
 void ResourceDownloadHandler::downloadResource(std::pair<AuthorKeyType, Resource> keyResource)
 {

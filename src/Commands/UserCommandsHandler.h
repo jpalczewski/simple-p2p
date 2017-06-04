@@ -30,8 +30,16 @@ public:
     void handle(AddCommand* command);
     void handle(UnknownCommand* command);
     void handle(DownloadCommand* command);
-    void handle(OneIntegerParamCommand* command);
     void handle(BlockCommand* command);
+
+    void handle(UnblockCommand *command) override;
+
+    void handle(DeleteCommand *command) override;
+
+    void handle(InvalidateCommand *command) override;
+
+    void handle(CancelCommand *command) override;
+
 private:
     int broadcastPort;
     Socket socket;

@@ -57,9 +57,18 @@ void UserCommandsHandler::handleUserInput()
 
 std::pair<AuthorKeyType, Resource> UserCommandsHandler::resourceFromFile(std::string filePath)
 {
+#define TINFOIL_HAT 1
+#ifndef TINFOIL_HAT
     const std::string publicKeyFileName = "/home/kamil/Projects/simple-p2p/src/rsa_public.pem";
     const std::string privateKeyFileName = "/home/kamil/Projects/simple-p2p/src/rsa_private.pem";
     AuthorKey key(publicKeyFileName, privateKeyFileName);
+
+#else
+    const std::string publicKeyFileName = "/tmp/rsa_public.pem";
+    const std::string privateKeyFileName = "/tmp/rsa_private.pem";
+    AuthorKey key(publicKeyFileName, privateKeyFileName);
+    key.generateKey(1024);
+#endif
     AddFileRequest request(key.getPublicKey(), key.getPrivateKey(), filePath);
     auto hashAndSign = fileManagerInstance.addFile(request);
     size_t size = file_size(filePath);
@@ -147,32 +156,45 @@ void UserCommandsHandler::handle(DownloadCommand *command)
     }
 }
 
-void UserCommandsHandler::handle(OneIntegerParamCommand *command) {
-    if(command->getType()==Command::Type::Block)
-        handle(static_cast<BlockCommand*>(command));
-    // TODO implement other 'handle' functions:
-    if(command->getType()==Command::Type::Unblock)
-        handle(static_cast<UnblockCommand*>(command));
-    if(command->getType()==Command::Type::Delete)
-        handle(static_cast<DeleteCommand*>(command));
-    if(command->getType()==Command::Type::Invalidate)
-        handle(static_cast<InvalidateCommand*>(command));
-    else
-        throw std::runtime_error("It shouldn't come here");
-}
-
 void UserCommandsHandler::handle(BlockCommand *command) {
     auto result = resourceManager.getResourceById(command->getLocalId());
     resourceManager.setOwnedResourceInfoState(result.first, result.second, Resource::State::Blocked);
     std::stringstream stream;
     stream << "File " << result.first << " is blocked.";
-//    broadcastOnDemand();
     std::vector<unsigned char> sign(128, 0x44);
     ResourceManagementMessage message(result.first, result.second, sign);
     std::vector<unsigned char> binaryMessage {static_cast<unsigned char>(MessageType::BlockResource)};
     auto messageData = message.toByteStream();
     binaryMessage.insert(binaryMessage.end(), messageData.begin(), messageData.end());
     socket.writeTo(&binaryMessage[0], binaryMessage.size(), "127.255.255.255", broadcastPort);
+    log << stream.str() << std::endl;
+    commandInterface->sendResponse(stream.str());
+}
+
+void UserCommandsHandler::handle(UnblockCommand *command) {
+    std::stringstream stream;
+    stream << "Unblock" << std::endl;
+    log << stream.str() << std::endl;
+    commandInterface->sendResponse(stream.str());
+}
+
+void UserCommandsHandler::handle(DeleteCommand *command) {
+    std::stringstream stream;
+    stream << "Delete" << std::endl;
+    log << stream.str() << std::endl;
+    commandInterface->sendResponse(stream.str());
+}
+
+void UserCommandsHandler::handle(InvalidateCommand *command) {
+    std::stringstream stream;
+    stream << "Invalidate" << std::endl;
+    log << stream.str() << std::endl;
+    commandInterface->sendResponse(stream.str());
+}
+
+void UserCommandsHandler::handle(CancelCommand *command) {
+    std::stringstream stream;
+    stream << "Cancel" << std::endl;
     log << stream.str() << std::endl;
     commandInterface->sendResponse(stream.str());
 }
