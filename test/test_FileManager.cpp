@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_SUITE(filerecord)
         BOOST_REQUIRE_EQUAL_COLLECTIONS(response.received.begin(), response.received.end(), test_vec.begin(), test_vec.end());
     }
 BOOST_AUTO_TEST_SUITE_END()
-BOOST_AUTO_TEST_SUITE(fileManager)
+BOOST_AUTO_TEST_SUITE(fileManagerTests)
     BOOST_AUTO_TEST_CASE(addFileFromDisk)
     {
         path publicKey = boost::filesystem::unique_path(),

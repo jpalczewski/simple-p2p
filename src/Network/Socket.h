@@ -24,6 +24,7 @@ public:
     void bind(int port);
     void connect(std::string host, int port);
     void connect(std::string host, int port, int timeout);
+    void connectByIp(std::string hostIp, int port);
     void listen(int maxQueueLength);
     Socket accept();
     int read(unsigned char* output, int length);
@@ -41,6 +42,7 @@ private:
 
     Socket(int socketDescriptor, Socket::Domain domain, Socket::Type type);
     Socket::Type getType(int socket) const;
+
 };
 
 #endif //PROJECT_SOCKET_H

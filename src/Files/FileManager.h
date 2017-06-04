@@ -54,5 +54,6 @@ private:
     FileRecord findFileFromTable(const GenericFileRequest &request);
 };
 
+extern FileManager fileManagerInstance;
 
 #endif //SIMPLE_P2P_FILEMANAGER_H

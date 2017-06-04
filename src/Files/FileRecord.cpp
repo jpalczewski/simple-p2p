@@ -44,7 +44,7 @@ FilePartResponse FileRecord::getFilePart(const FilePartRequest &request) {
     if(ifs.tellg() != request.offset)
         throw new std::runtime_error("File is too short!");
 
-    ifs.read(&(fpr.received[0]), request.size);
+    ifs.read(reinterpret_cast<char *>(&(fpr.received[0])), request.size);
     if(ifs.gcount() < request.size);
         fpr.received.resize(ifs.gcount());
     return fpr;
@@ -58,7 +58,7 @@ bool FileRecord::saveFilePart(const FileSavePartRequest &request)
     ofs.seekp(request.offset);
     if(ofs.tellp()!=request.offset)
         throw new std::runtime_error("Can't write to file!");
-    ofs.write(&request.bytes[0], request.bytes.size());
+    ofs.write(reinterpret_cast<const char*>(&request.bytes[0]), request.bytes.size());
     if(ofs.fail())
         throw new std::runtime_error("FR:saveFilePart - failbit is set!");
     if(ofs.bad())

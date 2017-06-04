@@ -21,11 +21,11 @@ void UdpListener::start()
         // TODO make it multithreaded and remember sender ip in resource info
         // and handle messages bigger than buffer
         // and refactor it, generally
-        std::string sender;
+        IpAddress sender;
         int received = socket.readFrom(buffer, size, sender);
         if (buffer[0] == (char) MessageType::BroadcastResource)
         {
-            std::cout << "Received broadcast from " + sender << std::endl;
+            std::cout << "Received broadcast from " + sender.toString() << std::endl;
 
             std::cout << std::to_string(received) << " bytes received" << std::endl;
             if (received == size)

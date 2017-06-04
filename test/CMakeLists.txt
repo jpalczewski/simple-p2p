@@ -21,6 +21,7 @@ add_executable(test_FileManager test_FileManager.cpp)
 add_executable(test_Crypto          test_Crypto.cpp)
 add_executable(test_ResourceFile    test_ResourceFile.cpp)
 add_executable(test_ResourceManager test_ResourceManager.cpp)
+add_executable(test_Messages test_Messages.cpp)
 
 target_link_libraries(test_FileManager
         ${BOOST_TEST}
@@ -36,6 +37,13 @@ target_link_libraries(test_ResourceFile
         Crypto
         FileManager
         ResourceManager)
+
+target_link_libraries(test_Messages
+        ${BOOST_TEST}
+        Crypto
+        FileManager
+        ResourceManager
+        Messages)
 
 target_link_libraries(test_ResourceManager
         ${BOOST_TEST}
