@@ -19,11 +19,6 @@ const std::set<IpAddress>& NetworkResourceInfo::getSeeders() const
     return this->seeders;
 }
 
-//uint64_t NetworkResourceInfo::getLocalId() const
-//{
-//    return localId;
-//}
-
 std::string NetworkResourceInfo::toString() const
 {
     // TODO reserve place for a string in advance

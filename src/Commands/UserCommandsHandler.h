@@ -39,7 +39,7 @@ private:
     ResourceDownloadHandler downloader;
     std::ostream& log = std::cout;
 
-    std::pair<AuthorKeyType, Resource> resourceFromFile(std::string basic_string);
+    std::pair<AuthorKeyType, Resource> resourceFromFile(std::string filePath);
     std::unordered_map<std::string, std::vector<Resource>> convertInfoMapToResourceMap(ResourceManager::ResourceMap<LocalResourceInfo>);
 
     std::stringstream broadcastOnDemand();

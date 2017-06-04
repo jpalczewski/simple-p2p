@@ -6,9 +6,15 @@
 #include <boost/range/iterator_range.hpp>
 #include <iostream>
 
-FileManager::FileManager(const AuthorLookupMap &alm) : authorLookupMap(alm) {}
+FileManager::FileManager(const AuthorLookupMap &alm) : authorLookupMap(alm)
+{
+    cwd = initial_path().string();
+}
 
-FileManager::FileManager() {}
+FileManager::FileManager()
+{
+    cwd = initial_path().string();
+}
 
 void FileManager::setWorkingDirectory(const std::string &cwdPath) {
     using namespace boost::filesystem;
@@ -62,7 +68,6 @@ FilePartResponse FileManager::getFilePart(const FilePartRequest &request) {
 FileRecord
 FileManager::findFileFromTable(const GenericFileRequest &request)
 {
-    std::shared_lock<std::shared_timed_mutex> lock(almMutex);
     auto authorFiles = authorLookupMap.find(request.authorKey);
     if(authorFiles == authorLookupMap.end())
        throw std::runtime_error("Author not found!");
@@ -113,10 +118,12 @@ bool FileManager::createFile(const FileCreateRequest &request)
 
 boost::filesystem::path FileManager::createFilePath(const FileCreateRequest &request, AuthorKey authorKey)
 {
+    std::string authorDirectory = cwd +
+                          boost::filesystem::path::preferred_separator +
+                          authorKey.getPublicPEMHash().getString();
+    create_directories(path(authorDirectory));
     return boost::filesystem::path(
-            cwd +
-            boost::filesystem::path::preferred_separator +
-            authorKey.getPublicPEMHash().getString() +
+            authorDirectory +
             boost::filesystem::path::preferred_separator +
             request.name);
 }

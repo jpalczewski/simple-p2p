@@ -12,7 +12,7 @@ public:
     GenericResourceInfo() :resourceState(Resource::State::Active) {}
     GenericResourceInfo(uint64_t localId, Resource::State resourceState) : localId(localId),
                                                                             resourceState(resourceState) {}
-    GenericResourceInfo(uint64_t localId) : localId(localId) {}
+    GenericResourceInfo(uint64_t localId) : localId(localId), resourceState(Resource::State::Active) {}
 
     Resource::State getResourceState() const {
         return resourceState;

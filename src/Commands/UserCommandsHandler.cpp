@@ -51,14 +51,15 @@ void UserCommandsHandler::handleUserInput()
     }
 }
 
-std::pair<AuthorKeyType, Resource> UserCommandsHandler::resourceFromFile(std::string fileName)
+std::pair<AuthorKeyType, Resource> UserCommandsHandler::resourceFromFile(std::string filePath)
 {
     const std::string publicKeyFileName = "/home/kamil/Projects/simple-p2p/src/rsa_public.pem";
     const std::string privateKeyFileName = "/home/kamil/Projects/simple-p2p/src/rsa_private.pem";
     AuthorKey key(publicKeyFileName, privateKeyFileName);
-    AddFileRequest request(key.getPublicKey(), key.getPrivateKey(), fileName);
+    AddFileRequest request(key.getPublicKey(), key.getPrivateKey(), filePath);
     auto hashAndSign = fileManagerInstance.addFile(request);
-    size_t size = file_size(fileName);
+    size_t size = file_size(filePath);
+    std::string fileName = path(filePath).filename().string();
     return std::make_pair(key.getPublicKey(), Resource(fileName, size, hashAndSign.first.getVector(), hashAndSign.second));
 }
 

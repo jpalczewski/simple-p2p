@@ -186,6 +186,8 @@ std::string AuthorKey::loadKey(const std::string &filename) {
 
 Hash AuthorKey::getPublicPEMHash()  {
    // std::string key = this->loadKey(publicKeyFilename);
+    if (!cachedPublicKey.empty())
+        return Hash(cachedPublicKey, Hash::InputTextType::Text);
     return Hash(publicKeyFilename, Hash::InputTextType::File);
 }
 

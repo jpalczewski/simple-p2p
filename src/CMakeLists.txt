@@ -21,6 +21,7 @@ add_executable(simple-p2p-daemon simple-p2p-daemon.cpp)
 target_link_libraries(simple-p2p-daemon
         ${OPENSSL_LIBRARIES}
         ${Boost_SERIALIZATION_LIBRARY}
+        ${Boost_SYSTEM_LIBRARY}
         Threads::Threads
         NetworkCommandInterface
         Network
