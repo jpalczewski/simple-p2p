@@ -22,11 +22,11 @@ public:
         GenericResourceInfo::resourceState = resourceState;
     }
 
-    u_int64_t getLocalId() const {
+    uint64_t getLocalId() const {
         return localId;
     }
 
-    void setLocalId(u_int64_t localId) {
+    void setLocalId(uint64_t localId) {
         GenericResourceInfo::localId = localId;
     }
 
