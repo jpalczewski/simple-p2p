@@ -3,4 +3,4 @@ add_library(NetworkCommandInterface NetworkCommandInterface.cpp)
 #add_library(SimpleCommandInterface SimpleCommandInterface.cpp)
 add_library(UserCommandsHandler UserCommandsHandler.cpp)
 
-target_link_libraries(UserCommandsHandler NetworkCommandInterface)
+target_link_libraries(UserCommandsHandler NetworkCommandInterface Messages)
