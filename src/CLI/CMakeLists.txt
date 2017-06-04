@@ -5,5 +5,6 @@ add_executable(simple-p2p-cli simple-p2p-cli.cpp DaemonClient.cpp DaemonClientRe
 target_link_libraries(simple-p2p-cli Threads::Threads)
 target_link_libraries(simple-p2p-cli ${Boost_LIBRARIES} ${Boost_SERIALIZATION_LIBRARY})
 target_link_libraries(simple-p2p-cli ${OPENSSL_LIBRARIES} ${Boost_SERIALIZATION_LIBRARY})
+target_link_libraries(simple-p2p-cli Common)
 
 install(TARGETS simple-p2p-cli RUNTIME DESTINATION ${simple_p2p_SOURCE_DIR}/release)

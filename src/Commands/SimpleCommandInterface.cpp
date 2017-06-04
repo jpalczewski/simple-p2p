@@ -5,10 +5,10 @@
 #include <cstdlib>
 #include <iostream>
 #include "SimpleCommandInterface.h"
-#include "AddCommand.h"
-#include "DisplayCommand.h"
-#include "BroadcastCommand.h"
-#include "UnknownCommand.h"
+#include "CommandTypes/AddCommand.h"
+#include "CommandTypes/DisplayCommand.h"
+#include "CommandTypes/BroadcastCommand.h"
+#include "CommandTypes/UnknownCommand.h"
 
 std::unique_ptr<Command> SimpleCommandInterface::getNextCommand()
 {

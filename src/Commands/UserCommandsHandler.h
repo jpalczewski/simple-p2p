@@ -28,7 +28,8 @@ public:
     void handle(AddCommand* command);
     void handle(UnknownCommand* command);
     void handle(DownloadCommand* command);
-
+    void handle(OneIntegerParamCommand* command);
+    void handle(BlockCommand* command);
 private:
     int broadcastPort;
     Socket socket;
@@ -38,6 +39,8 @@ private:
     Resource resourceFromFile(std::string basic_string);
     std::string readPublicKey();
     std::unordered_map<std::string, std::vector<Resource>> convertInfoMapToResourceMap(ResourceManager::ResourceMap<LocalResourceInfo>);
+
+    std::stringstream broadcastOnDemand();
 };
 
 #endif //SIMPLE_P2P_USERCOMMANDSHANDLER_H

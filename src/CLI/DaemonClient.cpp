@@ -4,8 +4,6 @@
 
 #include <sstream>
 #include "DaemonClient.h"
-#include "../Commands/AddCommand.h"
-#include "../Commands/DownloadCommand.h"
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 
@@ -26,17 +24,6 @@ DaemonClientResponse DaemonClient::sendAdd(std::string filePath)
     return sendMessage(std::move(message));
 }
 
-DaemonClientResponse DaemonClient::sendDisplay()
-{
-    std::string message(1, static_cast<char>(Command::Type::Display));
-    return sendMessage(std::move(message));
-}
-
-DaemonClientResponse DaemonClient::sendBroadcast()
-{
-    std::string message(1, static_cast<char>(Command::Type::Broadcast));
-    return sendMessage(std::move(message));
-}
 
 DaemonClientResponse DaemonClient::sendMessage(std::string message)
 {
@@ -48,16 +35,8 @@ DaemonClientResponse DaemonClient::sendMessage(std::string message)
     return DaemonClientResponse(std::string(reinterpret_cast<char*>(response.data())));
 }
 
-DaemonClientResponse DaemonClient::sendDownload(uint64_t localId)
-{
-    DownloadCommand command(localId);
-    std::stringstream stream;
-    boost::archive::binary_oarchive archive(stream);
-    archive << command;
-    std::string message(1, static_cast<char>(Command::Type::Download));
-    message += stream.str();
-    return sendMessage(std::move(message));
-}
+
+
 
 
 

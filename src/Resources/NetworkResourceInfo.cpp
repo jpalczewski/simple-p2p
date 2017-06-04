@@ -19,15 +19,15 @@ const std::set<IpAddress>& NetworkResourceInfo::getSeeders() const
     return this->seeders;
 }
 
-uint64_t NetworkResourceInfo::getLocalId() const
-{
-    return localId;
-}
+//uint64_t NetworkResourceInfo::getLocalId() const
+//{
+//    return localId;
+//}
 
 std::string NetworkResourceInfo::toString() const
 {
     // TODO reserve place for a string in advance
-    std::string string = "State: " + ::toString(state) + "\n";
+    std::string string = "State: " + ::toString(getResourceState()) + "\n";
     string += "Seeders:\n";
     for (const auto& seeder : seeders)
     {

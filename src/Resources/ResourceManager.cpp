@@ -11,10 +11,15 @@ namespace
 {
      //TODO check whether resource exists in this map or not
     template <typename T>
-    void addResource(const std::string &publicKey, const Resource &resource, ResourceManager::ResourceMap<T>& map,
-                     const T& info = T{})
+    bool addResource(const std::string &publicKey,
+                     const Resource &resource,
+                    // uint64_t id,
+                     ResourceManager::ResourceMap<T>& map,
+                     const T& info = T())
     {
-        map[publicKey].insert(std::make_pair(resource, info));
+        //info.setLocalId(id);
+        auto insertResult = map[publicKey].insert(std::make_pair(resource, info));
+        return insertResult.second;
     }
 
     // TODO check if first (publicKey as key) map is found
@@ -24,12 +29,28 @@ namespace
         const auto& publicKeyMap = map.find(publicKey)->second;
         return publicKeyMap.find(resource)->second;
     }
+
+    template <typename T>
+    bool setResourceInfoState(const std::string &publicKey, const Resource &resource,
+                              ResourceManager::ResourceMap<T> &map, Resource::State newResourceState)
+    {
+        auto& publicKeyMap = map.find(publicKey)->second;
+        auto findResult = publicKeyMap.find(resource);
+        if(findResult == publicKeyMap.end())
+            throw std::runtime_error("Resource not found in setResourceInfoState");
+        //TODO now it is possible to f.e. unblock invalidated resource, it shouldn't be possible
+        findResult->second.setResourceState(newResourceState);
+
+
+    }
 }
 
 void ResourceManager::addNetworkResource(const std::string &publicKey, const Resource &resource,
                                          const std::vector<IpAddress>& seeders)
 {
     std::lock_guard<std::shared_timed_mutex> lock(networkMutex);
+    std::lock_guard<std::shared_timed_mutex> lock2(localIdMutex);
+
     auto &keyMap = networkResources[publicKey];
     auto keyMapIterator = networkResources.find(publicKey);
     auto localId = lastLocalId++;
@@ -62,8 +83,22 @@ LocalResourceInfo ResourceManager::getLocalResourceInfo(const std::string &publi
 
 void ResourceManager::addOwnedResource(const std::string &publicKey, const Resource &resource)
 {
-    std::lock_guard<std::shared_timed_mutex> lock(ownedMutex);
-    ::addResource<LocalResourceInfo>(publicKey, resource, ownedResources);
+    std::lock_guard<std::shared_timed_mutex> lock(localIdMutex);
+    std::lock_guard<std::shared_timed_mutex> lock2(ownedMutex);
+    auto result = ::addResource<LocalResourceInfo>(publicKey, resource, ownedResources);
+    if(result)
+    {
+        auto & keyMap = ownedResources[publicKey];
+        auto & info = keyMap[resource];
+        info.setLocalId(lastLocalId);
+//      keyMap[resource] = LocalResourceInfo(lastLocalId);
+
+        auto keyMapIterator = ownedResources.find(publicKey);
+//       NetworkResourceInfo info{localId};
+        auto inserted = keyMap.find(resource);
+        localIdsMap[lastLocalId] = std::make_pair(&keyMapIterator->first, &inserted->first);
+        lastLocalId++;
+    }
 }
 
 LocalResourceInfo ResourceManager::getOwnedResourceInfo(const std::string &publicKey, const Resource &resource)
@@ -88,10 +123,18 @@ std::pair<std::string, Resource> ResourceManager::getResourceById(uint64_t id)
 {
     std::shared_lock<std::shared_timed_mutex> lock(networkMutex);
     const auto& found = localIdsMap.find(id);
-    if (found == localIdsMap.end())
-        throw std::runtime_error("Requested resource not found");
+    if (found == localIdsMap.end()) {
+        std::stringstream ss;
+        ss << "Requested resource(" << id << ") not found in getResourceById";
+        throw std::runtime_error(ss.str());
+    }
     const auto& entry = found->second;
     return std::make_pair(*entry.first, *entry.second);
+}
+
+void ResourceManager::setOwnedResourceInfoState(const std::string &publicKey, const Resource &resource, const Resource::State &newState) {
+    std::lock_guard<std::shared_timed_mutex> lock(ownedMutex);
+    ::setResourceInfoState(publicKey, resource, ownedResources, newState);
 }
 
 

@@ -6,9 +6,10 @@
 #define SIMPLE_P2P_DISPLAYCOMMAND_H
 
 #include "Command.h"
-#include "Visitor.h"
+#include "../Visitor.h"
+#include "NoParamCommand.h"
 
-class DisplayCommand : public Command
+class DisplayCommand : public NoParamCommand
 {
 public:
     void accept(Visitor* visitor) {visitor->handle(this);};

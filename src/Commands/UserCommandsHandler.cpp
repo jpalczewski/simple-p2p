@@ -4,8 +4,9 @@
 
 #include "UserCommandsHandler.h"
 #include "../Messages/BroadcastMessage.h"
-#include "AddCommand.h"
-#include "DownloadCommand.h"
+#include "CommandTypes/AddCommand.h"
+#include "CommandTypes/DownloadCommand.h"
+#include "CommandTypes/BlockCommand.h"
 #include "NetworkCommandInterface.h"
 
 namespace
@@ -83,17 +84,22 @@ std::unordered_map<std::string, std::vector<Resource>> UserCommandsHandler::conv
 
 void UserCommandsHandler::handle(BroadcastCommand *command)
 {
+    std::stringstream stream = broadcastOnDemand();
+    commandInterface->sendResponse(stream.str());
+}
+
+std::stringstream UserCommandsHandler::broadcastOnDemand() {
     // TODO fragmentation is a big deal, should divide resources into multiple packets to prevent it
     const auto ownedResources = resourceManager.getOwnedResources();
     auto map = convertInfoMapToResourceMap(ownedResources);
-    BroadcastMessage message(std::move(map));
+    BroadcastMessage message(move(map));
     const auto bytes = message.toByteStream();
     socket.writeTo(&bytes[0], bytes.size(), "127.255.255.255", broadcastPort);
     std::stringstream stream;
     log << "--- Sending broadcast." << std::endl;
     stream << "--- Sending broadcast." << std::endl;
-    stream << std::to_string(bytes.size()) << "bytes sent." << std::endl;
-    commandInterface->sendResponse(stream.str());
+    stream << std::__cxx11::to_string(bytes.size()) << "bytes sent." << std::endl;
+    return stream;
 }
 
 void UserCommandsHandler::handle(DisplayCommand *command)
@@ -139,6 +145,23 @@ void UserCommandsHandler::handle(DownloadCommand *command)
         log << e.what() << std::endl;
         commandInterface->sendResponse(e.what());
     }
+}
+
+void UserCommandsHandler::handle(OneIntegerParamCommand *command) {
+    if(command->getType()==Command::Type::Block)
+        handle(static_cast<BlockCommand*>(command));
+    else
+        throw std::runtime_error("It shouldn't come here");
+}
+
+void UserCommandsHandler::handle(BlockCommand *command) {
+    auto result = resourceManager.getResourceById(command->getLocalId());
+    resourceManager.setOwnedResourceInfoState(result.first, result.second, Resource::State::Blocked);
+    std::stringstream stream;
+    stream << "File " << result.first << " is blocked.";
+    broadcastOnDemand();
+    log << stream.str() << std::endl;
+    commandInterface->sendResponse(stream.str());
 }
 
 

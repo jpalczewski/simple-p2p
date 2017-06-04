@@ -18,8 +18,9 @@ set(BOOST_TEST
         )
 
 add_executable(test_FileManager test_FileManager.cpp)
-add_executable(test_Crypto test_Crypto.cpp)
-add_executable(test_ResourceFile test_ResourceFile.cpp)
+add_executable(test_Crypto          test_Crypto.cpp)
+add_executable(test_ResourceFile    test_ResourceFile.cpp)
+add_executable(test_ResourceManager test_ResourceManager.cpp)
 
 target_link_libraries(test_FileManager
         ${BOOST_TEST}
@@ -34,4 +35,8 @@ target_link_libraries(test_ResourceFile
         ${BOOST_TEST}
         Crypto
         FileManager
+        ResourceManager)
+
+target_link_libraries(test_ResourceManager
+        ${BOOST_TEST}
         ResourceManager)
