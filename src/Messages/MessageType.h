@@ -18,4 +18,13 @@ enum class MessageType : unsigned char
     SendResource = 0x12
 };
 
+struct EnumHash
+{
+    template <typename T>
+    std::size_t operator()(T t) const
+    {
+        return static_cast<std::size_t>(t);
+    }
+};
+
 #endif //SIMPLE_P2P_MESSAGETYPE_H
