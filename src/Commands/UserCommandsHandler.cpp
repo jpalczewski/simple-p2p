@@ -15,7 +15,7 @@
 #include "CommandTypes/InvalidateCommand.h"
 #include "CommandTypes/DeleteCommand.h"
 #include "CommandTypes/CancelCommand.h"
-
+#include "../Crypto/Hash.h"
 #include "../ConfigHandler.h"
 
 namespace
@@ -25,13 +25,15 @@ namespace
     {
         for (const auto &keyRes : resources)
         {
-            stream << "key: " << std::endl;
-            stream << keyRes.first << std::endl;
+            Hash authorKeyHash(keyRes.first, Hash::InputTextType::Text);
+
+            stream << "Key: ";
+            stream << authorKeyHash.getString() << std::endl << std::endl;
             for (const auto &res : keyRes.second)
             {
-                stream << "Id: " << res.second.getLocalId() << std::endl;
-                stream << res.first.toString() << std::endl;
-                stream << res.second.toString() << std::endl;
+                stream <<  "Id: " << res.second.getLocalId() << std::endl;
+                stream  << res.first.toString(); // << std::endl;
+                stream  << res.second.toString() << std::endl;
             }
         }
     }
@@ -54,7 +56,24 @@ void UserCommandsHandler::handleUserInput()
     while (true)
     {
         std::unique_ptr<Command> command = commandInterface->getNextCommand();
-        command->accept(this);
+        try {
+            command->accept(this);
+        }
+        catch(std::runtime_error e)
+        {
+            stringstream ss;
+            ss << "Last command failed, reason: " << e.what();
+            std::cout << ss.str();
+            commandInterface->sendResponse(ss.str());
+        }
+        catch(std::exception e)
+        {
+            stringstream ss;
+            ss << "Last command failed, reason: " << e.what();
+            std::cout << ss.str();
+            commandInterface->sendResponse(ss.str());
+        }
+
     }
 }
 
@@ -144,25 +163,18 @@ void UserCommandsHandler::handle(UnknownCommand *command)
 
 void UserCommandsHandler::handle(DownloadCommand *command)
 {
-    try
+    const auto resource = resourceManager.getResourceById(command->getLocalId());
+    const auto info = resourceManager.getNetworkResourceInfo(resource.first, resource.second);
+    if (info.getResourceState() != Resource::State::Active)
     {
-        const auto resource = resourceManager.getResourceById(command->getLocalId());
-        const auto info = resourceManager.getNetworkResourceInfo(resource.first, resource.second);
-        if (info.getResourceState() != Resource::State::Active)
-        {
-            log << "Cannot download file: " << resource.second.getName() << " because of invalid state"<< std::endl;
-            commandInterface->sendResponse("Cannot download file: " +  resource.second.getName() + " because of invalid state");
-            return;
-        }
-        log << "Downloading file: " << resource.second.getName() << std::endl;
-        commandInterface->sendResponse("Downloading in progress.");
-        downloader.downloadResource(std::move(resource));
+        log << "Cannot download file: " << resource.second.getName() << " because of invalid state"<< std::endl;
+        commandInterface->sendResponse("Cannot download file: " +  resource.second.getName() + " because of invalid state");
+        return;
     }
-    catch (const std::runtime_error& e)
-    {
-        log << e.what() << std::endl;
-        commandInterface->sendResponse(e.what());
-    }
+    log << "Downloading file: " << resource.second.getName() << std::endl;
+
+    commandInterface->sendResponse("Downloading in progress.");
+    downloader.downloadResource(std::move(resource));
 }
 
 

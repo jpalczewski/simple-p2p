@@ -4,6 +4,7 @@
 
 #include "Resource.h"
 #include "../ConversionUtils.h"
+#include "../Crypto/Hash.h"
 
 Resource::Resource(const std::string &name, int64_t size, const std::vector<unsigned char> &hash,
                    const std::vector<unsigned char> &sign) : name(name), size(size), hash(hash), sign(sign)
@@ -79,7 +80,12 @@ std::string toString(Resource::State state)
 std::string Resource::toString() const
 {
     // TODO print hash and sign
-    const std::string string = "Name: " + name + "\nSize: " + std::to_string(size);
-    return string;
+    std::stringstream ss;
+    ss
+            << "\tName: " << name << std::endl
+            << "\tSize: " << std::to_string(size) << std::endl
+            << "\tHash: " << Hash(hash).getString() << std::endl;
+    //const std::string string = "Name: " + name + "\nSize: " + std::to_string(size);
+    return ss.str();
 }
 
