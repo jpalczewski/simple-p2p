@@ -18,6 +18,8 @@
 using namespace boost::filesystem;
 
 class FileRecord {
+public:
+private:
     friend class boost::serialization::access;
 
     // TODO: Reference to Resource?
@@ -25,6 +27,7 @@ class FileRecord {
     std::time_t lastKnownWriteTime;
     path        location;
     Hash        md5;
+    FileRecordState       state;
 
 public:
     FileRecord(time_t lastKnownWriteTime, const path &location, const Hash &md5);
@@ -33,6 +36,9 @@ public:
     FilePartResponse    getFilePart(const FilePartRequest& request);
     bool                saveFilePart(const FileSavePartRequest& request);
     void                create();
+
+    FileRecordState getState() const;
+    void setState(FileRecordState state);
 
 private:
     bool isValid(); // last_write_time from boost::filesystem

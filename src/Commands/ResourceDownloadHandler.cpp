@@ -25,25 +25,29 @@ void ResourceDownloadHandler::downloadResource(std::pair<AuthorKeyType, Resource
     std:: cout << "Sending file request for " << resource.getName() << std::endl;
     socket.write(&byteStream[0], byteStream.size());
     std:: cout << "Sent request for " << resource.getName() << std::endl;
+    unsigned char type;
+    socket.read(&type, 1);
+    if (type != (unsigned char) MessageType::SendResource)
+        throw std::runtime_error("Downloading resource failed.");
     size_t incomingMessageSize = 1 + 4 + resource.getName().length() + 8 + 16 + 128 + 8 + 8 + resource.getSize();
-    std::vector<unsigned char> bytes = getWholeMessage(socket, incomingMessageSize);
+    std::vector<unsigned char> bytes = getWholeMessage(socket, incomingMessageSize, MessageType::SendResource);
     SendResourceMessage contentMessage = SendResourceMessage::fromByteStream(std::move(bytes));
-    std:: cout << "successfully completed content message for " << resource.getName() << std::endl;
+    std:: cout << "Successfully completed content message for " << resource.getName() << std::endl;
     FileCreateRequest request(key, (const HashArray &) resource.getHash(), resource.getName(), resource.getSize());
     fileManagerInstance.createFile(std::move(request));
     FileSavePartRequest saveRequest(key, (const HashArray &) resource.getHash(), 0, resource.getSize());
     saveRequest.bytes = contentMessage.getData();
     fileManagerInstance.saveFilePart(std::move(saveRequest));
-    // TODO delete from network resources? or maybe not?
     // TODO broadcast this resource
     resourceManager.addLocalResource(message.getPublicKey(), message.getResource());
     std::cout << "Completed downloading resource " << contentMessage.getResource().getName() << std::endl;
 }
 
-std::vector<unsigned char> ResourceDownloadHandler::getWholeMessage(Socket& socket, size_t size)
+std::vector<unsigned char> ResourceDownloadHandler::getWholeMessage(Socket& socket, size_t size, MessageType type)
 {
     std::vector<unsigned char> output(size);
-    int readTotal = 0;
+    output[0] = static_cast<unsigned char>(type);
+    int readTotal = 1;
     while (readTotal < size)
     {
         int read;

@@ -8,6 +8,7 @@
 
 #include "../Resources/Resource.h"
 #include "../Network/Socket.h"
+#include "../Messages/MessageType.h"
 
 class ResourceDownloadHandler
 {
@@ -16,7 +17,7 @@ public:
 
     void downloadResource(std::pair<std::string, Resource> keyResource);
 
-    std::vector<unsigned char> getWholeMessage(Socket& socket, size_t size);
+    std::vector<unsigned char> getWholeMessage(Socket& socket, size_t size, MessageType type);
 
 private:
     int targetPort;

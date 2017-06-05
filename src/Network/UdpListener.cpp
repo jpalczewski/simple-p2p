@@ -9,6 +9,8 @@
 #include "../Messages/ResourceRequestMessage.h"
 #include "../Messages/ResourceManagementMessage.h"
 #include "../Crypto/AuthorKey.h"
+#include "../Files/FileManager.h"
+#include "../Files/Requests/SetFileStateRequest.h"
 
 UdpListener::UdpListener(int listenPort) : socket(Socket::Domain::Ip4, Socket::Type::Udp)
 {
@@ -52,7 +54,7 @@ void UdpListener::handleResourceManagementMessage(std::vector<unsigned char> buf
         std::cout << "Received unauthorized resource state change request for " << message.getResource().getName() << std::endl;
         return;
     }
-    if (type == MessageType ::DeleteResource)
+    if (type == MessageType::DeleteResource)
     {
         handleDelete(std::move(message));
         return;
@@ -83,7 +85,10 @@ void UdpListener::handleBroadcastMessage(std::vector<unsigned char> buffer, cons
 
 void UdpListener::handleDelete(ResourceManagementMessage message) const
 {
-
+    std::cout << "handleDelete in action" << std::endl;
+    resourceManager.deleteSharedAndNetworkResource(message.getPublicKey(), message.getResource());
+    SetFileStateRequest sfss(message.getPublicKey(), Hash(message.getResource().getHash()), FileRecordState::Deleted);
+    fileManagerInstance.setFileState(sfss);
 }
 
 bool UdpListener::verifySignature(ResourceManagementMessage &message, MessageType type) const

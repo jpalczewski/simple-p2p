@@ -15,7 +15,7 @@ SendResourceMessage SendResourceMessage::fromByteStream(std::vector<unsigned cha
 {
     const auto type = static_cast<MessageType>(byteArray[0]);
     if (type != MessageType::SendResource)
-        throw std::runtime_error("Invalid message type to construct a ResourceRequestMessage from byte stream");
+        throw std::runtime_error("Invalid message type to construct a SendRequestMessage from byte stream");
     int index = 1;
     Resource resource = Resource::fromByteStream(byteArray, index);
     const int64_t offset = int64FromBytes(byteArray, index);

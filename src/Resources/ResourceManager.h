@@ -36,6 +36,8 @@ public:
     void trySetLocalResourceInfoState(const std::string &publicKey, const Resource &resource, Resource::State state);
     LocalResourceInfo getLocalOrSharedResourceInfo(const std::string &publicKey, const Resource &resource);
 
+    void deleteOwnedResource(const std::string &publicKey, const Resource &resource);
+    void deleteSharedAndNetworkResource(const std::string &publicKey, const Resource &resource);
 
     template <typename Type>
     using ResourceMap = std::unordered_map<std::string, std::unordered_map<Resource, Type, ResourceHash>>;
@@ -43,6 +45,8 @@ public:
     ResourceManager::ResourceMap<NetworkResourceInfo> getNetworkResources();
     ResourceManager::ResourceMap<LocalResourceInfo> getOwnedResources();
     ResourceManager::ResourceMap<LocalResourceInfo> getLocalResources();
+
+
 
 private:
     // network resources - available for download

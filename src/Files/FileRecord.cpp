@@ -20,7 +20,7 @@ bool FileRecord::isValid() {
 }
 
 FileRecord::FileRecord(time_t lastKnownWriteTime, const path &location, const Hash &md5) : lastKnownWriteTime(
-        lastKnownWriteTime), location(location), md5(md5) {}
+        lastKnownWriteTime), location(location), md5(md5), state(FileRecordState::Valid) {}
 
 const path &FileRecord::getLocation() const {
     return location;
@@ -74,5 +74,13 @@ void FileRecord::create() {
     ofstream ofs{location};
     ofs.close();
 
+}
+
+FileRecordState FileRecord::getState() const {
+    return state;
+}
+
+void FileRecord::setState(FileRecordState state) {
+    FileRecord::state = state;
 }
 

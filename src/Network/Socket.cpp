@@ -15,6 +15,7 @@
 #include <cstring>
 #include <iostream>
 #include <arpa/inet.h>
+#include <sstream>
 
 Socket::Socket(Socket::Domain domain, Socket::Type type)
 {
@@ -36,7 +37,7 @@ Socket::Socket(int socketDescriptor, Socket::Domain domain, Socket::Type type)
 
 Socket::~Socket()
 {
-    close();
+//    close();
 }
 
 Socket::Socket(Socket&& other): socketDescriptor(other.socketDescriptor)
@@ -124,8 +125,11 @@ Socket Socket::accept()
 #endif
     if (newSocket < 0)
     {
-        std::cout << errno << std::endl;
-        throw std::runtime_error("Error on accept.");
+        std::stringstream ss;
+        ss << "Error on accept" << std::endl;
+        ss << "Errno: " << std::string(strerror(errno)) << std::endl;
+        //std::cout << errno << std::endl;
+        throw std::runtime_error(ss.str());
     }
 
     Domain domain = static_cast<Domain>(cli_addr.sin_family);
@@ -237,6 +241,16 @@ int Socket::readFrom(unsigned char *output, int length, std::string& receiveAddr
     receiveAddress = address;
     return result;
 }
+
+void Socket::setReceiveTimeout(int seconds)
+{
+    struct timeval tv;
+    tv.tv_sec = seconds;
+    tv.tv_usec = 0;
+    setsockopt(socketDescriptor, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv,sizeof(struct timeval));
+}
+
+
 
 
 

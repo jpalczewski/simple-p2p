@@ -28,7 +28,7 @@ namespace
         auto keyIterator = map.find(publicKey);
         if (keyIterator == map.end())
             throw std::runtime_error("Cannot get resource info for " + resource.getName() + " - key not found");
-        const auto& publicKeyMap = keyIterator->second;
+         const auto& publicKeyMap = keyIterator->second;
         auto resourceFound = publicKeyMap.find(resource);
         if (resourceFound == publicKeyMap.end())
             throw std::runtime_error("Cannot get resource info for " + resource.getName() + " - resource not found");
@@ -53,8 +53,6 @@ namespace
 
 
         findResult->second.setResourceState(newResourceState);
-
-
     }
 }
 
@@ -191,6 +189,34 @@ ResourceManager::ResourceMap<LocalResourceInfo> ResourceManager::getLocalResourc
 {
     std::shared_lock<std::shared_timed_mutex> lock(localMutex);
     return localResources;
+}
+
+void ResourceManager::deleteOwnedResource(const std::string &publicKey, const Resource &resource)
+{
+    std::lock_guard<std::shared_timed_mutex> lock(ownedMutex);
+    auto keyFound = ownedResources.find(publicKey);
+    if (keyFound == ownedResources.end())
+        throw std::runtime_error("Cannot delete owned resource - key not found");
+    keyFound->second.erase(resource);
+    if (keyFound->second.empty())
+        ownedResources.erase(keyFound);
+}
+
+void ResourceManager::deleteSharedAndNetworkResource(const std::string &publicKey, const Resource &resource)
+{
+    std::lock_guard<std::shared_timed_mutex> lock(networkMutex);
+    std::lock_guard<std::shared_timed_mutex> lock2(localMutex);
+    auto keyFound = networkResources.find(publicKey);
+    if (keyFound != networkResources.end())
+        keyFound->second.erase(resource);
+    if (keyFound->second.empty())
+        networkResources.erase(keyFound);
+
+    auto keyFound2 = localResources.find(publicKey);
+    if (keyFound2 != localResources.end())
+        keyFound2->second.erase(resource);
+    if (keyFound2->second.empty())
+        localResources.erase(keyFound2);
 }
 
 

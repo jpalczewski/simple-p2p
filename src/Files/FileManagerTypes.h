@@ -15,6 +15,9 @@
 
 class FileRecord;
 
+
+enum class FileRecordState { Valid, Invalid, Deleted };
+
 typedef     std::string                                                                     AuthorKeyType;
 typedef     std::unordered_map<Hash, FileRecord, Hash::ContainerHasher >                    AuthorFiles;
 typedef     std::unordered_map<AuthorKeyType, AuthorFiles>                                  AuthorLookupMap;

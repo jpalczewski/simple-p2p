@@ -226,10 +226,19 @@ void UserCommandsHandler::handle(UnblockCommand *command) {
 
 void UserCommandsHandler::handle(DeleteCommand *command) {
     uint64_t id = command->getLocalId();
+    ConfigHandler *config = ConfigHandler::getInstance();
+    auto result = resourceManager.getResourceById(id);
+
+//    AuthorKey authorKey(config->get("keys.dir") + "rsa_public.pem", config->get("keys.dir") + "rsa_private.pem");
+
     MessageType messageType = MessageType::DeleteResource;
     Resource::State state = Resource::State::Invalid;
 
     sendBroadcastMessage(id, messageType, state);
+    std::cout << "handleDelete on author node in action" << std::endl;
+    resourceManager.deleteOwnedResource(result.first, result.second);
+    SetFileStateRequest sfss(result.first, Hash(result.second.getHash()), FileRecordState::Deleted);
+    fileManagerInstance.setFileState(sfss);
     //TODO: Handle deleting from resourceManager
 }
 
