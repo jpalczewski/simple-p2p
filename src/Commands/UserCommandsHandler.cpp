@@ -164,20 +164,46 @@ void UserCommandsHandler::handle(OneIntegerParamCommand *command) {
 }
 
 void UserCommandsHandler::handle(BlockCommand *command) {
-    auto result = resourceManager.getResourceById(command->getLocalId());
-    resourceManager.setOwnedResourceInfoState(result.first, result.second, Resource::State::Blocked);
+    handleResourceStateChange(command->getLocalId(), MessageType::BlockResource, Resource::State::Blocked);
+}
+
+void UserCommandsHandler::handleResourceStateChange(uint64_t localId, MessageType messageType, Resource::State state)
+{
+    auto result = resourceManager.getResourceById(localId);
+    resourceManager.setOwnedResourceInfoState(result.first, result.second, state);
     std::stringstream stream;
-    stream << "File " << result.first << " is blocked.";
+    stream << "File " << result.first << " state changed.";
 //    broadcastOnDemand();
+    // TODO sign the message with private key from config
     std::vector<unsigned char> sign(128, 0x44);
     ResourceManagementMessage message(result.first, result.second, sign);
-    std::vector<unsigned char> binaryMessage {static_cast<unsigned char>(MessageType::BlockResource)};
+    std::vector<unsigned char> binaryMessage {static_cast<unsigned char>(messageType)};
     auto messageData = message.toByteStream();
     binaryMessage.insert(binaryMessage.end(), messageData.begin(), messageData.end());
     socket.writeTo(&binaryMessage[0], binaryMessage.size(), ConfigHandler::getInstance()->get("network.broadcast_ip"), broadcastPort);
     log << stream.str() << std::endl;
     commandInterface->sendResponse(stream.str());
 }
+
+void UserCommandsHandler::handle(UnblockCommand *command)
+{
+    handleResourceStateChange(command->getLocalId(), MessageType::UnblockResource, Resource::State::Active);
+}
+
+void UserCommandsHandler::handle(InvalidateCommand *command)
+{
+    handleResourceStateChange(command->getLocalId(), MessageType::InvalidateResource, Resource::State::Invalid);
+}
+
+void UserCommandsHandler::handle(DeleteCommand *command)
+{
+    // TODO delete this resource from resource manager completely
+    handleResourceStateChange(command->getLocalId(), MessageType::DeleteResource, Resource::State::Invalid);
+}
+
+
+
+
 
 
 

@@ -16,6 +16,10 @@
 #include "CommandInterface.h"
 #include "../Files/FileManagerTypes.h"
 #include "ResourceDownloadHandler.h"
+#include "../Messages/MessageType.h"
+#include "CommandTypes/DeleteCommand.h"
+#include "CommandTypes/InvalidateCommand.h"
+#include "CommandTypes/UnblockCommand.h"
 
 class UserCommandsHandler : public Visitor
 {
@@ -32,6 +36,9 @@ public:
     void handle(DownloadCommand* command);
     void handle(OneIntegerParamCommand* command);
     void handle(BlockCommand* command);
+    void handle(UnblockCommand* command);
+    void handle(InvalidateCommand* command);
+    void handle(DeleteCommand* command);
 private:
     int broadcastPort;
     Socket socket;
@@ -43,6 +50,8 @@ private:
     std::unordered_map<std::string, std::vector<Resource>> convertInfoMapToResourceMap(ResourceManager::ResourceMap<LocalResourceInfo>);
 
     std::stringstream broadcastOnDemand();
+
+    void handleResourceStateChange(uint64_t localId, MessageType messageType, Resource::State state);
 };
 
 #endif //SIMPLE_P2P_USERCOMMANDSHANDLER_H
