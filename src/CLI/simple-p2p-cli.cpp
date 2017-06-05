@@ -3,13 +3,14 @@
 //
 #include <iostream>
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 #include "DaemonClient.h"
 
 namespace po = boost::program_options;
 
 int main(int argc, char** argv)
 {
-    std::cout << "Generic CLI app" << std::endl;
+    std::cout << "simple-p2p client application" << std::endl;
     po::options_description desc("Command line interface for p2p daemon. Allowed options");
     desc.add_options()
             ("help", "produce this help message")
@@ -52,9 +53,17 @@ int main(int argc, char** argv)
         if (vm.count("display"))
             std::cout << client.sendNoParam<DisplayCommand>().getContent() << std::endl;
 
-        if (vm.count("add"))
-            std::cout << client.sendAdd(vm["add"].as<std::string>()).getContent() << std::endl;
-
+        if (vm.count("add")) {
+            const std::string &path = vm["add"].as<std::string>();
+            boost::filesystem::path p{path};
+            boost::filesystem::path absolutePath = boost::filesystem::absolute(p);
+            if(!boost::filesystem::exists(p) || !boost::filesystem::is_regular_file(p))
+            {
+                std::cerr << "File doesn't exist! Do you really wanted to add " << absolutePath.native() << "?" << std::endl;
+                return 1;
+            }
+            std::cout << client.sendAdd(absolutePath.native()).getContent() << std::endl;
+        }
         if (vm.count("broadcast"))
             std::cout << client.sendNoParam<BroadcastCommand>().getContent() << std::endl;
 

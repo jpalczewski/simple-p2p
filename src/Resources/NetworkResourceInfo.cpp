@@ -22,13 +22,14 @@ const std::set<IpAddress>& NetworkResourceInfo::getSeeders() const
 std::string NetworkResourceInfo::toString() const
 {
     // TODO reserve place for a string in advance
-    std::string string = "State: " + ::toString(getResourceState()) + "\n";
-    string += "Seeders:\n";
+    std::stringstream ss;
+    ss << "\tState:" << ::toString(getResourceState()) << std::endl
+       << "\tSeeders:" << std::endl;
     for (const auto& seeder : seeders)
     {
-        string += seeder.toString() + "\n";
+        ss << "\t\t" << seeder.toString() << std::endl;
     }
-    return string;
+    return ss.str();
 }
 
 

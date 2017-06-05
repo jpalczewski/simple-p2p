@@ -30,6 +30,8 @@ void dispatcherFunc(int port)
 
 int main(int argc, char** argv)
 {
+    std::cout << "simple-p2p daemon" << std::endl;
+
 	if (argc < 2)
     {
         std::cout << "Usage: " << argv[0] << " PATH_TO_DIR (containing config.ini download/ share/ and keys/" << std::endl;
@@ -38,12 +40,19 @@ int main(int argc, char** argv)
         return 0;
     }
 
+
+
     ConfigHandler *config;
-    config = ConfigHandler::getInstance();
-	config->readDirectory(argv[1]);
-	
-    //std::cout << ConfigHandler::getInstance()->get("daemon.port") << std::endl;
-	
+    try {
+        config = ConfigHandler::getInstance();
+        config->readDirectory(argv[1]);
+    }
+    catch(std::exception e)
+    {
+        std::cerr << "Loading profile failed, so I have nothing to do." << std::endl
+                  << "Details:" << e.what() << std::endl;
+    }
+
     initOpenSsl();
 
 	int serverPort = std::stoi(config->get("network.server_port"));

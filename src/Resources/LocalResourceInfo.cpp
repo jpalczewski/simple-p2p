@@ -6,9 +6,8 @@
 
 std::string LocalResourceInfo::toString() const
 {
-    std::string works = "It works!";
     std::stringstream ss;
-    ss << "State:" << ::toString(getResourceState()) << std::endl;
+    ss << "\tState: " << ::toString(getResourceState()) << std::endl;
     //std::string string = "State: " + ::toString(getResourceState()) + "\n";
     return ss.str();
 }

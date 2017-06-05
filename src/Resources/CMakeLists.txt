@@ -8,5 +8,6 @@ link_directories(ResourceManager ${Boost_LIBRARY_DIRS})
 target_link_libraries(ResourceManager
         ${OPENSSL_LIBRARIES}
         Network
+        Crypto
         Threads::Threads
         )
