@@ -52,6 +52,8 @@ private:
     void sendBroadcastMessage(const std::pair<std::string, Resource> &result, const MessageType &messageType);
 
     void sendBroadcastMessage(uint64_t id, const MessageType &messageType, const Resource::State &state);
+
+    void broadcastResourceMap(std::unordered_map<std::string, std::vector<Resource>> &map);
 };
 
 #endif //SIMPLE_P2P_USERCOMMANDSHANDLER_H

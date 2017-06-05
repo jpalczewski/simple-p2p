@@ -28,7 +28,7 @@ void UdpListener::start()
         std::cout << "Received broadcast from " + sender.toString() << std::endl;
         if (received == bufferSize)
             throw std::runtime_error("buffer too small");
-        std::cout << std::to_string(received) << " bytes received" << std::endl;
+//        std::cout << std::to_string(received) << " bytes received" << std::endl;
         
         switch (static_cast<MessageType >(buffer[0]))
         {
@@ -64,6 +64,7 @@ void UdpListener::handleResourceManagementMessage(std::vector<unsigned char> buf
         return;
     }
     resourceManager.setNetworkResourceInfoState(message.getPublicKey(), message.getResource(), found->second);
+    resourceManager.trySetLocalResourceInfoState(message.getPublicKey(), message.getResource(), found->second);
     std::cout << "Resource state change request completed: " << message.getResource().getName() << std::endl;
 }
 

@@ -78,9 +78,11 @@ std::unordered_map<std::string, std::vector<Resource>> UserCommandsHandler::conv
         std::vector<Resource> resources;
         for (const auto& resourceWithInfo : keyResource.second)
         {
-            resources.push_back(resourceWithInfo.first);
+            if (resourceWithInfo.second.getResourceState() == Resource::State::Active)
+                resources.push_back(resourceWithInfo.first);
         }
-        allResources.insert(std::make_pair(keyResource.first, std::move(resources)));
+        if (!resources.empty())
+            allResources.insert(std::make_pair(keyResource.first, std::move(resources)));
     }
     return allResources;
 }
@@ -94,14 +96,17 @@ void UserCommandsHandler::handle(BroadcastCommand *command)
 std::stringstream UserCommandsHandler::broadcastOnDemand() {
     // TODO fragmentation is a big deal, should divide resources into multiple packets to prevent it
     const auto ownedResources = resourceManager.getOwnedResources();
-    auto map = convertInfoMapToResourceMap(ownedResources);
-    BroadcastMessage message(move(map));
-    const auto bytes = message.toByteStream();
-    socket.writeTo(&bytes[0], bytes.size(), ConfigHandler::getInstance()->get("network.broadcast_ip"), broadcastPort);
+    const auto localResources = resourceManager.getLocalResources();
     std::stringstream stream;
     log << "--- Sending broadcast." << std::endl;
     stream << "--- Sending broadcast." << std::endl;
-    stream << std::__cxx11::to_string(bytes.size()) << "bytes sent." << std::endl;
+
+    auto ownedResourcesMap = convertInfoMapToResourceMap(ownedResources);
+    broadcastResourceMap(ownedResourcesMap);
+    auto localResourcesMap = convertInfoMapToResourceMap(localResources);
+    broadcastResourceMap(localResourcesMap);
+
+    stream << "Broadcast sent." << std::endl;
     return stream;
 }
 
@@ -112,6 +117,9 @@ void UserCommandsHandler::handle(DisplayCommand *command)
     stream << "Network resources: " << std::endl;
     const auto resources = resourceManager.getNetworkResources();
     printResourceMap<NetworkResourceInfo>(resources, stream);
+    stream << "Downloaded resources: " << std::endl;
+    const auto localResources = resourceManager.getLocalResources();
+    printResourceMap<LocalResourceInfo>(localResources, stream);
     stream << "Owned resources: " << std::endl;
     const auto ownedResources = resourceManager.getOwnedResources();
     printResourceMap<LocalResourceInfo>(ownedResources, stream);
@@ -139,6 +147,13 @@ void UserCommandsHandler::handle(DownloadCommand *command)
     try
     {
         const auto resource = resourceManager.getResourceById(command->getLocalId());
+        const auto info = resourceManager.getNetworkResourceInfo(resource.first, resource.second);
+        if (info.getResourceState() != Resource::State::Active)
+        {
+            log << "Cannot download file: " << resource.second.getName() << " because of invalid state"<< std::endl;
+            commandInterface->sendResponse("Cannot download file: " +  resource.second.getName() + " because of invalid state");
+            return;
+        }
         log << "Downloading file: " << resource.second.getName() << std::endl;
         commandInterface->sendResponse("Downloading in progress.");
         downloader.downloadResource(std::move(resource));
@@ -233,6 +248,20 @@ void UserCommandsHandler::handle(CancelCommand *command) {
 
     sendBroadcastMessage(id, messageType, state);
 }
+
+void UserCommandsHandler::broadcastResourceMap(std::unordered_map<std::string, std::vector<Resource>> &map)
+{
+    if (map.empty())
+    {
+        std::cout << "No resources to broadcast" << std::endl;
+        return;
+    }
+    BroadcastMessage message(map);
+    const auto bytes = message.toByteStream();
+    socket.writeTo(&bytes[0], bytes.size(), ConfigHandler::getInstance()->get("network.broadcast_ip"), broadcastPort);
+}
+
+
 
 
 

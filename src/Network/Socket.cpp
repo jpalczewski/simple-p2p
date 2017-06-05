@@ -36,7 +36,7 @@ Socket::Socket(int socketDescriptor, Socket::Domain domain, Socket::Type type)
 
 Socket::~Socket()
 {
-//    close();
+    close();
 }
 
 Socket::Socket(Socket&& other): socketDescriptor(other.socketDescriptor)
@@ -175,7 +175,9 @@ int Socket::close()
 {
     if (socketDescriptor < 0)
         return 1;
-    return ::close(socketDescriptor);
+    int oldDestriptor = socketDescriptor;
+    socketDescriptor = -1;
+    return ::close(oldDestriptor);
 }
 
 void Socket::enableBroadcast()

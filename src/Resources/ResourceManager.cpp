@@ -61,8 +61,8 @@ namespace
 void ResourceManager::addNetworkResource(const std::string &publicKey, const Resource &resource,
                                          const std::vector<IpAddress>& seeders)
 {
-    std::lock_guard<std::shared_timed_mutex> lock(networkMutex);
     std::lock_guard<std::shared_timed_mutex> lock2(localIdMutex);
+    std::lock_guard<std::shared_timed_mutex> lock(networkMutex);
 
     auto &keyMap = networkResources[publicKey];
     auto keyMapIterator = networkResources.find(publicKey);
@@ -155,6 +155,42 @@ void ResourceManager::setNetworkResourceInfoState(const std::string &publicKey, 
 {
     std::lock_guard<std::shared_timed_mutex> lock(networkMutex);
     ::setResourceInfoState(publicKey, resource, networkResources, newState);
+}
+
+void ResourceManager::trySetLocalResourceInfoState(const std::string &publicKey, const Resource &resource,
+                                                   Resource::State state)
+{
+    std::lock_guard<std::shared_timed_mutex> lock(localMutex);
+    try
+    {
+        ::setResourceInfoState(publicKey, resource, networkResources, state);
+    }
+    catch (const std::runtime_error& e)
+    {
+        // we don't have this resource locally so we don't have to do anything
+        // not the prettiest solution...
+    }
+}
+
+LocalResourceInfo ResourceManager::getLocalOrSharedResourceInfo(const std::string &publicKey, const Resource &resource)
+{
+    std::shared_lock<std::shared_timed_mutex> lock(localMutex);
+    std::shared_lock<std::shared_timed_mutex> lock2(ownedMutex);
+    try
+    {
+        return ::getResourceInfo(publicKey, resource, ownedResources);
+    }
+        // quite ugly but...
+    catch (const std::runtime_error& e)
+    {
+        return ::getResourceInfo(publicKey, resource, localResources);
+    }
+}
+
+ResourceManager::ResourceMap<LocalResourceInfo> ResourceManager::getLocalResources()
+{
+    std::shared_lock<std::shared_timed_mutex> lock(localMutex);
+    return localResources;
 }
 
 

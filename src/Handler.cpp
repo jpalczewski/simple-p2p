@@ -8,6 +8,7 @@
 #include "ConversionUtils.h"
 #include "Files/FileManager.h"
 #include "Messages/SendResourceMessage.h"
+#include "Resources/ResourceManager.h"
 
 void Handler::handle(Socket connection)
 {
@@ -56,6 +57,15 @@ std::vector<unsigned char> Handler::readBytes(Socket& connection, std::vector<un
 void Handler::processResourceRequestMessage(ResourceRequestMessage message, Socket& connection)
 {
     std::cout << "File " << message.getResource().getName() << " requested. " << std::endl;
+    LocalResourceInfo info = resourceManager.getLocalOrSharedResourceInfo(message.getPublicKey(), message.getResource());
+    if (info.getResourceState() != Resource::State::Active)
+    {
+        // TODO add error description
+        std::vector<unsigned char> errorResponse = {(unsigned char) MessageType::Error};
+        std::cout << "File " << message.getResource().getName() << " requested but is in invalid/blocked state. " << std::endl;
+        connection.write(errorResponse.data(), 1);
+        return;
+    }
     FilePartRequest request(message.getPublicKey(), message.getResource().getHash(), message.getOffset(), message.getSize());
     FilePartResponse part = fileManagerInstance.getFilePart(request);
     SendResourceMessage response(message.getResource(), message.getOffset(), message.getSize(), part.received);
