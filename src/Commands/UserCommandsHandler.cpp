@@ -15,6 +15,8 @@
 #include "CommandTypes/InvalidateCommand.h"
 #include "CommandTypes/DeleteCommand.h"
 
+#include "../ConfigHandler.h"
+
 namespace
 {
     template<typename InfoType>
@@ -57,18 +59,9 @@ void UserCommandsHandler::handleUserInput()
 
 std::pair<AuthorKeyType, Resource> UserCommandsHandler::resourceFromFile(std::string filePath)
 {
-#define TINFOIL_HAT 1
-#ifndef TINFOIL_HAT
-    const std::string publicKeyFileName = "/home/kamil/Projects/simple-p2p/src/rsa_public.pem";
-    const std::string privateKeyFileName = "/home/kamil/Projects/simple-p2p/src/rsa_private.pem";
+    const std::string publicKeyFileName = ConfigHandler::getInstance()->get("keys.dir")+"rsa_public.pem";
+    const std::string privateKeyFileName = ConfigHandler::getInstance()->get("keys.dir")+"rsa_private.pem";
     AuthorKey key(publicKeyFileName, privateKeyFileName);
-
-#else
-    const std::string publicKeyFileName = "/tmp/rsa_public.pem";
-    const std::string privateKeyFileName = "/tmp/rsa_private.pem";
-    AuthorKey key(publicKeyFileName, privateKeyFileName);
-    key.generateKey(1024);
-#endif
     AddFileRequest request(key.getPublicKey(), key.getPrivateKey(), filePath);
     auto hashAndSign = fileManagerInstance.addFile(request);
     size_t size = file_size(filePath);
@@ -103,7 +96,7 @@ std::stringstream UserCommandsHandler::broadcastOnDemand() {
     auto map = convertInfoMapToResourceMap(ownedResources);
     BroadcastMessage message(move(map));
     const auto bytes = message.toByteStream();
-    socket.writeTo(&bytes[0], bytes.size(), "127.255.255.255", broadcastPort);
+    socket.writeTo(&bytes[0], bytes.size(), ConfigHandler::getInstance()->get("network.broadcast_ip"), broadcastPort);
     std::stringstream stream;
     log << "--- Sending broadcast." << std::endl;
     stream << "--- Sending broadcast." << std::endl;
@@ -156,6 +149,7 @@ void UserCommandsHandler::handle(DownloadCommand *command)
     }
 }
 
+
 void UserCommandsHandler::handle(BlockCommand *command) {
     auto result = resourceManager.getResourceById(command->getLocalId());
     resourceManager.setOwnedResourceInfoState(result.first, result.second, Resource::State::Blocked);
@@ -166,7 +160,7 @@ void UserCommandsHandler::handle(BlockCommand *command) {
     std::vector<unsigned char> binaryMessage {static_cast<unsigned char>(MessageType::BlockResource)};
     auto messageData = message.toByteStream();
     binaryMessage.insert(binaryMessage.end(), messageData.begin(), messageData.end());
-    socket.writeTo(&binaryMessage[0], binaryMessage.size(), "127.255.255.255", broadcastPort);
+    socket.writeTo(&binaryMessage[0], binaryMessage.size(), ConfigHandler::getInstance()->get("network.broadcast_ip"), broadcastPort);
     log << stream.str() << std::endl;
     commandInterface->sendResponse(stream.str());
 }

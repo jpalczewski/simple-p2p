@@ -15,6 +15,7 @@
 #include "CommandTypes/UnblockCommand.h"
 #include "CommandTypes/InvalidateCommand.h"
 #include "CommandTypes/CancelCommand.h"
+#include "CommandTypes/DeleteCommand.h"
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 
@@ -56,7 +57,7 @@ std::unique_ptr<Command> NetworkCommandInterface::getNextCommand()
         case Command::Type::Invalidate:
             return unzipCommand<InvalidateCommand>(stream);
         case Command::Type::Delete:
-            return unzipCommand<DownloadCommand>(stream);
+            return unzipCommand<DeleteCommand>(stream);
 
     }
 }
