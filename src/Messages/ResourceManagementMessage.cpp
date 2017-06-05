@@ -14,13 +14,18 @@ ResourceManagementMessage ResourceManagementMessage::fromByteStream(std::vector<
     return ResourceManagementMessage(std::move(publicKey), std::move(resource), std::move(sign));
 }
 
-std::vector<unsigned char> ResourceManagementMessage::toByteStream() const
+std::vector<unsigned char> ResourceManagementMessage::toByteStream(bool withSignature) const
 {
     std::vector<unsigned char> byteArray;
     resource.toByteStream(byteArray);
     byteArray.insert(byteArray.end(), publicKey.begin(), publicKey.end());
-    byteArray.insert(byteArray.end(), sign.begin(), sign.end());
+    if(withSignature)
+        byteArray.insert(byteArray.end(), sign.begin(), sign.end());
     return byteArray;
+}
+
+void ResourceManagementMessage::setSign(const std::vector<unsigned char> &sign) {
+    ResourceManagementMessage::sign = sign;
 }
 
 

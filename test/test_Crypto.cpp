@@ -63,4 +63,29 @@ BOOST_AUTO_TEST_SUITE(authorkey_tests)
         remove(privateKey);
 
     }
+    BOOST_AUTO_TEST_CASE(does_vector_hash_works)
+    {
+        using namespace boost::filesystem;
+
+        path publicKey = boost::filesystem::unique_path(),
+                privateKey = boost::filesystem::unique_path();
+
+        AuthorKey authorKey(publicKey.native(), privateKey.native());
+        AuthorKey secondAuthor;
+        authorKey.generateKey(4096);
+
+        std::vector<unsigned char> inputVector = {2};
+        std::string testVector(inputVector.begin(), inputVector.end()); //lol
+        auto signResult = authorKey.signMessage(inputVector);
+        std::cout << "Sign size:" << signResult.size() << std::endl;
+
+        auto verifyResult = authorKey.verifySignature(testVector, &signResult[0], signResult.size());
+
+        BOOST_REQUIRE_EQUAL(true, verifyResult);
+
+        //secondAuthor.
+
+        remove(publicKey);
+        remove(privateKey);
+    }
 BOOST_AUTO_TEST_SUITE_END()

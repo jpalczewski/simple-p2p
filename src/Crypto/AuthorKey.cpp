@@ -214,3 +214,14 @@ std::string AuthorKey::getPublicKey() {
         cachedPublicKey = loadKey(publicKeyFilename);
     return cachedPublicKey;
 }
+
+std::vector<unsigned char> AuthorKey::signMessage(
+        const std::vector<unsigned char> &inputData) {
+    unsigned char* encMessage;
+    size_t encMessageLength;
+    RSASign(privateKeyFilename, (unsigned char*) &inputData[0], inputData.size(), &encMessage, &encMessageLength);
+    std::vector<unsigned char> signedMessaage(encMessage, encMessage + encMessageLength);
+    free(encMessage);
+    return signedMessaage;
+
+}

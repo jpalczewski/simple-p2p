@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(resourceManagementMessageConversion)
     AuthorKeyType key = getTestKey();
     std::vector<unsigned char> sign(128, 0x11);
     ResourceManagementMessage message(key, resource, sign);
-    auto bytes = message.toByteStream();
+    auto bytes = message.toByteStream(true);
     ResourceManagementMessage fromBytes = ResourceManagementMessage::fromByteStream(bytes, 0);
     BOOST_CHECK_EQUAL(key, fromBytes.getPublicKey());
     BOOST_CHECK_EQUAL("foo", fromBytes.getResource().getName());

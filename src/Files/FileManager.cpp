@@ -25,19 +25,19 @@ void FileManager::setWorkingDirectory(const std::string &cwdPath) {
     if(!is_directory(cwd))
         throw std::runtime_error("FileManager::setWorkingDirectory received path that isn't directory!");
 
-    for(auto & file : boost::make_iterator_range(directory_iterator(cwdPath), {}))
-    {
-        //const HashArray &ha = MD5Utils::boostPathToHashArray(file.path());
-        const Hash ha(file.path());
-        std::cout << file << " " << ha << std::endl;
-        auto result = findInResourcesManager(ha);
-        if(result.first)
-        {
-            std::time_t lastTime = last_write_time(file.path()); // TODO: it's wrong as hell
-            FileRecord fr(lastTime, file.path(), ha);
-            authorLookupMap[result.second][ha] = fr;
-        }
-    }
+//    for(auto & file : boost::make_iterator_range(directory_iterator(cwdPath), {}))
+//    {
+//        //const HashArray &ha = MD5Utils::boostPathToHashArray(file.path());
+//        const Hash ha(file.path());
+//        std::cout << file << " " << ha << std::endl;
+//        auto result = findInResourcesManager(ha);
+//        if(result.first)
+//        {
+//            std::time_t lastTime = last_write_time(file.path()); // TODO: it's wrong as hell
+//            FileRecord fr(lastTime, file.path(), ha);
+//            authorLookupMap[result.second][ha] = fr;
+//        }
+//    }
 
     this->cwd = cwdPath;
 }

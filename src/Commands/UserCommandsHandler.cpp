@@ -14,6 +14,7 @@
 #include "CommandTypes/UnblockCommand.h"
 #include "CommandTypes/InvalidateCommand.h"
 #include "CommandTypes/DeleteCommand.h"
+#include "CommandTypes/CancelCommand.h"
 
 #include "../ConfigHandler.h"
 
@@ -151,46 +152,86 @@ void UserCommandsHandler::handle(DownloadCommand *command)
 
 
 void UserCommandsHandler::handle(BlockCommand *command) {
-    auto result = resourceManager.getResourceById(command->getLocalId());
-    resourceManager.setOwnedResourceInfoState(result.first, result.second, Resource::State::Blocked);
-    std::stringstream stream;
-    stream << "File " << result.first << " is blocked.";
-    std::vector<unsigned char> sign(128, 0x44);
-    ResourceManagementMessage message(result.first, result.second, sign);
-    std::vector<unsigned char> binaryMessage {static_cast<unsigned char>(MessageType::BlockResource)};
-    auto messageData = message.toByteStream();
-    binaryMessage.insert(binaryMessage.end(), messageData.begin(), messageData.end());
-    socket.writeTo(&binaryMessage[0], binaryMessage.size(), ConfigHandler::getInstance()->get("network.broadcast_ip"), broadcastPort);
-    log << stream.str() << std::endl;
+    uint64_t id = command->getLocalId();
+    MessageType messageType = MessageType::BlockResource;
+    Resource::State state = Resource::State::Blocked;
+
+    sendBroadcastMessage(id, messageType, state);
+
+}
+
+void
+UserCommandsHandler::sendBroadcastMessage(uint64_t id, const MessageType &messageType, const Resource::State &state) {
+    auto result = resourceManager.getResourceById(id);
+    resourceManager.setOwnedResourceInfoState(result.first, result.second, state);
+
+    stringstream stream;
+    stream << "File " << result.second.getName() << " is ";
+    if(messageType==MessageType::BlockResource)
+        stream << "blocked";
+    if(messageType==MessageType::UnblockResource)
+        stream << "unblocked";
+    if(messageType==MessageType::DeleteResource)
+        stream << "deleted";
+    if(messageType==MessageType::InvalidateResource)
+        stream << "invalidated";
+
+    stream << std::endl;
+    sendBroadcastMessage(result, messageType);
+    log << stream.str() << endl;
     commandInterface->sendResponse(stream.str());
+}
+
+void UserCommandsHandler::sendBroadcastMessage(const std::pair<std::string, Resource> &result, const MessageType &messageType) {
+    ConfigHandler *config = ConfigHandler::getInstance();
+    AuthorKey authorKey(config->get("keys.dir") + "rsa_public.pem", config->get("keys.dir") + "rsa_private.pem");
+
+    vector<unsigned char> sign;
+    ResourceManagementMessage message(result.first, result.second, sign);
+    vector<unsigned char> binaryMessage {static_cast<unsigned char>(messageType)};
+    auto messageData = message.toByteStream(false);
+    binaryMessage.insert(binaryMessage.end(), messageData.begin(), messageData.end());
+
+    sign = authorKey.signMessage(binaryMessage);
+    message.setSign(sign);
+    binaryMessage = {static_cast<unsigned char>(messageType)};
+    messageData = message.toByteStream(true);
+    binaryMessage.insert(binaryMessage.end(), messageData.begin(), messageData.end());
+    socket.writeTo(&binaryMessage[0], binaryMessage.size(), ConfigHandler::getInstance()->get("network.broadcast_ip"),
+                   broadcastPort);
 }
 
 void UserCommandsHandler::handle(UnblockCommand *command) {
-    std::stringstream stream;
-    stream << "Unblock" << std::endl;
-    log << stream.str() << std::endl;
-    commandInterface->sendResponse(stream.str());
+    uint64_t id = command->getLocalId();
+    MessageType messageType = MessageType::UnblockResource;
+    Resource::State state = Resource::State::Active;
+
+    sendBroadcastMessage(id, messageType, state);
 }
 
 void UserCommandsHandler::handle(DeleteCommand *command) {
-    std::stringstream stream;
-    stream << "Delete" << std::endl;
-    log << stream.str() << std::endl;
-    commandInterface->sendResponse(stream.str());
+    uint64_t id = command->getLocalId();
+    MessageType messageType = MessageType::DeleteResource;
+    Resource::State state = Resource::State::Invalid;
+
+    sendBroadcastMessage(id, messageType, state);
+    //TODO: Handle deleting from resourceManager
 }
 
 void UserCommandsHandler::handle(InvalidateCommand *command) {
-    std::stringstream stream;
-    stream << "Invalidate" << std::endl;
-    log << stream.str() << std::endl;
-    commandInterface->sendResponse(stream.str());
+    uint64_t id = command->getLocalId();
+    MessageType messageType = MessageType::InvalidateResource;
+    Resource::State state = Resource::State::Invalid;
+
+    sendBroadcastMessage(id, messageType, state);
 }
 
 void UserCommandsHandler::handle(CancelCommand *command) {
-    std::stringstream stream;
-    stream << "Cancel" << std::endl;
-    log << stream.str() << std::endl;
-    commandInterface->sendResponse(stream.str());
+    uint64_t id = command->getLocalId();
+    MessageType messageType = MessageType::InvalidateResource;
+    Resource::State state = Resource::State::Invalid;
+
+    sendBroadcastMessage(id, messageType, state);
 }
 
 

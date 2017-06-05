@@ -16,6 +16,7 @@
 #include "CommandInterface.h"
 #include "../Files/FileManagerTypes.h"
 #include "ResourceDownloadHandler.h"
+#include "../Messages/MessageType.h"
 
 class UserCommandsHandler : public Visitor
 {
@@ -31,14 +32,10 @@ public:
     void handle(UnknownCommand* command);
     void handle(DownloadCommand* command);
     void handle(BlockCommand* command);
-
-    void handle(UnblockCommand *command) override;
-
-    void handle(DeleteCommand *command) override;
-
-    void handle(InvalidateCommand *command) override;
-
-    void handle(CancelCommand *command) override;
+    void handle(UnblockCommand *command);
+    void handle(DeleteCommand *command);
+    void handle(InvalidateCommand *command);
+    void handle(CancelCommand *command);
 
 private:
     int broadcastPort;
@@ -51,6 +48,10 @@ private:
     std::unordered_map<std::string, std::vector<Resource>> convertInfoMapToResourceMap(ResourceManager::ResourceMap<LocalResourceInfo>);
 
     std::stringstream broadcastOnDemand();
+
+    void sendBroadcastMessage(const std::pair<std::string, Resource> &result, const MessageType &messageType);
+
+    void sendBroadcastMessage(uint64_t id, const MessageType &messageType, const Resource::State &state);
 };
 
 #endif //SIMPLE_P2P_USERCOMMANDSHANDLER_H

@@ -39,6 +39,11 @@ namespace
         if(findResult == publicKeyMap.end())
             throw std::runtime_error("Resource not found in setResourceInfoState");
         //TODO now it is possible to f.e. unblock invalidated resource, it shouldn't be possible
+        auto oldState = findResult->second.getResourceState();
+        if(oldState==Resource::State::Invalid)
+            throw std::runtime_error("You shouldn't mess with invalid resource!");
+
+
         findResult->second.setResourceState(newResourceState);
 
 

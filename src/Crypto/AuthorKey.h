@@ -29,6 +29,7 @@ public:
     bool verifySignature(const std::string &plainText, unsigned char* encryptedMessage,
                          size_t encryptedMessageLength);
     std::vector<unsigned char> signMessage(const std::string &plainText);
+    std::vector<unsigned char> signMessage(const std::vector<unsigned char> &inputData);
     void generateKey(int bits);
     Hash getPublicPEMHash();
 

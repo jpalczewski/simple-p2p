@@ -17,7 +17,7 @@ public:
     { }
 
     static ResourceManagementMessage fromByteStream(std::vector<unsigned char> byteArray, int currentIndex);
-    std::vector<unsigned char> toByteStream() const;
+    std::vector<unsigned char> toByteStream(bool withSignature = true) const;
 
 
     const AuthorKeyType &getPublicKey() const
@@ -34,6 +34,8 @@ public:
     {
         return sign;
     }
+
+    void setSign(const std::vector<unsigned char> &sign);
 
 private:
     AuthorKeyType publicKey;
