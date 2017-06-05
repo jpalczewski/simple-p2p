@@ -7,6 +7,7 @@
 
 #include "Network/UdpListener.h"
 #include "Resources/Resource.h"
+#include "Files/FileManager.h"
 
 #include "Resources/ResourceManager.h"
 #include "Commands/UserCommandsHandler.h"
@@ -47,16 +48,21 @@ int main(int argc, char** argv)
 
 	int serverPort = std::stoi(config->get("network.server_port"));
     int targetPort = std::stoi(config->get("network.client_port"));
-	
-    AuthorKey authorKey(config->get("keys.dir")+"rsa_public.pem", config->get("keys.dir")+"rsa_private.pem");
+    int clientHandlerPort = std::stoi(config->get("daemon.port"));
 
-    authorKey.generateKey(1024);
+    if (!boost::filesystem::exists(config->get("keys.dir")+"rsa_public.pem"))
+    {
+        AuthorKey authorKey(config->get("keys.dir") + "rsa_public.pem", config->get("keys.dir") + "rsa_private.pem");
+        authorKey.generateKey(1024);
+    }
+
+    fileManagerInstance.setWorkingDirectory(config->get("download.dir"));
 
     std::thread serverThread(serverFunc, serverPort);
     std::thread dispatcherThread(dispatcherFunc, serverPort);
     std::cout << "Server started." << std::endl;
     // std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
-    int userHandlerPort = argc > 3 ? atoi(argv[3]) : 6000;
+    int userHandlerPort = clientHandlerPort;
     UserCommandsHandler commandsHandler(targetPort, userHandlerPort);
     std::cout << "User commands handler started." << std::endl;
     commandsHandler.handleUserInput();

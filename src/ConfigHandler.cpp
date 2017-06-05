@@ -1,6 +1,7 @@
 #include "ConfigHandler.h"
 
 #include <boost/property_tree/ini_parser.hpp>
+#include <boost/filesystem.hpp>
 
 boost::property_tree::ptree pt;
 
@@ -28,9 +29,19 @@ string ConfigHandler::get(string const &parameter)
 
 void ConfigHandler::readDirectory(string const &directoryPath)
 {
-	boost::property_tree::ini_parser::read_ini(directoryPath + "config.ini", pt);
-	
-	pt.put("download.dir", directoryPath + "download/");
-	pt.put("share.dir", directoryPath + "share/");
-	pt.put("keys.dir", directoryPath + "keys/");
+    using namespace boost::filesystem;
+    path configPath = path(directoryPath) / path("config.ini");
+	boost::property_tree::ini_parser::read_ini(configPath.string(), pt);
+
+    path downloadDirectory = path(directoryPath + boost::filesystem::path::preferred_separator + "download/");
+    path shareDirectory = path(directoryPath + boost::filesystem::path::preferred_separator + "share/");
+    path keysDirectory = path(directoryPath + boost::filesystem::path::preferred_separator + "keys/");
+
+    create_directories(downloadDirectory);
+    create_directories(shareDirectory);
+    create_directories(keysDirectory);
+
+	pt.put("download.dir", downloadDirectory.string());
+	pt.put("share.dir", shareDirectory.string());
+	pt.put("keys.dir", keysDirectory.string());
 }
