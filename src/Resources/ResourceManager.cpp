@@ -28,7 +28,7 @@ namespace
         auto keyIterator = map.find(publicKey);
         if (keyIterator == map.end())
             throw std::runtime_error("Cannot get resource info for " + resource.getName() + " - key not found");
-        const auto& publicKeyMap = keyIterator->second;
+         const auto& publicKeyMap = keyIterator->second;
         auto resourceFound = publicKeyMap.find(resource);
         if (resourceFound == publicKeyMap.end())
             throw std::runtime_error("Cannot get resource info for " + resource.getName() + " - resource not found");

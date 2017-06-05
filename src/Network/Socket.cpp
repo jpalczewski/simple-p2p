@@ -15,6 +15,7 @@
 #include <cstring>
 #include <iostream>
 #include <arpa/inet.h>
+#include <sstream>
 
 Socket::Socket(Socket::Domain domain, Socket::Type type)
 {
@@ -124,8 +125,11 @@ Socket Socket::accept()
 #endif
     if (newSocket < 0)
     {
-        std::cout << errno << std::endl;
-        throw std::runtime_error("Error on accept.");
+        std::stringstream ss;
+        ss << "Error on accept" << std::endl;
+        ss << "Errno: " << std::string(strerror(errno)) << std::endl;
+        //std::cout << errno << std::endl;
+        throw std::runtime_error(ss.str());
     }
 
     Domain domain = static_cast<Domain>(cli_addr.sin_family);
