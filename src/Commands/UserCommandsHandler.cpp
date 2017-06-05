@@ -15,6 +15,8 @@
 #include "CommandTypes/InvalidateCommand.h"
 #include "CommandTypes/DeleteCommand.h"
 
+#include "../ConfigHandler.h"
+
 namespace
 {
     template<typename InfoType>
@@ -57,8 +59,8 @@ void UserCommandsHandler::handleUserInput()
 
 std::pair<AuthorKeyType, Resource> UserCommandsHandler::resourceFromFile(std::string filePath)
 {
-    const std::string publicKeyFileName = "/simple-p2p/rsa_keys/rsa_public.pem";
-    const std::string privateKeyFileName = "/simple-p2p/rsa_keys/rsa_private.pem";
+    const std::string publicKeyFileName = ConfigHandler::getInstance()->get("keys.dir")+"rsa_public.pem";
+    const std::string privateKeyFileName = ConfigHandler::getInstance()->get("keys.dir")+"rsa_private.pem";
     AuthorKey key(publicKeyFileName, privateKeyFileName);
     AddFileRequest request(key.getPublicKey(), key.getPrivateKey(), filePath);
     auto hashAndSign = fileManagerInstance.addFile(request);
@@ -94,7 +96,7 @@ std::stringstream UserCommandsHandler::broadcastOnDemand() {
     auto map = convertInfoMapToResourceMap(ownedResources);
     BroadcastMessage message(move(map));
     const auto bytes = message.toByteStream();
-    socket.writeTo(&bytes[0], bytes.size(), "172.18.255.255", broadcastPort);
+    socket.writeTo(&bytes[0], bytes.size(), ConfigHandler::getInstance()->get("network.broadcast_ip"), broadcastPort);
     std::stringstream stream;
     log << "--- Sending broadcast." << std::endl;
     stream << "--- Sending broadcast." << std::endl;
@@ -172,7 +174,7 @@ void UserCommandsHandler::handle(BlockCommand *command) {
     std::vector<unsigned char> binaryMessage {static_cast<unsigned char>(MessageType::BlockResource)};
     auto messageData = message.toByteStream();
     binaryMessage.insert(binaryMessage.end(), messageData.begin(), messageData.end());
-    socket.writeTo(&binaryMessage[0], binaryMessage.size(), "127.255.255.255", broadcastPort);
+    socket.writeTo(&binaryMessage[0], binaryMessage.size(), ConfigHandler::getInstance()->get("network.broadcast_ip"), broadcastPort);
     log << stream.str() << std::endl;
     commandInterface->sendResponse(stream.str());
 }

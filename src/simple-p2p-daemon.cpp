@@ -3,14 +3,17 @@
 #include <unordered_map>
 
 #include "CryptoUtils.h"
+#include "ConfigHandler.h"
+
 #include "Network/UdpListener.h"
 #include "Resources/Resource.h"
+
 #include "Resources/ResourceManager.h"
 #include "Commands/UserCommandsHandler.h"
 #include "Dispatcher.h"
 
-#include "Crypto/AuthorKey.h"
 
+#include "Crypto/AuthorKey.h"
 
 void serverFunc(int port)
 {
@@ -26,23 +29,28 @@ void dispatcherFunc(int port)
 
 int main(int argc, char** argv)
 {
-
-
-    initOpenSsl();
-
-    if (argc < 3)
+	if (argc < 2)
     {
-        std::cout << "Usage: " << argv[0] << " SERVER_PORT CLIENT_PORT [opt CLIENT_HANDLER_PORT - default 6000]" << std::endl;
+        std::cout << "Usage: " << argv[0] << " PATH_TO_DIR (containing config.ini download/ share/ and keys/" << std::endl;
+		
+        std::cout << "\te.g. ./simple-p2p-daemon /simple-p2p/config/docker/" << std::endl;
         return 0;
     }
-    int serverPort = atoi(argv[1]);
-    int targetPort = atoi(argv[2]);
 
+    ConfigHandler *config;
+    config = ConfigHandler::getInstance();
+	config->readDirectory(argv[1]);
+	
+    //std::cout << ConfigHandler::getInstance()->get("daemon.port") << std::endl;
+	
+    initOpenSsl();
 
-    AuthorKey authorKey("/simple-p2p/rsa_keys/rsa_public.pem", "/simple-p2p/rsa_keys/rsa_private.pem");
+	int serverPort = std::stoi(config->get("network.server_port"));
+    int targetPort = std::stoi(config->get("network.client_port"));
+	
+    AuthorKey authorKey(config->get("keys.dir")+"rsa_public.pem", config->get("keys.dir")+"rsa_private.pem");
 
     authorKey.generateKey(1024);
-
 
     std::thread serverThread(serverFunc, serverPort);
     std::thread dispatcherThread(dispatcherFunc, serverPort);
