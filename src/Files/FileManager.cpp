@@ -61,7 +61,8 @@ AuthorsList FileManager::getAllAuthors() {
 FilePartResponse FileManager::getFilePart(const FilePartRequest &request) {
     std::shared_lock<std::shared_timed_mutex> lock(almMutex);
     auto file = findFileFromTable(request);
-
+    if(file.getState()==FileRecordState::Deleted)
+        throw std::runtime_error("Cannot get part - file is deleted!");
     return file.getFilePart(request);
 }
 
@@ -156,6 +157,17 @@ std::pair<Hash, std::vector<unsigned char> > FileManager::addFile(const AddFileR
     authorLookupMap[request.authorKey][request.fileHash] = fr;
 
     return std::make_pair(request.fileHash, signResult);
+}
+
+void FileManager::setFileState(const SetFileStateRequest &request) {
+    std::lock_guard<std::shared_timed_mutex> lock(almMutex);
+    try {
+        auto &fileRecord = authorLookupMap[request.authorKey][request.fileHash];
+        fileRecord.setState(request.state);
+    }
+    catch(std::exception e) {
+        throw std::runtime_error(std::string("FileManager::setFileState failed:") + e.what());
+    }
 }
 
 FileManager fileManagerInstance;

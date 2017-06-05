@@ -22,6 +22,8 @@
 #include "Requests/AddFileRequest.h"
 #include "../Crypto/AuthorKey.h"
 #include "../Crypto/Hash.h"
+#include "Requests/SetFileStateRequest.h"
+
 class FileManager {
 
     friend class boost::serialization::access;
@@ -44,6 +46,7 @@ public:
     bool                                         saveFilePart(const FileSavePartRequest &request);
     bool                                         createFile(const FileCreateRequest & request);
     std::pair<Hash, std::vector<unsigned char> > addFile(const AddFileRequest &request);
+    void                                         setFileState(const SetFileStateRequest &request);
 private:
     AuthorLookupMap     authorLookupMap;
     std::string         cwd;
