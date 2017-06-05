@@ -37,6 +37,8 @@ private:
     };
 
     void handleDelete(ResourceManagementMessage message) const;
+
+    bool verifySignature(ResourceManagementMessage &message, MessageType type) const;
 };
 
 

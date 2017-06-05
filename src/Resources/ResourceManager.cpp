@@ -21,20 +21,28 @@ namespace
         auto insertResult = map[publicKey].insert(std::make_pair(resource, info));
         return insertResult.second;
     }
-
-    // TODO check if first (publicKey as key) map is found
+    
     template <typename T>
     T getResourceInfo(const std::string &publicKey, const Resource &resource, ResourceManager::ResourceMap<T>& map)
     {
-        const auto& publicKeyMap = map.find(publicKey)->second;
-        return publicKeyMap.find(resource)->second;
+        auto keyIterator = map.find(publicKey);
+        if (keyIterator == map.end())
+            throw std::runtime_error("Cannot get resource info for " + resource.getName() + " - key not found");
+        const auto& publicKeyMap = keyIterator->second;
+        auto resourceFound = publicKeyMap.find(resource);
+        if (resourceFound == publicKeyMap.end())
+            throw std::runtime_error("Cannot get resource info for " + resource.getName() + " - resource not found");
+        return resourceFound->second;
     }
 
     template <typename T>
     bool setResourceInfoState(const std::string &publicKey, const Resource &resource,
                               ResourceManager::ResourceMap<T> &map, Resource::State newResourceState)
     {
-        auto& publicKeyMap = map.find(publicKey)->second;
+        auto keyFound = map.find(publicKey);
+        if (keyFound == map.end())
+            throw std::runtime_error("Cannot set resource info for " + resource.getName() + " - key not found");
+        auto& publicKeyMap = keyFound->second;
         auto findResult = publicKeyMap.find(resource);
         if(findResult == publicKeyMap.end())
             throw std::runtime_error("Resource not found in setResourceInfoState");

@@ -8,6 +8,7 @@
 #include "../Messages/BroadcastMessage.h"
 #include "../Messages/ResourceRequestMessage.h"
 #include "../Messages/ResourceManagementMessage.h"
+#include "../Crypto/AuthorKey.h"
 
 UdpListener::UdpListener(int listenPort) : socket(Socket::Domain::Ip4, Socket::Type::Udp)
 {
@@ -46,6 +47,11 @@ void UdpListener::start()
 void UdpListener::handleResourceManagementMessage(std::vector<unsigned char> buffer, MessageType type) const
 {
     ResourceManagementMessage message = ResourceManagementMessage::fromByteStream(move(buffer), 1);
+    if (!verifySignature(message, type))
+    {
+        std::cout << "Received unauthorized resource state change request for " << message.getResource().getName() << std::endl;
+        return;
+    }
     if (type == MessageType ::DeleteResource)
     {
         handleDelete(std::move(message));
@@ -78,6 +84,20 @@ void UdpListener::handleDelete(ResourceManagementMessage message) const
 {
 
 }
+
+bool UdpListener::verifySignature(ResourceManagementMessage &message, MessageType type) const
+{
+    AuthorKey key;
+    key.loadPublicKeyFromString(message.getPublicKey());
+    std::stringstream plainText;
+    plainText << (char)type;
+    const std::vector<unsigned char>&vector = message.toByteStream(false);
+    plainText << std::string(reinterpret_cast<const char*>(vector.data()), vector.size());
+    bool verified = key.verifySignature(plainText.str(), message.getSign().data(), 128);
+    return verified;
+}
+
+
 
 
 

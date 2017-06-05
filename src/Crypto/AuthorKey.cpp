@@ -105,7 +105,7 @@ bool AuthorKey::RSAVerifySignature(RSA *rsa, unsigned char *MsgHash, size_t MsgH
     }
 }
 
-bool AuthorKey::verifySignature(const std::string &plainText, unsigned char *encryptedMessage,
+bool AuthorKey::verifySignature(const std::string &plainText, const unsigned char *encryptedMessage,
                                 size_t encryptedMessageLength) {
     std::string key;
     if(cachedPublicKey.empty()) {
@@ -117,7 +117,7 @@ bool AuthorKey::verifySignature(const std::string &plainText, unsigned char *enc
 
     RSA* publicRSA = createPublicRSA(key);
     bool authentic;
-    bool result = RSAVerifySignature(publicRSA, encryptedMessage, encryptedMessageLength, plainText.c_str(), plainText.length(), &authentic);
+    bool result = RSAVerifySignature(publicRSA, const_cast<unsigned char*>(encryptedMessage), encryptedMessageLength, plainText.c_str(), plainText.length(), &authentic);
     return result && authentic;
 }
 

@@ -26,7 +26,7 @@ public:
     AuthorKey();
     AuthorKey(const std::string &publicKeyFilename, const std::string &privateKeyFilename);
 
-    bool verifySignature(const std::string &plainText, unsigned char* encryptedMessage,
+    bool verifySignature(const std::string &plainText, const unsigned char* encryptedMessage,
                          size_t encryptedMessageLength);
     std::vector<unsigned char> signMessage(const std::string &plainText);
     std::vector<unsigned char> signMessage(const std::vector<unsigned char> &inputData);
