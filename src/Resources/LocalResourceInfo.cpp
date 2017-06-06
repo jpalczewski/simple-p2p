@@ -16,7 +16,6 @@ LocalResourceInfo::LocalResourceInfo(uint64_t localId) : GenericResourceInfo(loc
 
 //uint64_t LocalResourceInfo::getLocalId() const
 //{
-//    // TODO implement when needed. It would be used to identify resources to delete/block
 //    return 0;
 //}
 

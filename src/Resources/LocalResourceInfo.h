@@ -20,8 +20,6 @@ public:
     //uint64_t getLocalId() const;
 
 private:
-
-    // TODO: more resource properties
 };
 
 

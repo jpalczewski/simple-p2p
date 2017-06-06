@@ -7,8 +7,6 @@
 
 #include <cstdint>
 
-// TODO maybe some better place for these functions?
-
 void int64ToBytes(int64_t value, std::vector<unsigned char>& result);
 int64_t int64FromBytes(const std::vector<unsigned char>& byteArray, int index);
 void intToBytes(int value, std::vector<unsigned char>& result);

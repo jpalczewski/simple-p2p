@@ -70,7 +70,6 @@ void Handler::processResourceRequestMessage(ResourceRequestMessage message, Sock
     LocalResourceInfo info = resourceManager.getLocalOrSharedResourceInfo(message.getPublicKey(), message.getResource());
     if (info.getResourceState() != Resource::State::Active)
     {
-        // TODO add error description
         std::vector<unsigned char> errorResponse = {(unsigned char) MessageType::Error};
         std::cout << "File " << message.getResource().getName() << " requested but is in invalid/blocked state. " << std::endl;
         connection.write(errorResponse.data(), 1);

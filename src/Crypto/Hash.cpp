@@ -23,7 +23,7 @@ Hash::Hash(const std::string &inputText, InputTextType inputType) {
     if(inputType == InputTextType::Text)
         MD5((unsigned char*)inputText.c_str(), inputText.length(), hash.data());
     else if(inputType == InputTextType::Hash)
-        throw std::logic_error("Not implemented yet"); //TODO: https://stackoverflow.com/questions/17261798/converting-a-hex-string-to-a-byte-array
+        throw std::logic_error("Not implemented yet");
     else if(inputType == InputTextType::File)
     {
         if(!boost::filesystem::exists(boost::filesystem::path(inputText)))

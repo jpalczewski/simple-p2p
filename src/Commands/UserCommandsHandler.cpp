@@ -113,7 +113,6 @@ void UserCommandsHandler::handle(BroadcastCommand *command)
 }
 
 std::stringstream UserCommandsHandler::broadcastOnDemand() {
-    // TODO fragmentation is a big deal, should divide resources into multiple packets to prevent it
     const auto ownedResources = resourceManager.getOwnedResources();
     const auto localResources = resourceManager.getLocalResources();
     std::stringstream stream;
