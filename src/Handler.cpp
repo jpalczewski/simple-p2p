@@ -25,7 +25,9 @@ void Handler::handle(Socket connection)
     catch (const std::exception& e)
     {
         std::cout << "Handling tcp connection failed. Reason: " << e.what() << std::endl;
+        connection.close();
     }
+    connection.close();
 }
 
 void Handler::processResourceRequest(std::vector<unsigned char> buffer, Socket &connection)

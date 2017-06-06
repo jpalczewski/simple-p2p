@@ -33,12 +33,14 @@ void ResourceDownloadHandler::downloadResource(std::pair<AuthorKeyType, Resource
     std::vector<unsigned char> bytes = getWholeMessage(socket, incomingMessageSize, MessageType::SendResource);
     SendResourceMessage contentMessage = SendResourceMessage::fromByteStream(std::move(bytes));
     std:: cout << "Successfully completed content message for " << resource.getName() << std::endl;
-    FileCreateRequest request(key, (const HashArray &) resource.getHash(), resource.getName(), resource.getSize());
+    HashArray hashArray;
+    std::vector<unsigned char> hash = resource.getHash();
+    std::copy_n(hash.begin(), 16, hashArray.begin());
+    FileCreateRequest request(key, hashArray, resource.getName(), resource.getSize());
     fileManagerInstance.createFile(std::move(request));
-    FileSavePartRequest saveRequest(key, (const HashArray &) resource.getHash(), 0, resource.getSize());
+    FileSavePartRequest saveRequest(key, hashArray, 0, resource.getSize());
     saveRequest.bytes = contentMessage.getData();
     fileManagerInstance.saveFilePart(std::move(saveRequest));
-    // TODO broadcast this resource
     resourceManager.addLocalResource(message.getPublicKey(), message.getResource());
     std::cout << "Completed downloading resource " << contentMessage.getResource().getName() << std::endl;
 }

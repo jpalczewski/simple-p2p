@@ -116,8 +116,8 @@ void Socket::listen(int maxQueueLength)
 
 Socket Socket::accept()
 {
-    unsigned clilen;
     struct sockaddr_in cli_addr;
+    unsigned clilen = sizeof(cli_addr);;
 #ifndef __CYGWIN__
     int newSocket = ::accept(socketDescriptor, (struct sockaddr *)&cli_addr, &clilen);
 #else
