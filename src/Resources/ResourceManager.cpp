@@ -208,15 +208,19 @@ void ResourceManager::deleteSharedAndNetworkResource(const std::string &publicKe
     std::lock_guard<std::shared_timed_mutex> lock2(localMutex);
     auto keyFound = networkResources.find(publicKey);
     if (keyFound != networkResources.end())
+    {
         keyFound->second.erase(resource);
-    if (keyFound->second.empty())
-        networkResources.erase(keyFound);
+        if (keyFound->second.empty())
+            networkResources.erase(keyFound);
+    }
 
     auto keyFound2 = localResources.find(publicKey);
     if (keyFound2 != localResources.end())
+    {
         keyFound2->second.erase(resource);
-    if (keyFound2->second.empty())
-        localResources.erase(keyFound2);
+        if (keyFound2->second.empty())
+            localResources.erase(keyFound2);
+    }
 }
 
 
