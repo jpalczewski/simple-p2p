@@ -5,7 +5,6 @@
 #ifndef SIMPLE_P2P_MESSAGETYPE_H
 #define SIMPLE_P2P_MESSAGETYPE_H
 
-// TODO add the rest of the message types
 enum class MessageType : unsigned char
 {
     BroadcastResource = 0x00,

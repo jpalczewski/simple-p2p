@@ -29,7 +29,6 @@ DaemonClientResponse DaemonClient::sendAdd(std::string filePath)
 DaemonClientResponse DaemonClient::sendMessage(std::string message)
 {
     socket.writeTo(reinterpret_cast<const unsigned char*>(message.data()), message.size(), daemonAddress, daemonPort);
-    // TODO receive messages bigger than 1024 bytes
     std::vector<unsigned char> response(1024);
     if (socket.readFrom(&response[0], 1024, daemonAddress) < 0)
         throw std::runtime_error("Couldn't get any response from daemon");

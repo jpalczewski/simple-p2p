@@ -27,7 +27,6 @@ NetworkCommandInterface::NetworkCommandInterface(int listenPort)
 
 std::unique_ptr<Command> NetworkCommandInterface::getNextCommand()
 {
-    // TODO receive messages bigger than 1024 bytes
     std::vector<unsigned char> buffer(1024);
     socket.readFrom(&buffer[0], 1024, lastSender);
     std::stringstream stream;

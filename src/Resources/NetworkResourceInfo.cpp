@@ -21,7 +21,6 @@ const std::set<IpAddress>& NetworkResourceInfo::getSeeders() const
 
 std::string NetworkResourceInfo::toString() const
 {
-    // TODO reserve place for a string in advance
     std::stringstream ss;
     ss << "\tState:" << ::toString(getResourceState()) << std::endl
        << "\tSeeders:" << std::endl;

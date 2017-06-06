@@ -210,8 +210,6 @@ int Socket::writeTo(const unsigned char *input, int length, std::string address,
     return bytesSent;
 }
 
-
-//TODO merge 2 readFrom functions or at least call one from the other
 int Socket::readFrom(unsigned char *output, int length, IpAddress& receiveAddress)
 {
     struct sockaddr_in socketAddress;

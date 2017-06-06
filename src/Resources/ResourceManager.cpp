@@ -9,7 +9,6 @@ uint64_t ResourceManager::lastLocalId = 0;
 
 namespace
 {
-     //TODO check whether resource exists in this map or not
     template <typename T>
     bool addResource(const std::string &publicKey,
                      const Resource &resource,
@@ -46,7 +45,6 @@ namespace
         auto findResult = publicKeyMap.find(resource);
         if(findResult == publicKeyMap.end())
             throw std::runtime_error("Resource not found in setResourceInfoState");
-        //TODO now it is possible to f.e. unblock invalidated resource, it shouldn't be possible
         auto oldState = findResult->second.getResourceState();
         if(oldState==Resource::State::Invalid)
             throw std::runtime_error("You shouldn't mess with invalid resource!");

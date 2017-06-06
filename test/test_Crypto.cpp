@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_SUITE(authorkey_tests)
 
         std::cout << "A crypto ma: " << sizeof(RSA) << std::endl;
 
-        BOOST_REQUIRE_EQUAL(final_result.size(), 32); //TODO: it can be tested in better way
+        BOOST_REQUIRE_EQUAL(final_result.size(), 32);
 
         remove(publicKey);
         remove(privateKey);

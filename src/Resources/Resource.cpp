@@ -13,7 +13,6 @@ Resource::Resource(const std::string &name, int64_t size, const std::vector<unsi
 void Resource::toByteStream(std::vector<unsigned char>& byteArray) const
 {
     const char *data = name.data();
-    // TODO 4B for name length in documentation, change it to 8 and leave unsigned long as returned by string::length?
     // same with vector::size in other functions
     const int length = name.length() & INT_MAX;
     intToBytes(length, byteArray);
@@ -79,7 +78,6 @@ std::string toString(Resource::State state)
 
 std::string Resource::toString() const
 {
-    // TODO print hash and sign
     std::stringstream ss;
     ss
             << "\tName: " << name << std::endl

@@ -36,7 +36,7 @@ public:
     }
 
 private:
-    std::string address; // TODO maybe some better representation? bytes or whatever
+    std::string address;
     int port;
 };
 

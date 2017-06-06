@@ -22,8 +22,6 @@ public:
 private:
     friend class boost::serialization::access;
 
-    // TODO: Reference to Resource?
-
     std::time_t lastKnownWriteTime;
     path        location;
     Hash        md5;

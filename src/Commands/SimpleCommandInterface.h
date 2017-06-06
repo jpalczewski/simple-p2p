@@ -7,7 +7,6 @@
 
 #include "CommandInterface.h"
 
-// TODO better class name...
 class SimpleCommandInterface : public CommandInterface
 {
 public:
