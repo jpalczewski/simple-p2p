@@ -34,9 +34,9 @@ int main(int argc, char** argv)
 
 	if (argc < 2)
     {
-        std::cout << "Usage: " << argv[0] << " PATH_TO_DIR (containing config.ini download/ share/ and keys/" << std::endl;
+        std::cout << "Usage: " << argv[0] << " PATH_TO_DIR (containing config.ini download/ and keys/" << std::endl;
 		
-        std::cout << "\te.g. ./simple-p2p-daemon /simple-p2p/config/docker/" << std::endl;
+        std::cout << "\te.g. ./simple-p2p-daemon /simple-p2p/profiles/docker/" << std::endl;
         return 0;
     }
 
