@@ -4,6 +4,7 @@
 
 #include <thread>
 #include "Dispatcher.h"
+#include <iostream>
 
 Dispatcher::Dispatcher(int listenPort, int maximumConnections) : socket(Socket::Domain::Ip4, Socket::Type::Tcp)
 {
