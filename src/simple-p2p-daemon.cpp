@@ -1,6 +1,8 @@
 #include <iostream>
 #include <thread>
 #include <unordered_map>
+#include <cstdlib>
+#include <ctime>
 
 #include "CryptoUtils.h"
 #include "ConfigHandler.h"
@@ -12,6 +14,7 @@
 #include "Resources/ResourceManager.h"
 #include "Commands/UserCommandsHandler.h"
 #include "Dispatcher.h"
+
 
 
 #include "Crypto/AuthorKey.h"
@@ -41,7 +44,7 @@ int main(int argc, char** argv)
     }
 
 
-
+    srand(time(NULL));
     ConfigHandler *config;
     try {
         config = ConfigHandler::getInstance();

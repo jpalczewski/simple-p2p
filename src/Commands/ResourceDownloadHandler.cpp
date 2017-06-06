@@ -10,13 +10,16 @@
 #include "../Messages/SendResourceMessage.h"
 #include "../Files/FileManager.h"
 #include <iostream>
+#include <cstdlib>
 
 void ResourceDownloadHandler::downloadResource(std::pair<AuthorKeyType, Resource> keyResource)
 {
     AuthorKeyType &key = keyResource.first;
     Resource &resource = keyResource.second;
     auto info = resourceManager.getNetworkResourceInfo(key, resource);
-    auto seeder = *info.getSeeders().begin();
+//    auto seeder = *info.getSeeders().begin();
+    size_t seederNumber = (rand()%info.getSeeders().size());
+    auto seeder = *std::next(info.getSeeders().begin(), seederNumber);
     Socket socket(Socket::Domain::Ip4, Socket::Type::Tcp);
     socket.bind(0);
     socket.connectByIp(seeder.getAddress(), targetPort);

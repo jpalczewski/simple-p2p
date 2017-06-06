@@ -14,6 +14,7 @@ void Handler::handle(Socket connection)
 {
     try
     {
+        connection.setTimeout(5);
         std::vector<unsigned char> buffer(5);
         int received = connection.read(&buffer[0], 1);
         if (buffer[0] == (char) MessageType::ResourceRequest)

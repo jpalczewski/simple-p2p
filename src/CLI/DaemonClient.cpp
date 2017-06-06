@@ -11,6 +11,7 @@ DaemonClient::DaemonClient(std::string daemonAddress, int daemonPort) : socket(S
                                                                         daemonAddress(daemonAddress), daemonPort(daemonPort)
 { 
     socket.bind(0);
+    socket.setTimeout(5);
 }
 
 DaemonClientResponse DaemonClient::sendAdd(std::string filePath)

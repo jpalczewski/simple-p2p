@@ -34,6 +34,7 @@ public:
     int writeTo(const unsigned char *input, int length, std::string address, int port);
     int close();
     void enableBroadcast();
+    void setTimeout(int second);
 
 private:
     int socketDescriptor;
