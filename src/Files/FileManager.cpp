@@ -161,9 +161,14 @@ std::pair<Hash, std::vector<unsigned char> > FileManager::addFile(const AddFileR
 
 void FileManager::setFileState(const SetFileStateRequest &request) {
     std::lock_guard<std::shared_timed_mutex> lock(almMutex);
-    try {
-        auto &fileRecord = authorLookupMap[request.authorKey][request.fileHash];
-        fileRecord.setState(request.state);
+    try {        const AuthorKeyType &key = request.authorKey;
+        auto keyMap = authorLookupMap.find(key);
+        if (keyMap == authorLookupMap.end())
+            return;
+        auto fileRecord = keyMap->second.find(request.fileHash);
+        if (fileRecord == keyMap->second.end())
+            return;
+        fileRecord->second.setState(request.state);
     }
     catch(std::exception e) {
         throw std::runtime_error(std::string("FileManager::setFileState failed:") + e.what());
