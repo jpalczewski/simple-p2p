@@ -12,12 +12,19 @@
 
 void Handler::handle(Socket connection)
 {
-    std::vector<unsigned char> buffer(5);
-    int received = connection.read(&buffer[0], 1);
-    if (buffer[0] == (char) MessageType::ResourceRequest)
+    try
     {
-        std::cout << "Received resource request." << std::endl;
-        processResourceRequest(std::move(buffer), connection);
+        std::vector<unsigned char> buffer(5);
+        int received = connection.read(&buffer[0], 1);
+        if (buffer[0] == (char) MessageType::ResourceRequest)
+        {
+            std::cout << "Received resource request." << std::endl;
+            processResourceRequest(std::move(buffer), connection);
+        }
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << "Handling tcp connection failed. Reason: " << e.what() << std::endl;
     }
 }
 

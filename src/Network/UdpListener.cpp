@@ -22,26 +22,30 @@ void UdpListener::start()
     std::vector<unsigned char> buffer(bufferSize);
     while (true)
     {
-        // TODO make it multithreaded and remember sender ip in resource info
-        // and handle messages bigger than buffer
-        // and refactor it, generally
-        IpAddress sender;
-        int received = socket.readFrom(&buffer[0], bufferSize, sender);
-        std::cout << "Received broadcast from " + sender.toString() << std::endl;
-        if (received == bufferSize)
-            throw std::runtime_error("buffer too small");
-//        std::cout << std::to_string(received) << " bytes received" << std::endl;
-        
-        switch (static_cast<MessageType >(buffer[0]))
+        try
         {
-            case MessageType::BroadcastResource:
-                handleBroadcastMessage(buffer, sender);
-                break;
-            case MessageType::BlockResource:
-            case MessageType::DeleteResource:
-            case MessageType::InvalidateResource:
-            case MessageType::UnblockResource:
-                handleResourceManagementMessage(buffer, static_cast<MessageType>(buffer[0]));
+            IpAddress sender;
+            int received = socket.readFrom(&buffer[0], bufferSize, sender);
+            std::cout << "Received broadcast from " + sender.toString() << std::endl;
+            if (received == bufferSize)
+                throw std::runtime_error("buffer too small");
+//        std::cout << std::to_string(received) << " bytes received" << std::endl;
+
+            switch (static_cast<MessageType >(buffer[0]))
+            {
+                case MessageType::BroadcastResource:
+                    handleBroadcastMessage(buffer, sender);
+                    break;
+                case MessageType::BlockResource:
+                case MessageType::DeleteResource:
+                case MessageType::InvalidateResource:
+                case MessageType::UnblockResource:
+                    handleResourceManagementMessage(buffer, static_cast<MessageType>(buffer[0]));
+            }
+        }
+        catch (const std::exception& e)
+        {
+            std::cout << "Handling udp message failed. Reason: " << e.what() << std::endl;
         }
     }
 }

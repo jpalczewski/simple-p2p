@@ -175,6 +175,10 @@ void UserCommandsHandler::handle(DownloadCommand *command)
 
     commandInterface->sendResponse("Downloading in progress.");
     downloader.downloadResource(std::move(resource));
+    std::unordered_map<std::string, std::vector<Resource>> resourceToBroadcast;
+    resourceToBroadcast[resource.first] = std::vector<Resource>{resource.second};
+    broadcastResourceMap(resourceToBroadcast);
+    std::cout << "Broadcasting downlaoded resource" << std::endl;
 }
 
 
@@ -251,7 +255,6 @@ void UserCommandsHandler::handle(DeleteCommand *command) {
     resourceManager.deleteOwnedResource(result.first, result.second);
     SetFileStateRequest sfss(result.first, Hash(result.second.getHash()), FileRecordState::Deleted);
     fileManagerInstance.setFileState(sfss);
-    //TODO: Handle deleting from resourceManager
 }
 
 void UserCommandsHandler::handle(InvalidateCommand *command) {

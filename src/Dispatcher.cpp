@@ -15,8 +15,16 @@ void Dispatcher::start()
 {
     while (true)
     {
-        Socket newSocket = socket.accept();
-        std::thread thread([&] (Socket socket) -> void {handler.handle(std::move(socket));}, std::move(newSocket));
-        thread.detach();
+        try
+        {
+            Socket newSocket = socket.accept();
+            std::thread thread([&](Socket socket) -> void
+                               { handler.handle(std::move(socket)); }, std::move(newSocket));
+            thread.detach();
+        }
+        catch (const std::exception& e)
+        {
+            std::cout << "Accepting new connection in dispatcher failed. Reason: " << e.what();
+        }
     }
 }
