@@ -42,7 +42,6 @@ private:
 
     Socket(int socketDescriptor, Socket::Domain domain, Socket::Type type);
     Socket::Type getType(int socket) const;
-    void setReceiveTimeout(int seconds);
 };
 
 #endif //PROJECT_SOCKET_H

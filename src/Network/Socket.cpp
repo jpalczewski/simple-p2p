@@ -242,15 +242,6 @@ int Socket::readFrom(unsigned char *output, int length, std::string& receiveAddr
     return result;
 }
 
-void Socket::setReceiveTimeout(int seconds)
-{
-    struct timeval tv;
-    tv.tv_sec = seconds;
-    tv.tv_usec = 0;
-    setsockopt(socketDescriptor, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv,sizeof(struct timeval));
-}
-
-
 
 
 
