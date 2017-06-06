@@ -17,7 +17,7 @@ $ simple-p2p-daemon ${PROFILE_DIRECTORY}
 And for example:
 $ simple-p2p-cli --port ${PORT_SPECIFIED_IN_PROFILE} --display
 ```
-###With docker
+### With docker
 In repo main directory:
 ```
 $ docker-compose up
